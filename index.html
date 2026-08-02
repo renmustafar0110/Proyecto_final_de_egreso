@@ -1,14 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Panel Principal</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Panel Principal</h1>
+    <header>
+        <h1>Hospital de Clínicas</h1>
+    </header>
 
-    <button onclick="window.location.href='RegistroF.html'">Funcionario</button>
-    <button onclick="window.location.href='RegistroP.html'">Paciente</button>
+    <main>
+        <h1 class="welcome">Bienvenidos a funcionarios y pacientes al módulo de gestión de documentación del Hospital de Clínicas, seleccione cuál es su estado.</h1>
+        <div class="panel">
+            <ul class="menu">
+                <li><a href="RegistroF.html">Funcionario</a></li>
+                <li><a href="RegistroP.html">Paciente</a></li>
+            </ul>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; Hospital de Clínicas</p>
+    </footer>
 </body>
 </html>

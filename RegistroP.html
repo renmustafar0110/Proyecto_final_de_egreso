@@ -2,33 +2,63 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>RegistroP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Paciente</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Formulario de Registro</h1>
-        <form action="" method="post">
-            <label for="cedula">Cédula:</label>
-            <input type="text" id="cedula" name="cedula"><br><br>
+    <header>
+        <h1>Hospital de Clínicas</h1>
+    </header>
 
-            <label for="nombre">Nombre:</label>
-            <input type="text" id="nombre" name="nombre"><br><br>
+    <main>
+        <div class="panel form-panel">
+            <h2>Formulario de Registro - Paciente</h2>
+            <form action="" method="post">
+                <div class="form-field">
+                    <label for="cedula">Cédula:</label>
+                    <input type="text" id="cedula" name="cedula">
+                </div>
 
-            <label for="apellido">Apellido:</label>
-            <input type="text" id="apellido" name="apellido"><br><br>
+                <div class="form-field">
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" id="nombre" name="nombre">
+                </div>
 
-            <label for="fecha_nac">Fecha de nacimiento:</label>
-            <input type="date" id="fecha_nac" name="fecha_nac"><br><br>
+                <div class="form-field">
+                    <label for="apellido">Apellido:</label>
+                    <input type="text" id="apellido" name="apellido">
+                </div>
 
-            <label for="telefono">Teléfono:</label>
-            <input type="tel" id="telefono" name="telefono"><br><br>
+                <div class="form-field">
+                    <label for="fecha_nac">Fecha de nacimiento:</label>
+                    <input type="date" id="fecha_nac" name="fecha_nac">
+                </div>
 
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email"><br><br>
+                <div class="form-field">
+                    <label for="telefono">Teléfono:</label>
+                    <input type="tel" id="telefono" name="telefono">
+                </div>
 
-            <label for="direccion">Dirección:</label>
-            <input type="text" id="direccion" name="direccion"><br><br>
+                <div class="form-field">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email">
+                </div>
 
-            <input type="submit" value="Registrar">
-        </form>
+                <div class="form-field">
+                    <label for="direccion">Dirección:</label>
+                    <input type="text" id="direccion" name="direccion">
+                </div>
+
+                <div class="form-field">
+                    <input type="submit" value="Registrar">
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; Hospital de Clínicas</p>
+    </footer>
 </body>
 </html>

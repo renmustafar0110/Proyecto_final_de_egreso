@@ -2,24 +2,49 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Funcionario</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Inicio de Sesión - Funcionario</h1>
-    <form action="" method="post">
-        <label for="id">ID:</label>
-        <input type="text" id="id" name="id"><br><br>
+    <header>
+        <h1>Hospital de Clínicas</h1>
+    </header>
 
-        <label for="cedula">Cédula:</label>
-        <input type="text" id="cedula" name="cedula"><br><br>
+    <main>
+        <div class="panel form-panel">
+            <h2>Inicio de Sesión - Funcionario</h2>
+            <form action="" method="post">
+                <div class="form-field">
+                    <label for="id">ID:</label>
+                    <input type="text" id="id" name="id">
+                </div>
 
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" name="nombre"><br><br>
+                <div class="form-field">
+                    <label for="cedula">Cédula:</label>
+                    <input type="text" id="cedula" name="cedula">
+                </div>
 
-        <label for="apellido">Apellido:</label>
-        <input type="text" id="apellido" name="apellido"><br><br>
+                <div class="form-field">
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" id="nombre" name="nombre">
+                </div>
 
-        <input type="submit" value="Ingresar">
-    </form>
+                <div class="form-field">
+                    <label for="apellido">Apellido:</label>
+                    <input type="text" id="apellido" name="apellido">
+                </div>
+
+                <div class="form-field">
+                    <input type="submit" value="Ingresar">
+                </div>
+            </form>
+            <p class="back-link"><a href="index.html">&larr; Volver al inicio</a></p>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; Hospital de Clínicas</p>
+    </footer>
 </body>
 </html>

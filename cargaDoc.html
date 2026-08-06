@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carga de Documentos</title>
+    <link rel="stylesheet" href="cargaDoc.css">
+</head>
+<body>
+    <header>
+        <h1>Hospital de Clínicas</h1>
+    </header>
+
+    <main>
+        <div class="panel form-panel">
+            <h2>Cargar Documento</h2>
+            <form action="" method="post" enctype="multipart/form-data">
+                <div class="form-field">
+                    <label for="archivo">Archivo (PDF u otro formato estándar):</label>
+                    <input type="file" id="archivo" name="archivo" accept=".pdf,.doc,.docx,.odt">
+                </div>
+
+                <div class="form-field">
+                    <label for="titulo">Título:</label>
+                    <input type="text" id="titulo" name="titulo">
+                </div>
+
+                <div class="form-field">
+                    <label for="descripcion">Descripción:</label>
+                    <textarea id="descripcion" name="descripcion" rows="3"></textarea>
+                </div>
+
+                <div class="form-field">
+                    <label for="categoria">Categoría:</label>
+                    <select id="categoria" name="categoria">
+                        <option value="informacion_general">Información general</option>
+                        <option value="indicaciones">Indicaciones médicas</option>
+                        <option value="estudios">Estudios imagenológicos</option>
+                        <option value="enfermeria">Enfermería</option>
+                        <option value="encuestas">Encuestas</option>
+                    </select>
+                </div>
+
+                <div class="form-field">
+                    <label for="fecha_publicacion">Fecha de publicación:</label>
+                    <input type="date" id="fecha_publicacion" name="fecha_publicacion">
+                </div>
+
+                <div class="form-field">
+                    <input type="submit" value="Cargar Documento">
+                </div>
+
+                <p class="back-link"><a href="docCar.html">Documentos cargados</a></p>
+            </form>
+            <p class="back-link"><a href="index.html">&larr; Volver al inicio</a></p>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; Hospital de Clínicas</p>
+    </footer>
+</body>
+</html>

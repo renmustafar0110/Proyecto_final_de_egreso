@@ -14,15 +14,26 @@
     <main>
         <div class="panel form-panel">
             <h2>Cargar Documento</h2>
-            <form action="" method="post" enctype="multipart/form-data">
+            <form action="" method="post">
                 <div class="form-field">
-                    <label for="archivo">Archivo (PDF u otro formato estándar):</label>
-                    <input type="file" id="archivo" name="archivo" accept=".pdf,.doc,.docx,.odt">
-                </div>
-
-                <div class="form-field">
-                    <label for="titulo">Título:</label>
-                    <input type="text" id="titulo" name="titulo">
+                    <label for="titulo">Título del documento:</label>
+                    <select id="titulo" name="titulo">
+                        <option value="" disabled selected>Seleccione un documento...</option>
+                        <option value="interrupcion_embarazo">Indicaciones de interrupción voluntaria del embarazo</option>
+                        <option value="prostatectomia">Prostatectomía radical (indicaciones e información para el paciente)</option>
+                        <option value="estudios_imagenologicos">Preparación para estudios imagenológicos</option>
+                        <option value="pertecneciato">Estudios diagnósticos con pertecneciato</option>
+                        <option value="centellograma">Centellograma de perfusión miocárdica</option>
+                        <option value="ecocardiograma_dobutamina">Indicaciones ecocardiograma con dobutamina</option>
+                        <option value="warfarina">Indicaciones para pacientes en tratamiento con warfarina</option>
+                        <option value="ecocardiograma_transesofagico">Indicaciones ecocardiograma transesofágico</option>
+                        <option value="nefrologia_trasplante">Indicaciones para ingreso a centro de nefrología y trasplante</option>
+                        <option value="alta_enfermeria">Plan de alta enfermería, Nefrología</option>
+                        <option value="enfermeria_trasplantados">Indicaciones de enfermería para usuarios trasplantados</option>
+                        <option value="prevencion_infecciones">Prevención de infecciones</option>
+                        <option value="encuesta_satisfaccion">Encuesta de satisfacción del usuario trasplantado</option>
+                        <option value="pauta_ostomizados">Pauta para pacientes ostomizados</option>
+                    </select>
                 </div>
 
                 <div class="form-field">
@@ -49,10 +60,55 @@
                 <div class="form-field">
                     <input type="submit" value="Cargar Documento">
                 </div>
-
-                <p class="back-link"><a href="docCar.html">Documentos cargados</a></p>
             </form>
             <p class="back-link"><a href="index.html">&larr; Volver al inicio</a></p>
+        </div>
+
+        <div class="panel doc-panel">
+            <h2>Documentos Cargados</h2>
+            <table class="doc-table">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Categoría</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Indicaciones de interrupción voluntaria del embarazo</td>
+                        <td>Información general</td>
+                        <td>10/02/2026</td>
+                        <td class="estado activo">Activo</td>
+                        <td class="acciones">
+                            <a href="editDoc.html">Editar</a>
+                            <a href="">Eliminar</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Preparación para estudios imagenológicos</td>
+                        <td>Estudios imagenológicos</td>
+                        <td>15/03/2026</td>
+                        <td class="estado activo">Activo</td>
+                        <td class="acciones">
+                            <a href="editDoc.html">Editar</a>
+                            <a href="">Eliminar</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Pauta para pacientes ostomizados</td>
+                        <td>Enfermería</td>
+                        <td>02/04/2026</td>
+                        <td class="estado inactivo">Inactivo</td>
+                        <td class="acciones">
+                            <a href="editDoc.html">Editar</a>
+                            <a href="">Eliminar</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </main>
 

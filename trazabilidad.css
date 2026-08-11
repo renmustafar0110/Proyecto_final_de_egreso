@@ -29,8 +29,8 @@ main {
     flex: 1;
     overflow-y: auto;
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-direction: row;
+    align-items: flex-start;
     justify-content: flex-start;
     gap: 16px;
     padding: 16px;
@@ -51,96 +51,62 @@ footer {
     padding: 16px 24px;
 }
 
-.scan-panel {
-    width: 100%;
-    max-width: 420px;
-}
-
-.scan-panel h2,
-.doc-panel h2 {
+.panel h2 {
     font-size: 18px;
     margin-bottom: 12px;
     color: #1e3a5f;
 }
 
-.form-field {
-    margin-bottom: 8px;
-}
-
-.form-field label {
-    display: block;
-    margin-bottom: 3px;
-    font-size: 13px;
-    color: #1e3a5f;
-}
-
-.form-field input {
+.left-panel {
     width: 100%;
-    padding: 5px 8px;
-    border: 1px solid #b8c8dc;
-    border-radius: 4px;
-    font-size: 14px;
-    font-family: inherit;
-    background-color: #ffffff;
-    color: #1e3a5f;
+    max-width: 520px;
 }
 
-.form-field input[type="submit"] {
-    background-color: #1e3a5f;
-    color: #ffffff;
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
-    padding: 8px;
-}
-
-.form-field input[type="submit"]:hover {
-    background-color: #2a4d7a;
-}
-
-.doc-panel {
-    width: 100%;
-    max-width: 720px;
-}
-
-.doc-table {
+.veh-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 13px;
 }
 
-.doc-table th,
-.doc-table td {
+.veh-table th,
+.veh-table td {
     border: 1px solid #b8c8dc;
     padding: 6px 8px;
     text-align: left;
 }
 
-.doc-table th {
+.veh-table th {
     background-color: #e8f0fa;
     color: #1e3a5f;
 }
 
-.doc-table .estado {
+.veh-table .estado {
     font-weight: bold;
 }
 
-.doc-table .activo {
+.veh-table .disponible {
     color: #2e7d32;
 }
 
-.doc-table .inactivo {
+.veh-table .en_traslado {
     color: #c62828;
 }
 
-.doc-table .acciones a {
-    margin-right: 8px;
-    color: #1e3a5f;
+.btn-mandar {
+    display: inline-block;
+    background-color: #1e3a5f;
+    color: #ffffff;
     text-decoration: none;
+    border: none;
+    border-radius: 3px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
 }
 
-.doc-table .acciones a:hover {
-    text-decoration: underline;
+.btn-mandar:hover {
+    background-color: #2a4d7a;
 }
 
 .back-link {

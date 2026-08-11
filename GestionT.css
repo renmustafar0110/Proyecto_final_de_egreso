@@ -53,7 +53,7 @@ footer {
 
 .form-panel {
     width: 100%;
-    max-width: 420px;
+    max-width: 480px;
 }
 
 .form-panel h2 {
@@ -84,6 +84,7 @@ footer {
     font-family: inherit;
     background-color: #ffffff;
     color: #1e3a5f;
+    resize: vertical;
 }
 
 .form-field input[type="submit"] {

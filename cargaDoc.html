@@ -14,7 +14,12 @@
     <main>
         <div class="panel form-panel">
             <h2>Cargar Documento</h2>
-            <form action="" method="post">
+            <form action="" method="post" enctype="multipart/form-data">
+                <div class="form-field">
+                    <label for="archivo">Archivo (PDF u otro formato estándar):</label>
+                    <input type="file" id="archivo" name="archivo" accept=".pdf,.doc,.docx,.odt">
+                </div>
+
                 <div class="form-field">
                     <label for="titulo">Título del documento:</label>
                     <select id="titulo" name="titulo">
@@ -77,36 +82,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Indicaciones de interrupción voluntaria del embarazo</td>
-                        <td>Información general</td>
-                        <td>10/02/2026</td>
-                        <td class="estado activo">Activo</td>
-                        <td class="acciones">
-                            <a href="editDoc.html">Editar</a>
-                            <a href="">Eliminar</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Preparación para estudios imagenológicos</td>
-                        <td>Estudios imagenológicos</td>
-                        <td>15/03/2026</td>
-                        <td class="estado activo">Activo</td>
-                        <td class="acciones">
-                            <a href="editDoc.html">Editar</a>
-                            <a href="">Eliminar</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Pauta para pacientes ostomizados</td>
-                        <td>Enfermería</td>
-                        <td>02/04/2026</td>
-                        <td class="estado inactivo">Inactivo</td>
-                        <td class="acciones">
-                            <a href="editDoc.html">Editar</a>
-                            <a href="">Eliminar</a>
-                        </td>
-                    </tr>
                 </tbody>
             </table>
         </div>

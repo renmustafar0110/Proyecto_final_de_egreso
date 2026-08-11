@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Traslados</title>
+    <link rel="stylesheet" href="GestionT.css">
+</head>
+<body>
+    <header>
+        <h1>Hospital de Clínicas</h1>
+    </header>
+
+    <main>
+        <div class="panel form-panel">
+            <h2>Registro de Solicitud de Traslado</h2>
+            <form action="" method="post">
+                <div class="form-field">
+                    <label for="conductor">Conductor responsable del vehículo:</label>
+                    <input type="text" id="conductor" name="conductor">
+                </div>
+
+                <div class="form-field">
+                    <label for="elemento">Paciente o elemento a trasladar:</label>
+                    <select id="elemento" name="elemento">
+                        <option value="" disabled selected>Seleccione una opción...</option>
+                        <option value="paciente_biologico">Paciente biológico</option>
+                        <option value="equipamiento_medico">Equipamiento médico</option>
+                        <option value="otros_insumos">Otros insumos</option>
+                    </select>
+                </div>
+
+                <div class="form-field" id="campo_descripcion" style="display: none;">
+                    <label for="descripcion_elemento">Descripción del elemento:</label>
+                    <textarea id="descripcion_elemento" name="descripcion_elemento" rows="4"></textarea>
+                </div>
+
+                <div class="form-field">
+                    <label for="acompanante">Copiloto o acompañante:</label>
+                    <input type="text" id="acompanante" name="acompanante">
+                </div>
+
+                <div class="form-field">
+                    <label for="origen">Punto de origen:</label>
+                    <input type="text" id="origen" name="origen">
+                </div>
+
+                <div class="form-field">
+                    <label for="destino">Destino:</label>
+                    <input type="text" id="destino" name="destino">
+                </div>
+
+                <div class="form-field">
+                    <label for="hora_salida">Hora de salida:</label>
+                    <input type="time" id="hora_salida" name="hora_salida">
+                </div>
+
+                <div class="form-field">
+                    <label for="hora_estimada">Hora estimada de llegada:</label>
+                    <input type="time" id="hora_estimada" name="hora_estimada">
+                </div>
+
+                <div class="form-field">
+                    <label for="hora_efectiva">Hora efectiva de llegada:</label>
+                    <input type="time" id="hora_efectiva" name="hora_efectiva">
+                </div>
+
+                <div class="form-field">
+                    <input type="submit" value="Registrar Traslado">
+                </div>
+            </form>
+            <p class="back-link"><a href="trazabilidad.html">&larr; Volver a trazabilidad</a></p>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; Hospital de Clínicas</p>
+    </footer>
+
+    <script src="GestionT.js"></script>
+</body>
+</html>

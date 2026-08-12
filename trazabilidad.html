@@ -9,6 +9,10 @@
 <body>
     <header>
         <h1>Hospital de Clínicas</h1>
+        <nav class="header-nav">
+            <a href="cargaDoc.html" class="header-btn">Documentos</a>
+            <a href="trazabilidad.html" class="header-btn">Trazabilidad</a>
+        </nav>
     </header>
 
     <main>
@@ -27,19 +31,19 @@
                     <tr>
                         <td>ABC 1234</td>
                         <td>01</td>
-                        <td class="estado pendiente">Pendiente</td>
+                        <td><span class="estado disponible">Disponible</span></td>
                         <td><a href="GestionT.html" class="btn-mandar">Mandar</a></td>
                     </tr>
                     <tr>
                         <td>DEF 5678</td>
                         <td>02</td>
-                        <td class="estado en_curso">En curso</td>
+                        <td><span class="estado ocupado">Ocupado</span> <span class="estado en_curso">En curso</span></td>
                         <td><a href="GestionT.html" class="btn-mandar">Mandar</a></td>
                     </tr>
                     <tr>
                         <td>GHI 9012</td>
                         <td>03</td>
-                        <td class="estado en_ruta">En ruta</td>
+                        <td><span class="estado ocupado">Ocupado</span> <span class="estado en_ruta">En ruta</span></td>
                         <td><a href="GestionT.html" class="btn-mandar">Mandar</a></td>
                     </tr>
                 </tbody>

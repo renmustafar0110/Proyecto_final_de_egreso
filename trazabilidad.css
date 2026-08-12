@@ -18,11 +18,33 @@ header {
     background-color: #1e3a5f;
     color: #ffffff;
     padding: 10px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 header h1 {
     font-size: 22px;
     font-weight: bold;
+}
+
+.header-nav {
+    display: flex;
+    gap: 10px;
+}
+
+.header-btn {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #ffffff;
+    color: #1e3a5f;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.header-btn:hover {
+    background-color: #e8f0fa;
 }
 
 main {
@@ -82,6 +104,14 @@ footer {
 
 .veh-table .estado {
     font-weight: bold;
+}
+
+.veh-table .disponible {
+    color: #2e7d32;
+}
+
+.veh-table .ocupado {
+    color: #c62828;
 }
 
 .veh-table .pendiente {

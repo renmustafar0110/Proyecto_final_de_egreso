@@ -1,4 +1,5 @@
 var formulario = document.getElementById('form-login');
+var alerta = document.getElementById('alerta-acceso');
 
 formulario.addEventListener('submit', function (evento) {
     var campos = formulario.querySelectorAll('input');
@@ -10,8 +11,10 @@ formulario.addEventListener('submit', function (evento) {
 
         if (campos[i].value.trim() === '') {
             evento.preventDefault();
-            alert('Debe completar todos los campos de inicio de sesión para continuar.');
+            alerta.style.display = 'block';
             return;
         }
     }
+
+    alerta.style.display = 'none';
 });

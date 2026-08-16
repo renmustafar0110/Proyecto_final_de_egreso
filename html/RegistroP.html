@@ -14,7 +14,7 @@
     <main>
         <div class="panel form-panel">
             <h2>Formulario de Registro - Paciente</h2>
-            <form action="" method="post" id="form-registro">
+            <form action="" method="post" id="form-registro" novalidate>
                 <div class="form-field">
                     <label for="cedula">Cédula:</label>
                     <input type="text" id="cedula" name="cedula">
@@ -49,6 +49,8 @@
                     <label for="direccion">Dirección:</label>
                     <input type="text" id="direccion" name="direccion">
                 </div>
+
+                <div class="alerta" id="alerta-acceso">Acceso denegado</div>
 
                 <div class="form-field">
                     <input type="submit" value="Registrar">

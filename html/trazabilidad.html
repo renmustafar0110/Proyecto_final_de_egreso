@@ -9,11 +9,18 @@
 <body>
     <header>
         <h1>Hospital de Clínicas</h1>
-        <nav class="header-nav">
-            <a href="cargaDoc.html" class="header-btn">Documentos</a>
-            <a href="trazabilidad.html" class="header-btn">Trazabilidad</a>
-        </nav>
+        <button class="menu-btn" id="menu-btn" aria-label="Menú">
+            <span class="menu-linea"></span>
+            <span class="menu-linea"></span>
+            <span class="menu-linea"></span>
+        </button>
     </header>
+
+    <div class="menu-panel" id="menu-panel">
+        <button class="menu-cerrar" id="menu-cerrar" aria-label="Cerrar">X</button>
+        <a href="cargaDoc.html" class="menu-opcion">Documentos</a>
+        <a href="trazabilidad.html" class="menu-opcion">Trazabilidad</a>
+    </div>
 
     <main>
         <div class="panel left-panel">
@@ -55,5 +62,7 @@
     <footer>
         <p>&copy; Hospital de Clínicas</p>
     </footer>
+
+    <script src="../js/menu.js"></script>
 </body>
 </html>

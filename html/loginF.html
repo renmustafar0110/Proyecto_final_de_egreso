@@ -14,7 +14,7 @@
     <main>
         <div class="panel form-panel">
             <h2>Inicio de Sesión - Funcionario</h2>
-            <form action="" method="post" id="form-login">
+            <form action="" method="post" id="form-login" novalidate>
                 <div class="form-field">
                     <label for="id">ID:</label>
                     <input type="text" id="id" name="id">
@@ -34,6 +34,8 @@
                     <label for="apellido">Apellido:</label>
                     <input type="text" id="apellido" name="apellido">
                 </div>
+
+                <div class="alerta" id="alerta-acceso">Acceso denegado</div>
 
                 <div class="form-field">
                     <input type="submit" value="Ingresar">

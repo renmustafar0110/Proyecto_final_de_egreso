@@ -6,22 +6,34 @@
 
 body {
     font-family: Arial, Helvetica, sans-serif;
-    background-color: #f0f4f8;
     color: #1e3a5f;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    background-image: url('../hospital.jpg.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
 }
 
 header {
     background-color: #1e3a5f;
     color: #ffffff;
     padding: 16px 32px;
+    display: flex;
+    align-items: center;
 }
 
 header h1 {
     font-size: 22px;
     font-weight: bold;
+}
+
+.header-logo {
+    height: 35px;
+    width: auto;
+    margin-right: 10px;
+    vertical-align: middle;
 }
 
 main {
@@ -52,9 +64,6 @@ footer {
 }
 
 .panel {
-    background-color: #ffffff;
-    border: 1px solid #d0dbe8;
-    border-radius: 6px;
     padding: 32px 40px;
 }
 
@@ -69,12 +78,11 @@ footer {
     display: inline-block;
     padding: 12px 24px;
     text-decoration: none;
-    color: #1e3a5f;
-    background-color: #ffffff;
-    border: 1px solid #b8c8dc;
+    color: #ffffff;
+    background-color: #1e3a5f;
     border-radius: 4px;
 }
 
 .menu a:hover {
-    background-color: #e8f0fa;
+    background-color: #2a4d7a;
 }

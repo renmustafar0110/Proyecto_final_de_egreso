@@ -26,7 +26,7 @@
     <main>
         <div class="panel form-panel">
             <h2>Cargar Documento</h2>
-            <form action="" method="post" enctype="multipart/form-data" id="form-doc">
+            <form action="" method="post" enctype="multipart/form-data" id="form-doc" novalidate>
                 <div class="form-field">
                     <label for="archivo">Archivo (PDF u otro formato estándar):</label>
                     <input type="file" id="archivo" name="archivo" accept=".pdf,.doc,.docx,.odt">
@@ -75,10 +75,13 @@
                     <input type="date" id="fecha_publicacion" name="fecha_publicacion">
                 </div>
 
+                <div id="alerta-acceso" class="alerta">Complete todos los campos</div>
+
                 <div class="form-field">
                     <input type="submit" value="Cargar Documento">
                 </div>
             </form>
+            <p class="back-link"><a href="decisionF.html">&larr; Volver al Panel de Funcionario</a></p>
             <p class="back-link"><a href="index.html">&larr; Volver al inicio</a></p>
         </div>
 

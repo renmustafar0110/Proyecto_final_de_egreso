@@ -36,6 +36,7 @@ header h1 {
 
 .reloj {
     margin-left: auto;
+    margin-right: 20px;
     color: #ffffff;
     font-size: 14px;
     font-weight: normal;
@@ -187,6 +188,18 @@ footer {
 
 .form-field input[type="submit"]:hover {
     background-color: #2a4d7a;
+}
+
+.alerta {
+    display: none;
+    background-color: #c62828;
+    color: #ffffff;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 16px;
 }
 
 .back-link {

@@ -32,6 +32,14 @@ header h1 {
     vertical-align: middle;
 }
 
+.reloj {
+    margin-left: auto;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: normal;
+    white-space: nowrap;
+}
+
 main {
     flex: 1;
     display: flex;

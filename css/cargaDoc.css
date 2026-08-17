@@ -34,6 +34,14 @@ header h1 {
     vertical-align: middle;
 }
 
+.reloj {
+    margin-left: auto;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: normal;
+    white-space: nowrap;
+}
+
 .menu-btn {
     width: 42px;
     height: 42px;

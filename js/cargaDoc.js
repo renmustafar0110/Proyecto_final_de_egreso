@@ -1,28 +1,17 @@
-var formulario = document.getElementById('form-doc');
-var errorMsg = document.getElementById('alerta-acceso');
+// Lógica de la página de Carga de Documentos
+const nombre = document.getElementById('titulo');
+const archivo = document.getElementById('archivo');
+const boton = document.getElementById('carga_Documentos');
 
-errorMsg.style.display = 'none';
+boton.addEventListener('click', async (e) => {
+    e.preventDefault();
 
-formulario.addEventListener('submit', function (evento) {
-    var campos = formulario.querySelectorAll('input, select, textarea');
+    let doc = new FormData();
+    doc.append('nombre', nombre.value);
+    doc.append('archivo', archivo.files[0]);
 
-    for (var i = 0; i < campos.length; i++) {
-        if (campos[i].type === 'submit') {
-            continue;
-        }
-
-        if (campos[i].type === 'file') {
-            if (campos[i].files.length === 0) {
-                evento.preventDefault();
-                errorMsg.style.display = 'block';
-                return;
-            }
-        } else {
-            if (campos[i].value.trim() === '') {
-                evento.preventDefault();
-                errorMsg.style.display = 'block';
-                return;
-            }
-        }
-    }
+    let respuesta = await fetch('../php/carga.php', {
+        method: 'POST',
+        body: doc
+    });
 });

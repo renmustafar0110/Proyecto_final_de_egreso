@@ -190,18 +190,6 @@ footer {
     background-color: #2a4d7a;
 }
 
-.alerta {
-    display: none;
-    background-color: #c62828;
-    color: #ffffff;
-    padding: 10px;
-    border-radius: 4px;
-    text-align: center;
-    font-weight: bold;
-    font-size: 14px;
-    margin-bottom: 16px;
-}
-
 .back-link {
     margin-top: 10px;
     text-align: center;
@@ -238,26 +226,4 @@ footer {
 .doc-table th {
     background-color: #e8f0fa;
     color: #1e3a5f;
-}
-
-.doc-table .estado {
-    font-weight: bold;
-}
-
-.doc-table .activo {
-    color: #2e7d32;
-}
-
-.doc-table .inactivo {
-    color: #c62828;
-}
-
-.doc-table .acciones a {
-    margin-right: 8px;
-    color: #1e3a5f;
-    text-decoration: none;
-}
-
-.doc-table .acciones a:hover {
-    text-decoration: underline;
 }

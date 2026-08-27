@@ -1,12 +1,16 @@
 # Documento de Requisitos de Producto (PRD)
 
-## Proyecto: Digitalización de Servicios Hospitalarios – Hospital de Clínicas
+**Proyecto:** Digitalización de Servicios Hospitalarios – Hospital de Clínicas
+**Versión:** 3.0
 
 ---
 
-## 1. Objetivo del Producto
+## 1. Objetivo y Visión del Producto
 
-Desarrollar dos servicios digitales que serán alojados en los servidores del Departamento Técnico de Informática (DTI) del Hospital de Clínicas, con el fin de optimizar la gestión de documentación para pacientes y la trazabilidad del transporte en ambulancias.
+Modernizar la gestión hospitalaria desarrollando dos servicios digitales alojados en los servidores del Departamento Técnico de Informática (DTI) del Hospital de Clínicas:
+
+- Un sistema de **documentación digital con acceso vía QR** para pacientes, eliminando las copias impresas.
+- Un sistema de **trazabilidad de ambulancias** que permita registrar y controlar cada traslado durante todo su ciclo operativo.
 
 ---
 
@@ -21,12 +25,39 @@ Ambos módulos se integrarán al panel principal de acceso del hospital, permiti
 
 ---
 
-## 3. Usuarios del Sistema
+## 3. Stakeholders y Usuarios
+
+### 3.1. Stakeholders
+
+| Stakeholder | Rol |
+|-------------|-----|
+| Hospital de Clínicas | Cliente y dueño del producto |
+| DTI (Departamento Técnico de Informática) | Responsable de infraestructura, hosting y mantenimiento |
+| Funcionarios administrativos | Usuarios operativos de ambos módulos |
+| Pacientes | Usuarios finales del módulo de documentación y encuestas |
+| Conductores y personal de ambulancias | Involucrados en el módulo de trazabilidad |
+
+### 3.2. Usuarios del Sistema
 
 | Tipo de Usuario | Descripción |
 |----------------|-------------|
 | Administrativo | Personal administrativo del área de la salud que gestionará la información y operará los servicios. |
 | Paciente | Usuario final que accederá a documentación e información institucional mediante códigos QR desde su dispositivo móvil. |
+
+### 3.3. User Personas
+
+#### Persona 1 — María (Funcionaria administrativa, Gestión Documental)
+- **Necesidad:** Cargar documentos y generar QRs sin pasos complejos.
+- **Dolor:** Actualmente depende de impresión y distribución física.
+
+#### Persona 2 — Carlos (Paciente)
+- **Necesidad:** Acceder a indicaciones médicas desde su celular.
+- **Dolor:** Pierde papeles, no recuerda las indicaciones.
+
+#### Persona 3 — Pablo (Administrativo, Ambulancias)
+- **Rol:** Encargado de logística de transporte.
+- **Necesidad:** Saber dónde está cada ambulancia y qué traslado tiene asignado.
+- **Dolor:** Comunicación telefónica constante, sin registro centralizado.
 
 ---
 
@@ -34,34 +65,168 @@ Ambos módulos se integrarán al panel principal de acceso del hospital, permiti
 
 ### 4.1. Descripción General
 
-Servicio que permite a un funcionario administrativo cargar y gestionar documentación digital en el servidor. Los pacientes acceden a dichos documentos escaneando un código QR desde sus dispositivos móviles, eliminando la necesidad de copias impresas.
+Servicio que permite a un funcionario administrativo cargar y gestionar documentación digital en el servidor (en formato PDF u otros formatos estándar), asociando metadatos a cada documento (título, descripción, categoría, fecha de publicación) y visualizando un listado con estado (activo/inactivo). Cada documento genera automáticamente un código QR único que el paciente escanea para acceder al contenido desde su dispositivo móvil, sin autenticación ni aplicaciones adicionales, en una vista web optimizada para móviles.
 
-### 4.2. Funcionalidades
+Incluye además un módulo de **encuestas de satisfacción**: los administrativos crean y gestionan formularios, los pacientes los completan de forma digital y las respuestas se almacenan en el servidor para su posterior análisis y exportación.
 
-#### 4.2.1. Carga y Gestión de Documentos (Funcionario Administrativo)
+### 4.2. Historias de Usuario
 
-- Iniciar sesión mediante credenciales del sistema central del hospital.
-- Cargar documentos en formato PDF (u otros formatos de documento estándar).
-- Asociar metadatos a cada documento: título, descripción, categoría, fecha de publicación.
-- Editar, actualizar o eliminar documentos existentes.
-- Visualizar listado de documentos cargados con estado (activo/inactivo).
-- Cada documento cargado genera automáticamente un código QR único.
+#### US-01: Carga de documentos
+> **Como** funcionario administrativo  
+> **Quiero** cargar un documento PDF al sistema  
+> **Para** que esté disponible para los pacientes vía QR
 
-#### 4.2.2. Acceso del Paciente mediante QR
+*Criterios de aceptación:*
+- El sistema acepta archivos PDF de hasta 10 MB
+- Al cargar, se muestra un preview del documento
+- Se genera un código QR automáticamente
+- El QR es descargable en formato PNG
+- La carga y obtención del QR descargable se completa en menos de 5 pasos
 
-- El paciente escanea el código QR impreso o mostrado en pantalla.
-- El sistema redirige al paciente a una vista web optimizada para dispositivos móviles.
-- El paciente visualiza el contenido del documento sin necesidad de descargar aplicaciones adicionales.
-- No se requiere autenticación para acceder a los documentos.
+---
 
-#### 4.2.3. Módulo de Encuestas de Satisfacción
+#### US-02: Gestión de documentos
+> **Como** funcionario administrativo  
+> **Quiero** editar, desactivar o eliminar documentos existentes  
+> **Para** mantener la información actualizada
 
-- Los funcionarios administrativos pueden crear y gestionar formularios de encuesta.
-- Los pacientes pueden completar encuestas de satisfacción de forma digital.
-- Las respuestas se almacenan en el servidor para su posterior análisis.
-- El sistema permite exportar datos para cálculo de indicadores de satisfacción.
+*Criterios de aceptación:*
+- El listado de documentos permite buscar por título y categoría
+- Al desactivar un documento, su QR deja de funcionar
+- Solo un administrador autenticado puede realizar estas acciones
 
-### 4.3. Documentos a Incluir (iniciales)
+---
+
+#### US-03: Visualización de documento por QR
+> **Como** paciente del hospital  
+> **Quiero** escanear un código QR con mi celular  
+> **Para** ver el documento sin necesidad de autenticarme
+
+*Criterios de aceptación:*
+- El QR redirige a una URL pública sin login
+- El documento se muestra correctamente en Chrome y Safari móvil
+- El contenido es legible sin hacer zoom (vista responsiva)
+
+---
+
+#### US-04: Creación de encuestas
+> **Como** funcionario administrativo  
+> **Quiero** crear formularios de encuesta con preguntas personalizables  
+> **Para** medir la satisfacción de los pacientes
+
+*Criterios de aceptación:*
+- Soporta preguntas de opción múltiple, escala numérica y texto libre
+- La encuesta se asocia a un documento o es independiente
+- Se genera un QR específico para la encuesta
+
+---
+
+#### US-05: Respuesta a encuestas
+> **Como** paciente  
+> **Quiero** completar una encuesta escaneando un QR  
+> **Para** dar mi opinión sobre el servicio recibido
+
+*Criterios de aceptación:*
+- No requiere registro ni autenticación
+- Las respuestas se guardan automáticamente al enviar
+- El paciente recibe confirmación visual de envío exitoso
+
+---
+
+#### US-06: Análisis de resultados
+> **Como** administrativo  
+> **Quiero** ver los resultados de las encuestas en un dashboard  
+> **Para** calcular indicadores de satisfacción
+
+*Criterios de aceptación:*
+- El dashboard muestra cantidad de respuestas por encuesta
+- Los datos se pueden exportar a CSV
+- Se muestran gráficos básicos (barras, torta)
+
+### 4.3. Casos de Uso
+
+**CU-01: Iniciar sesión en el sistema**
+| Campo | Detalle |
+|-------|---------|
+| **Actor** | Funcionario administrativo |
+| **Descripción** | El administrativo ingresa al sistema centralizado del hospital usando usuario y contraseña habituales |
+| **Precondición** | El usuario posee credenciales activas en el sistema central |
+| **Postcondición** | El usuario accede al panel principal con los módulos disponibles |
+| **Flujo principal** | 1. El usuario ingresa usuario y contraseña. 2. El sistema valida las credenciales. 3. El sistema redirige al panel principal con accesos a los módulos. |
+| **Flujo alternativo** | 2a. Credenciales inválidas: el sistema muestra mensaje de error y permite reintentar. |
+
+---
+
+**CU-02: Cargar documento informativo**
+| Campo | Detalle |
+|-------|---------|
+| **Actor** | Funcionario administrativo |
+| **Descripción** | El administrativo carga un documento PDF al servidor para que esté disponible para pacientes vía QR |
+| **Precondición** | El usuario ha iniciado sesión |
+| **Postcondición** | El documento se almacena en el servidor y se genera un código QR asociado |
+| **Flujo principal** | 1. El usuario selecciona "Cargar documento". 2. El sistema muestra un formulario. 3. El usuario selecciona el archivo PDF y completa metadatos (título, categoría). 4. El usuario confirma la carga. 5. El sistema valida y almacena el archivo. 6. El sistema genera un código QR único. 7. El sistema muestra el QR descargable y confirma la operación. |
+| **Flujo alternativo** | 5a. Archivo inválido o superior a 10 MB: el sistema rechaza la carga y muestra error. |
+
+---
+
+**CU-03: Gestionar documentos existentes**
+| Campo | Detalle |
+|-------|---------|
+| **Actor** | Funcionario administrativo |
+| **Descripción** | El administrativo edita, desactiva o elimina documentos previamente cargados |
+| **Precondición** | El usuario ha iniciado sesión y existen documentos en el sistema |
+| **Postcondición** | El documento es modificado, desactivado (el QR deja de funcionar) o eliminado |
+| **Flujo principal** | 1. El usuario accede al listado de documentos. 2. El sistema muestra los documentos con su estado. 3. El usuario selecciona un documento. 4. El usuario elige editar, desactivar o eliminar. 5. El sistema confirma la acción y la ejecuta. |
+| **Flujo alternativo** | 4a. Si elige eliminar, el sistema solicita confirmación adicional. |
+
+---
+
+**CU-04: Visualizar documento mediante QR**
+| Campo | Detalle |
+|-------|---------|
+| **Actor** | Paciente |
+| **Descripción** | El paciente escanea un código QR con su dispositivo móvil y visualiza el documento asociado |
+| **Precondición** | El código QR está activo y asociado a un documento en el servidor |
+| **Postcondición** | El paciente visualiza el documento en su dispositivo |
+| **Flujo principal** | 1. El paciente abre la cámara de su dispositivo. 2. Escanea el código QR. 3. El sistema redirige a una URL pública. 4. El sistema muestra el documento en formato optimizado para móvil. 5. El paciente puede leer el contenido. |
+| **Flujo alternativo** | 3a. QR inválido o documento desactivado: el sistema muestra mensaje "Documento no disponible". |
+
+---
+
+**CU-05: Crear encuesta de satisfacción**
+| Campo | Detalle |
+|-------|---------|
+| **Actor** | Funcionario administrativo |
+| **Descripción** | El administrativo crea un formulario de encuesta con preguntas personalizables |
+| **Precondición** | El usuario ha iniciado sesión |
+| **Postcondición** | La encuesta queda disponible con un QR propio para que los pacientes la completen |
+| **Flujo principal** | 1. El usuario accede al módulo de encuestas. 2. Selecciona "Crear encuesta". 3. Completa título, preguntas y tipo de respuesta (múltiple opción, escala, texto). 4. Confirma la creación. 5. El sistema genera la encuesta y un QR asociado. |
+| **Flujo alternativo** | - |
+
+---
+
+**CU-06: Completar encuesta de satisfacción**
+| Campo | Detalle |
+|-------|---------|
+| **Actor** | Paciente |
+| **Descripción** | El paciente escanea un QR de encuesta, responde las preguntas y envía el formulario |
+| **Precondición** | La encuesta está activa y tiene un QR generado |
+| **Postcondición** | Las respuestas se almacenan en el servidor para su análisis |
+| **Flujo principal** | 1. El paciente escanea el QR de la encuesta. 2. El sistema muestra el formulario. 3. El paciente completa las preguntas. 4. El paciente envía el formulario. 5. El sistema guarda las respuestas. 6. El sistema muestra confirmación de envío exitoso. |
+| **Flujo alternativo** | - |
+
+---
+
+**CU-07: Analizar resultados de encuestas**
+| Campo | Detalle |
+|-------|---------|
+| **Actor** | Funcionario administrativo |
+| **Descripción** | El administrativo accede a los resultados de las encuestas para calcular indicadores de satisfacción |
+| **Precondición** | Existen encuestas con respuestas almacenadas |
+| **Postcondición** | El usuario visualiza los datos y puede exportarlos |
+| **Flujo principal** | 1. El usuario accede al dashboard de encuestas. 2. El sistema muestra gráficos con resultados. 3. El usuario puede filtrar por fecha o encuesta. 4. El usuario puede exportar los datos a CSV. |
+
+### 4.4. Documentos Informativos Iniciales
 
 - Indicaciones de interrupción voluntaria del embarazo
 - Prostatectomía radical (indicaciones e información para el paciente)
@@ -78,270 +243,26 @@ Servicio que permite a un funcionario administrativo cargar y gestionar document
 - Encuesta de satisfacción del usuario trasplantado
 - Pauta para pacientes ostomizados
 
-### 4.4. Criterios de Aceptación
-
-- El administrativo puede cargar un documento y obtener un código QR descargable en menos de 5 pasos.
-- El paciente puede escanear el QR y visualizar el documento en su móvil sin autenticación.
-- Las encuestas se almacenan persistentemente y los datos son exportables.
-- El sistema funciona correctamente en los principales navegadores móviles (Chrome, Safari).
-
 ---
 
 ## 5. Módulo 2: Trazabilidad de Ambulancias
 
 ### 5.1. Descripción General
 
-Sistema para la gestión y seguimiento del transporte realizado mediante ambulancias del Hospital de Clínicas. Permite registrar solicitudes de traslado y controlar el estado de cada operación durante todo su ciclo.
-
-### 5.2. Funcionalidades
-
-#### 5.2.1. Registro de Solicitudes de Traslado
-
-El funcionario administrativo puede registrar los siguientes datos mínimos:
+Sistema para la gestión y seguimiento del transporte realizado mediante ambulancias del Hospital de Clínicas. Permite registrar solicitudes de traslado con los siguientes datos mínimos:
 
 - **Conductor** responsable del vehículo
-- **Paciente o elemento** a trasladar (puede ser paciente biológico, equipamiento médico u otros insumos)
+- **Paciente o elemento** a trasladar (paciente biológico, equipamiento médico u otros insumos)
 - **Copiloto o acompañante**
-- **Punto de origen**
-- **Destino**
-- **Hora de salida**
-- **Hora estimada de llegada**
-- **Hora efectiva de llegada**
-- Gestión de rutas dentro del circuito nacional
+- **Punto de origen** y **destino**
+- **Hora de salida**, **hora estimada de llegada** y **hora efectiva de llegada**
+- **Rutas** dentro del circuito nacional
 
-#### 5.2.2. Seguimiento de Estado del Traslado
+El administrativo actualiza manualmente el estado de cada operación durante todo su ciclo (Pendiente, En curso, En ruta, Llegada a destino, Retorno, Finalizado) y cuenta con un panel de control con las ambulancias en circulación, traslados en curso e históricos con búsqueda y filtros (fecha, conductor, paciente, estado).
 
-- Visualización del estado actual del traslado durante todo su ciclo operativo:
-  - Pendiente
-  - En curso (salida del hospital)
-  - En ruta
-  - Llegada a destino
-  - Retorno al hospital
-  - Finalizado
-- Actualización manual del estado por parte del administrativo.
+### 5.2. Historias de Usuario
 
-#### 5.2.3. Panel de Control
-
-- Vista general de todas las ambulancias en circulación y traslados en curso.
-- Histórico de traslados realizados.
-- Búsqueda y filtros por fecha, conductor, paciente, estado.
-
-### 5.3. Criterios de Aceptación
-
-- El administrativo puede crear un traslado completo en menos de 2 minutos.
-- El sistema muestra en tiempo real (o cuasi-real) el estado de cada traslado.
-- Se puede consultar el histórico completo de traslados.
-- Los datos persisten correctamente en el servidor.
-
----
-
-## 6. Requisitos Técnicos
-
-### 6.1. Infraestructura
-
-- Las aplicaciones se alojarán en servidores propios del Hospital de Clínicas (DTI, piso 6).
-- Se integran al sistema centralizado existente mediante accesos directos en el panel principal.
-- La autenticación se realiza mediante las credenciales existentes (usuario y contraseña).
-
-### 6.2. Stack Tecnológico (a definir con DTI)
-
-- Compatibilidad con la infraestructura tecnológica actual del hospital.
-- Frontend responsivo (optimizado para móviles en el módulo de pacientes).
-- Backend con API REST para comunicación entre módulos.
-- Base de datos relacional para almacenamiento persistente.
-
-### 6.3. Seguridad
-
-- Autenticación segura para el personal administrativo.
-- Los documentos de pacientes son de acceso público vía QR (sin autenticación), pero deben protegerse contra accesos no autorizados a la gestión.
-- Los datos de encuestas deben almacenarse de forma anónima o seudonimizada según normativa aplicable.
-
----
-
-## 7. Restricciones y Supuestos
-
-- El sistema centralizado existente continuará funcionando; los nuevos módulos se integran como extensiones.
-- No se contempla el desarrollo de aplicaciones nativas móviles; el acceso del paciente es vía web responsiva.
-- El seguimiento de ambulancias es mediante actualización manual del estado por parte del administrativo (no se requiere GPS en esta etapa).
-- Los servidores del DTI tienen disponibilidad y capacidad suficientes para alojar los nuevos servicios.
-
----
-
-## 8. Entregables
-
-1. Módulo de Gestión de Documentación para Pacientes (código fuente, documentación, script de base de datos).
-2. Módulo de Trazabilidad de Ambulancias (código fuente, documentación, script de base de datos).
-3. Documentación de integración con el sistema centralizado.
-4. Manual de usuario para administrativos.
-
----
-
-## 9. Criterios de Éxito
-
-- Reducción del presupuesto destinado a impresión de documentos informativos.
-- Los pacientes acceden exitosamente a la documentación vía QR.
-- Las encuestas de satisfacción tienen una tasa de respuesta medible.
-- El personal administrativo puede gestionar y dar seguimiento a los traslados de ambulancia de forma eficiente.
-- Los indicadores de satisfacción pueden calcularse a partir de los datos recolectados.
-
----
-
-## 10. Glosario
-
-| Término | Definición |
-|---------|------------|
-| DTI | Departamento Técnico de Informática del Hospital de Clínicas |
-| QR | Código de respuesta rápida para acceso a información digital |
-| Traslado | Operación de transporte de paciente, equipamiento o insumos vía ambulancia |
-| Elemento trasladado | Puede ser paciente biológico, equipamiento médico u otros insumos |
-
----
-
-> **A continuación, contenido de PRD 2.0 — Digitalización de Servicios Hospitalarios**
-
----
-
-# PRD 2.0 — Digitalización de Servicios Hospitalarios
-
-## Hospital de Clínicas
-
----
-
-## 1. Visión del Producto
-
-Modernizar la gestión hospitalaria mediante dos servicios digitales: un sistema de documentación digital con acceso vía QR para pacientes (eliminando impresiones) y un sistema de trazabilidad de ambulancias que permita controlar cada traslado en tiempo operativo.
-
----
-
-## 2. Stakeholders
-
-| Stakeholder | Rol |
-|-------------|-----|
-| Hospital de Clínicas | Cliente y dueño del producto |
-| DTI (Departamento Técnico de Informática) | Responsable de infraestructura, hosting y mantenimiento |
-| Funcionarios administrativos | Usuarios operativos de ambos módulos |
-| Pacientes | Usuarios finales del módulo de documentación y encuestas |
-| Conductores y personal de ambulancias | Involucrados en el módulo de trazabilidad |
-
----
-
-## 3. User Personas
-
-### Persona 1 — Administrativo (Gestión Documental)
-- **Nombre:** María
-- **Rol:** Funcionaria administrativa del hospital
-- **Necesidad:** Cargar documentos y generar QRs sin pasos complejos
-- **Dolor:** Actualmente depende de impresión y distribución física
-
-### Persona 2 — Paciente
-- **Nombre:** Carlos
-- **Rol:** Paciente del hospital
-- **Necesidad:** Acceder a indicaciones médicas desde su celular
-- **Dolor:** Pierde papeles, no recuerda las indicaciones
-
-### Persona 3 — Administrativo (Ambulancias)
-- **Nombre:** Pablo
-- **Rol:** Encargado de logística de transporte
-- **Necesidad:** Saber dónde está cada ambulancia y qué traslado tiene asignado
-- **Dolor:** Comunicación telefónica constante, sin registro centralizado
-
----
-
-## 4. Epicas
-
-### Épica 1: Gestión de Documentación Digital para Pacientes
-**Descripción:** Sistema para que administrativos carguen documentos y pacientes los accedan vía QR.
-
-### Épica 2: Encuestas de Satisfacción Digitales
-**Descripción:** Módulo para crear y recolectar encuestas de satisfacción de pacientes.
-
-### Épica 3: Trazabilidad de Ambulancias
-**Descripción:** Sistema para registrar, gestionar y dar seguimiento a traslados en ambulancia.
-
----
-
-## 5. User Stories
-
-### Épica 1 — Gestión de Documentación Digital
-
-**US-01:** Carga de documentos
-> **Como** funcionario administrativo  
-> **Quiero** cargar un documento PDF al sistema  
-> **Para** que esté disponible para los pacientes vía QR
-
-*Criterios de aceptación:*
-- El sistema acepta archivos PDF de hasta 10 MB
-- Al cargar, se muestra un preview del documento
-- Se genera un código QR automáticamente
-- El QR es descargable en formato PNG
-
----
-
-**US-02:** Gestión de documentos
-> **Como** funcionario administrativo  
-> **Quiero** editar, desactivar o eliminar documentos existentes  
-> **Para** mantener la información actualizada
-
-*Criterios de aceptación:*
-- El listado de documentos permite buscar por título y categoría
-- Al desactivar un documento, su QR deja de funcionar
-- Solo un administrador autenticado puede realizar estas acciones
-
----
-
-**US-03:** Visualización de documento por QR
-> **Como** paciente del hospital  
-> **Quiero** escanear un código QR con mi celular  
-> **Para** ver el documento sin necesidad de autenticarme
-
-*Criterios de aceptación:*
-- El QR redirige a una URL pública sin login
-- El documento se muestra correctamente en Chrome y Safari móvil
-- El contenido es legible sin hacer zoom (vista responsiva)
-
----
-
-### Épica 2 — Encuestas de Satisfacción
-
-**US-04:** Creación de encuestas
-> **Como** funcionario administrativo  
-> **Quiero** crear formularios de encuesta con preguntas personalizables  
-> **Para** medir la satisfacción de los pacientes
-
-*Criterios de aceptación:*
-- Soporta preguntas de opción múltiple, escala numérica y texto libre
-- La encuesta se asocia a un documento o es independiente
-- Se genera un QR específico para la encuesta
-
----
-
-**US-05:** Respuesta a encuestas
-> **Como** paciente  
-> **Quiero** completar una encuesta escaneando un QR  
-> **Para** dar mi opinión sobre el servicio recibido
-
-*Criterios de aceptación:*
-- No requiere registro ni autenticación
-- Las respuestas se guardan automáticamente al enviar
-- El paciente recibe confirmación visual de envío exitoso
-
----
-
-**US-06:** Análisis de resultados
-> **Como** administrativo  
-> **Quiero** ver los resultados de las encuestas en un dashboard  
-> **Para** calcular indicadores de satisfacción
-
-*Criterios de aceptación:*
-- El dashboard muestra cantidad de respuestas por encuesta
-- Los datos se pueden exportar a CSV
-- Se muestran gráficos básicos (barras, torta)
-
----
-
-### Épica 3 — Trazabilidad de Ambulancias
-
-**US-07:** Registro de traslado
+#### US-07: Registro de traslado
 > **Como** funcionario administrativo  
 > **Quiero** registrar una nueva solicitud de traslado con conductor, paciente, origen y destino  
 > **Para** iniciar el seguimiento de la operación
@@ -350,10 +271,11 @@ Modernizar la gestión hospitalaria mediante dos servicios digitales: un sistema
 - Todos los campos obligatorios (conductor, paciente/elemento, origen, destino, hora salida)
 - Se puede seleccionar conductor y acompañante desde un listado precargado
 - Se genera un ID único de traslado
+- El registro de un traslado completo toma menos de 2 minutos
 
 ---
 
-**US-08:** Actualización de estado
+#### US-08: Actualización de estado
 > **Como** funcionario administrativo  
 > **Quiero** cambiar el estado del traslado (en ruta, llegó a destino, retornando, finalizado)  
 > **Para** mantener el seguimiento actualizado
@@ -365,7 +287,7 @@ Modernizar la gestión hospitalaria mediante dos servicios digitales: un sistema
 
 ---
 
-**US-09:** Panel de control de traslados
+#### US-09: Panel de control de traslados
 > **Como** administrativo encargado de logística  
 > **Quiero** ver un tablero con todos los traslados activos  
 > **Para** saber qué ambulancias están en circulación
@@ -374,10 +296,11 @@ Modernizar la gestión hospitalaria mediante dos servicios digitales: un sistema
 - El panel muestra: ID, conductor, destino, estado y hora de salida
 - Los traslados activos aparecen destacados
 - Permite filtrar por estado y fecha
+- El panel refleja el estado de cada traslado en tiempo real (o cuasi-real)
 
 ---
 
-**US-10:** Histórico de traslados
+#### US-10: Histórico de traslados
 > **Como** administrativo  
 > **Quiero** consultar traslados finalizados  
 > **Para** generar reportes o auditorías
@@ -386,10 +309,11 @@ Modernizar la gestión hospitalaria mediante dos servicios digitales: un sistema
 - Búsqueda por fecha, conductor, paciente, ID de traslado
 - Vista de detalle con línea de tiempo de cambios de estado
 - Exportación a CSV o PDF
+- Los datos persisten correctamente en el servidor
 
 ---
 
-**US-11:** Gestión de elementos no biológicos
+#### US-11: Gestión de elementos no biológicos
 > **Como** administrativo  
 > **Quiero** registrar traslados de equipamiento médico o insumos  
 > **Para** dar trazabilidad también a elementos que no son pacientes
@@ -398,169 +322,9 @@ Modernizar la gestión hospitalaria mediante dos servicios digitales: un sistema
 - El campo "paciente o elemento" acepta texto libre
 - Se puede especificar tipo: paciente, equipamiento, insumo, otro
 
----
+### 5.3. Casos de Uso
 
-## 6. Especificaciones Técnicas
-
-### 6.1. Integración con Sistema Centralizado
-- Los módulos se integran como accesos directos en el panel principal existente
-- La autenticación se delega al sistema central (SSO mediante credenciales actuales)
-- Las sesiones se manejan via token (JWT) proporcionado por el sistema central
-
-### 6.2. Stack Sugerido
-- **Frontend:** React o Vue.js (responsive, PWA-ready)
-- **Backend:** Node.js + Express o Python + FastAPI
-- **Base de datos:** PostgreSQL o MySQL
-- **Generación de QR:** Librería qrcode (server-side)
-- **Servidor:** Ubuntu Server + Nginx como reverse proxy
-
-### 6.3. Seguridad
-- Roles: `admin_documentos`, `admin_ambulancias`, `super_admin`
-- Los documentos públicos vía QR solo permiten lectura, no listado
-- Las encuestas son anónimas por defecto
-- HTTPS obligatorio en todos los endpoints
-
----
-
-## 7. Priorización (MoSCoW)
-
-| Prioridad | Historias |
-|-----------|-----------|
-| **Must have** | US-01, US-03, US-07, US-08, US-09 |
-| **Should have** | US-02, US-04, US-05, US-11 |
-| **Could have** | US-06, US-10 |
-| **Won't have (ahora)** | App nativa móvil, tracking GPS, notificaciones push |
-
----
-
-## 8. Roadmap Tentativo
-
-| Sprint | Historias | Entrega |
-|--------|-----------|---------|
-| Sprint 1 | US-01, US-03 | Carga y visualización de documentos vía QR |
-| Sprint 2 | US-02, US-04 | Gestión de documentos + creación de encuestas |
-| Sprint 3 | US-05, US-06 | Respuesta y análisis de encuestas |
-| Sprint 4 | US-07, US-08 | Registro y estados de traslados |
-| Sprint 5 | US-09, US-11 | Panel de control + elementos no biológicos |
-| Sprint 6 | US-10 | Histórico, reportes, integración final |
-
----
-
-## 9. Métricas de Éxito (KPIs)
-
-- **Tasa de adopción QR:** % de pacientes que escanean vs. documentos impresos emitidos
-- **Reducción de impresión:** Disminución de gasto en papel (comparativa mensual)
-- **Tasa de respuesta de encuestas:** Cantidad de respuestas recibidas / total de pacientes alcanzados
-- **Traslados registrados:** % de traslados documentados en el sistema vs. total realizados
-- **Tiempo de registro:** Tiempo promedio que tarda un administrativo en crear un traslado
-
----
-
-## 10. Riesgos y Mitigaciones
-
-| Riesgo | Impacto | Mitigación |
-|--------|---------|------------|
-| Baja adopción de QR por pacientes | Alto | Campaña informativa + instrucciones impresas breves |
-| Falla del servidor DTI | Alto | Backup diario + plan de contingencia |
-| Resistencia del personal administrativo | Medio | Capacitación y soporte durante rollout |
-| Documentos sensibles expuestos | Alto | Solo documentos de información general, sin datos personales |
-
----
-
-## 11. Casos de Uso
-
-### Módulo 1: Gestión de Documentación para Pacientes
-
----
-
-**CU-01:** Iniciar sesión en el sistema
-| Campo | Detalle |
-|-------|---------|
-| **Actor** | Funcionario administrativo |
-| **Descripción** | El administrativo ingresa al sistema centralizado del hospital usando usuario y contraseña habituales |
-| **Precondición** | El usuario posee credenciales activas en el sistema central |
-| **Postcondición** | El usuario accede al panel principal con los módulos disponibles |
-| **Flujo principal** | 1. El usuario ingresa usuario y contraseña. 2. El sistema valida las credenciales. 3. El sistema redirige al panel principal con accesos a los módulos. |
-| **Flujo alternativo** | 2a. Credenciales inválidas: el sistema muestra mensaje de error y permite reintentar. |
-
----
-
-**CU-02:** Cargar documento informativo
-| Campo | Detalle |
-|-------|---------|
-| **Actor** | Funcionario administrativo |
-| **Descripción** | El administrativo carga un documento PDF al servidor para que esté disponible para pacientes vía QR |
-| **Precondición** | El usuario ha iniciado sesión |
-| **Postcondición** | El documento se almacena en el servidor y se genera un código QR asociado |
-| **Flujo principal** | 1. El usuario selecciona "Cargar documento". 2. El sistema muestra un formulario. 3. El usuario selecciona el archivo PDF y completa metadatos (título, categoría). 4. El usuario confirma la carga. 5. El sistema valida y almacena el archivo. 6. El sistema genera un código QR único. 7. El sistema muestra el QR descargable y confirma la operación. |
-| **Flujo alternativo** | 5a. Archivo inválido o superior a 10 MB: el sistema rechaza la carga y muestra error. |
-
----
-
-**CU-03:** Gestionar documentos existentes
-| Campo | Detalle |
-|-------|---------|
-| **Actor** | Funcionario administrativo |
-| **Descripción** | El administrativo edita, desactiva o elimina documentos previamente cargados |
-| **Precondición** | El usuario ha iniciado sesión y existen documentos en el sistema |
-| **Postcondición** | El documento es modificado, desactivado (el QR deja de funcionar) o eliminado |
-| **Flujo principal** | 1. El usuario accede al listado de documentos. 2. El sistema muestra los documentos con su estado. 3. El usuario selecciona un documento. 4. El usuario elige editar, desactivar o eliminar. 5. El sistema confirma la acción y la ejecuta. |
-| **Flujo alternativo** | 4a. Si elige eliminar, el sistema solicita confirmación adicional. |
-
----
-
-**CU-04:** Visualizar documento mediante QR
-| Campo | Detalle |
-|-------|---------|
-| **Actor** | Paciente |
-| **Descripción** | El paciente escanea un código QR con su dispositivo móvil y visualiza el documento asociado |
-| **Precondición** | El código QR está activo y asociado a un documento en el servidor |
-| **Postcondición** | El paciente visualiza el documento en su dispositivo |
-| **Flujo principal** | 1. El paciente abre la cámara de su dispositivo. 2. Escanea el código QR. 3. El sistema redirige a una URL pública. 4. El sistema muestra el documento en formato optimizado para móvil. 5. El paciente puede leer el contenido. |
-| **Flujo alternativo** | 3a. QR inválido o documento desactivado: el sistema muestra mensaje "Documento no disponible". |
-
----
-
-**CU-05:** Crear encuesta de satisfacción
-| Campo | Detalle |
-|-------|---------|
-| **Actor** | Funcionario administrativo |
-| **Descripción** | El administrativo crea un formulario de encuesta con preguntas personalizables |
-| **Precondición** | El usuario ha iniciado sesión |
-| **Postcondición** | La encuesta queda disponible con un QR propio para que los pacientes la completen |
-| **Flujo principal** | 1. El usuario accede al módulo de encuestas. 2. Selecciona "Crear encuesta". 3. Completa título, preguntas y tipo de respuesta (múltiple opción, escala, texto). 4. Confirma la creación. 5. El sistema genera la encuesta y un QR asociado. |
-| **Flujo alternativo** | - |
-
----
-
-**CU-06:** Completar encuesta de satisfacción
-| Campo | Detalle |
-|-------|---------|
-| **Actor** | Paciente |
-| **Descripción** | El paciente escanea un QR de encuesta, responde las preguntas y envía el formulario |
-| **Precondición** | La encuesta está activa y tiene un QR generado |
-| **Postcondición** | Las respuestas se almacenan en el servidor para su análisis |
-| **Flujo principal** | 1. El paciente escanea el QR de la encuesta. 2. El sistema muestra el formulario. 3. El paciente completa las preguntas. 4. El paciente envía el formulario. 5. El sistema guarda las respuestas. 6. El sistema muestra confirmación de envío exitoso. |
-| **Flujo alternativo** | - |
-
----
-
-**CU-07:** Analizar resultados de encuestas
-| Campo | Detalle |
-|-------|---------|
-| **Actor** | Funcionario administrativo |
-| **Descripción** | El administrativo accede a los resultados de las encuestas para calcular indicadores de satisfacción |
-| **Precondición** | Existen encuestas con respuestas almacenadas |
-| **Postcondición** | El usuario visualiza los datos y puede exportarlos |
-| **Flujo principal** | 1. El usuario accede al dashboard de encuestas. 2. El sistema muestra gráficos con resultados. 3. El usuario puede filtrar por fecha o encuesta. 4. El usuario puede exportar los datos a CSV. |
-
----
-
-### Módulo 2: Trazabilidad de Ambulancias
-
----
-
-**CU-08:** Registrar solicitud de traslado
+**CU-08: Registrar solicitud de traslado**
 | Campo | Detalle |
 |-------|---------|
 | **Actor** | Funcionario administrativo |
@@ -572,7 +336,7 @@ Modernizar la gestión hospitalaria mediante dos servicios digitales: un sistema
 
 ---
 
-**CU-09:** Actualizar estado del traslado
+**CU-09: Actualizar estado del traslado**
 | Campo | Detalle |
 |-------|---------|
 | **Actor** | Funcionario administrativo |
@@ -584,7 +348,7 @@ Modernizar la gestión hospitalaria mediante dos servicios digitales: un sistema
 
 ---
 
-**CU-10:** Visualizar panel de control de traslados
+**CU-10: Visualizar panel de control de traslados**
 | Campo | Detalle |
 |-------|---------|
 | **Actor** | Funcionario administrativo |
@@ -595,7 +359,7 @@ Modernizar la gestión hospitalaria mediante dos servicios digitales: un sistema
 
 ---
 
-**CU-11:** Consultar histórico de traslados
+**CU-11: Consultar histórico de traslados**
 | Campo | Detalle |
 |-------|---------|
 | **Actor** | Funcionario administrativo |
@@ -606,7 +370,7 @@ Modernizar la gestión hospitalaria mediante dos servicios digitales: un sistema
 
 ---
 
-**CU-12:** Gestionar rutas del circuito nacional
+**CU-12: Gestionar rutas del circuito nacional**
 | Campo | Detalle |
 |-------|---------|
 | **Actor** | Funcionario administrativo |
@@ -617,9 +381,9 @@ Modernizar la gestión hospitalaria mediante dos servicios digitales: un sistema
 
 ---
 
-## 12. Esquema Entidad-Relación (MER)
+## 6. Modelo de Datos
 
-### 12.1. Diagrama Entidad-Relación
+### 6.1. Diagrama Entidad-Relación
 
 ```mermaid
 flowchart LR
@@ -825,7 +589,8 @@ flowchart LR
     class p_ced,p_nombre,p_apellido,p_fnac,p_tel,p_email,p_dir,t_id,t_hsal,t_hlleg,t_orig,t_dest,t_km,t_est,q_id,q_cod,q_url,q_fcreac,q_tipo,q_act,q_ced,d_id,d_nom,d_nompac,d_ced,d_idqr,d_femis,d_tipodoc,e_prov,e_preg,e_ced,e_fcreac,e_titulo,r_id,r_graf,r_porc,r_prov,r_fresp,r_coment,mb_id,mb_tipo,mb_cuid,mb_rec,mb_idt,mb_frec,mb_temp,f_id,f_nombre,f_apellido,f_cargo,f_fnac,f_ced,f_idmb,f_tel,f_email,f_fingreso,fcd_idf,fcd_idd,fcd_fcarga,a_mat,a_num,a_idt,a_marca,a_mod,a_ano,ac_ced,ac_nom,ac_ape,ac_cant,ac_idt,ac_tel,ac_par,ru_id,ru_dom,ru_km,ru_idt,ru_dur,ru_est,eq_id,eq_mod,eq_func,eq_tipo,eq_idt,eq_fadq,eq_est atributo
     class tiene1,carga_doc,cuida1,contiene1,escanea1,realiza1,genera1,tiene2,lleva1,tiene3,tiene4,carga2 relacion
 ```
-### 12.2. Descripción de Entidades
+
+### 6.2. Descripción de Entidades
 
 | Entidad | Atributos | Descripción |
 |---------|-----------|-------------|
@@ -843,7 +608,7 @@ flowchart LR
 | **Rutas** | id_ruta (PK), domicilio, km, id_traslado (FK), duracion_estimada, estado_trafico | Rutas del circuito nacional gestionadas para los traslados |
 | **Equipos** | id_equipo (PK), modelo, funcion, tipo, id_traslado (FK), fecha_adquisicion, estado | Equipamiento médico u otros insumos transportados |
 
-### 12.3. Relaciones
+### 6.3. Relaciones
 
 | Relación | Entidades | Cardinalidad | FK en | Descripción |
 |----------|-----------|--------------|-------|-------------|
@@ -861,3 +626,102 @@ flowchart LR
 | carga | Traslados - M. Biológicas | 1:N | M_Biologicas.id_traslado | Un traslado puede cargar varias muestras biológicas |
 
 ---
+
+## 7. Requisitos Técnicos
+
+### 7.1. Infraestructura e Integración
+
+- Las aplicaciones se alojarán en servidores propios del Hospital de Clínicas (DTI, piso 6).
+- Los módulos se integran como accesos directos en el panel principal del sistema centralizado existente.
+- La autenticación se delega al sistema central mediante credenciales existentes (SSO); las sesiones se manejan vía token (JWT).
+
+### 7.2. Stack Tecnológico (a definir con DTI)
+
+- **Frontend:** React o Vue.js (responsivo, optimizado para móviles en el módulo de pacientes, PWA-ready)
+- **Backend:** Node.js + Express o Python + FastAPI, con API REST para comunicación entre módulos
+- **Base de datos:** PostgreSQL o MySQL (almacenamiento persistente relacional)
+- **Generación de QR:** librería qrcode (server-side)
+- **Servidor:** Ubuntu Server + Nginx como reverse proxy
+
+### 7.3. Seguridad
+
+- Autenticación segura para el personal administrativo con roles: `admin_documentos`, `admin_ambulancias`, `super_admin`
+- HTTPS obligatorio en todos los endpoints
+- Los documentos de pacientes son de acceso público vía QR (sin autenticación), pero solo permiten lectura individual, no listado, y la gestión debe protegerse contra accesos no autorizados
+- Las encuestas son anónimas por defecto; los datos deben almacenarse de forma anónima o seudonimizada según normativa aplicable
+
+---
+
+## 8. Priorización (MoSCoW)
+
+| Prioridad | Historias |
+|-----------|-----------|
+| **Must have** | US-01, US-03, US-07, US-08, US-09 |
+| **Should have** | US-02, US-04, US-05, US-11 |
+| **Could have** | US-06, US-10 |
+| **Won't have (ahora)** | App nativa móvil, tracking GPS, notificaciones push |
+
+---
+
+## 9. Roadmap Tentativo
+
+| Sprint | Historias | Entrega |
+|--------|-----------|---------|
+| Sprint 1 | US-01, US-03 | Carga y visualización de documentos vía QR |
+| Sprint 2 | US-02, US-04 | Gestión de documentos + creación de encuestas |
+| Sprint 3 | US-05, US-06 | Respuesta y análisis de encuestas |
+| Sprint 4 | US-07, US-08 | Registro y estados de traslados |
+| Sprint 5 | US-09, US-11 | Panel de control + elementos no biológicos |
+| Sprint 6 | US-10 | Histórico, reportes, integración final |
+
+---
+
+## 10. Entregables
+
+1. Módulo de Gestión de Documentación para Pacientes (código fuente, documentación, script de base de datos).
+2. Módulo de Trazabilidad de Ambulancias (código fuente, documentación, script de base de datos).
+3. Documentación de integración con el sistema centralizado.
+4. Manual de usuario para administrativos.
+
+---
+
+## 11. Métricas de Éxito (KPIs)
+
+- **Tasa de adopción QR:** % de pacientes que escanean vs. documentos impresos emitidos.
+- **Reducción de impresión:** disminución del gasto en papel (comparativa mensual del presupuesto destinado a impresión).
+- **Tasa de respuesta de encuestas:** cantidad de respuestas recibidas / total de pacientes alcanzados.
+- **Indicadores de satisfacción calculables** a partir de los datos recolectados en el dashboard.
+- **Traslados registrados:** % de traslados documentados en el sistema vs. total realizados.
+- **Tiempo de registro:** tiempo promedio que tarda un administrativo en crear un traslado.
+
+---
+
+## 12. Riesgos y Mitigaciones
+
+| Riesgo | Impacto | Mitigación |
+|--------|---------|------------|
+| Baja adopción de QR por pacientes | Alto | Campaña informativa + instrucciones impresas breves |
+| Falla del servidor DTI | Alto | Backup diario + plan de contingencia |
+| Resistencia del personal administrativo | Medio | Capacitación y soporte durante rollout |
+| Documentos sensibles expuestos | Alto | Solo documentos de información general, sin datos personales |
+
+---
+
+## 13. Restricciones y Supuestos
+
+- El sistema centralizado existente continuará funcionando; los nuevos módulos se integran como extensiones.
+- No se contempla el desarrollo de aplicaciones nativas móviles; el acceso del paciente es vía web responsiva.
+- El seguimiento de ambulancias es mediante actualización manual del estado por parte del administrativo (no se requiere GPS en esta etapa).
+- Los servidores del DTI tienen disponibilidad y capacidad suficientes para alojar los nuevos servicios.
+
+---
+
+## 14. Glosario
+
+| Término | Definición |
+|---------|------------|
+| DTI | Departamento Técnico de Informática del Hospital de Clínicas |
+| QR | Código de respuesta rápida para acceso a información digital |
+| SSO | Single Sign-On: autenticación centralizada con credenciales únicas |
+| Traslado | Operación de transporte de paciente, equipamiento o insumos vía ambulancia |
+| Elemento trasladado | Puede ser paciente biológico, equipamiento médico u otros insumos |

@@ -1,7 +1,8 @@
 // Lógica de la página de Carga de Documentos
-const nombre = document.getElementById('titulo');
+
 const archivo = document.getElementById('archivo');
-const boton = document.getElementById('carga_Documentos');
+const nombre = document.getElementById('titulo');
+const boton = document.getElementById('carga_Documento');
 
 boton.addEventListener('click', async (e) => {
     e.preventDefault();

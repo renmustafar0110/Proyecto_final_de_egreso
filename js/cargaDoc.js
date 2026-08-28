@@ -15,4 +15,12 @@ boton.addEventListener('click', async (e) => {
         method: 'POST',
         body: doc
     });
+
+    let mensaje = await respuesta.text();
+
+    if (mensaje === 'Registro Exitoso') {
+        alert('Documento cargado exitosamente');
+    } else {
+        alert('Error al cargar el documento');
+    }
 });

@@ -70,10 +70,6 @@ footer {
     font-size: 14px;
 }
 
-.panel {
-    padding: 32px 40px;
-}
-
 .menu {
     list-style: none;
     display: flex;

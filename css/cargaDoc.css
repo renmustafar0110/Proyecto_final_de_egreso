@@ -146,8 +146,7 @@ footer {
     max-width: 420px;
 }
 
-.form-panel h2,
-.doc-panel h2 {
+.form-panel h2 {
     font-size: 18px;
     margin-bottom: 12px;
     color: #1e3a5f;
@@ -188,42 +187,4 @@ footer {
 
 .form-field input[type="submit"]:hover {
     background-color: #2a4d7a;
-}
-
-.back-link {
-    margin-top: 10px;
-    text-align: center;
-    font-size: 14px;
-}
-
-.back-link a {
-    color: #1e3a5f;
-    text-decoration: none;
-}
-
-.back-link a:hover {
-    text-decoration: underline;
-}
-
-.doc-panel {
-    width: 100%;
-    max-width: 720px;
-}
-
-.doc-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-}
-
-.doc-table th,
-.doc-table td {
-    border: 1px solid #b8c8dc;
-    padding: 6px 8px;
-    text-align: left;
-}
-
-.doc-table th {
-    background-color: #e8f0fa;
-    color: #1e3a5f;
 }

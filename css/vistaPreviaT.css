@@ -8,8 +8,7 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     background-color: #f0f4f8;
     color: #1e3a5f;
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
@@ -17,10 +16,9 @@ body {
 header {
     background-color: #1e3a5f;
     color: #ffffff;
-    padding: 10px 32px;
+    padding: 16px 32px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
 }
 
 header h1 {
@@ -116,21 +114,19 @@ header h1 {
 
 main {
     flex: 1;
-    overflow-y: auto;
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: flex-start;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    gap: 16px;
-    padding: 16px;
+    gap: 24px;
+    padding: 32px;
 }
 
 footer {
     background-color: #1e3a5f;
     color: #ffffff;
     text-align: center;
-    padding: 8px 32px;
+    padding: 12px 32px;
     font-size: 14px;
 }
 
@@ -138,71 +134,39 @@ footer {
     background-color: #ffffff;
     border: 1px solid #d0dbe8;
     border-radius: 6px;
-    padding: 16px 24px;
+    padding: 24px 32px;
 }
 
-.panel h2 {
+.map-panel {
+    width: 100%;
+    max-width: 900px;
+}
+
+.map-panel h2 {
     font-size: 18px;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
     color: #1e3a5f;
+    text-align: center;
 }
 
-.left-panel {
+.mapa {
     width: 100%;
-    max-width: 520px;
-}
-
-.veh-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-}
-
-.veh-table th,
-.veh-table td {
+    height: 480px;
+    background-color: #e8eef5;
     border: 1px solid #b8c8dc;
-    padding: 6px 8px;
-    text-align: left;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image:
+        linear-gradient(#cfdae6 1px, transparent 1px),
+        linear-gradient(90deg, #cfdae6 1px, transparent 1px);
+    background-size: 40px 40px;
 }
 
-.veh-table th {
-    background-color: #e8f0fa;
-    color: #1e3a5f;
-}
-
-.veh-table .estado {
-    font-weight: bold;
-}
-
-.veh-table .disponible {
-    color: #2e7d32;
-}
-
-.veh-table .ocupado {
-    color: #c62828;
-}
-
-.veh-table .en_curso {
-    color: #1565c0;
-}
-
-.veh-table .en_ruta {
-    color: #6a1b9a;
-}
-
-.btn-mandar {
-    display: inline-block;
-    background-color: #1e3a5f;
-    color: #ffffff;
-    text-decoration: none;
-    border: none;
-    border-radius: 3px;
-    padding: 4px 10px;
-    font-size: 12px;
-    font-family: inherit;
-    cursor: pointer;
-}
-
-.btn-mandar:hover {
-    background-color: #2a4d7a;
+.mapa-placeholder {
+    color: #6f88a3;
+    font-size: 16px;
+    text-align: center;
+    padding: 20px;
 }

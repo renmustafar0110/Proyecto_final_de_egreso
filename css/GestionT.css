@@ -35,10 +35,82 @@ header h1 {
 
 .reloj {
     margin-left: auto;
+    margin-right: 20px;
     color: #ffffff;
     font-size: 14px;
     font-weight: normal;
     white-space: nowrap;
+}
+
+.menu-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 0;
+}
+
+.menu-linea {
+    display: block;
+    width: 20px;
+    height: 3px;
+    background-color: #000000;
+    border-radius: 2px;
+}
+
+.menu-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 220px;
+    height: 100%;
+    background-color: #ffffff;
+    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.2);
+    padding: 70px 20px 20px 20px;
+    transform: translateX(100%);
+    z-index: 100;
+}
+
+.menu-panel.abierto {
+    transform: translateX(0);
+}
+
+.menu-cerrar {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #1e3a5f;
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.menu-opcion {
+    display: block;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    background-color: #1e3a5f;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.menu-opcion:hover {
+    background-color: #2a4d7a;
 }
 
 main {
@@ -114,19 +186,4 @@ footer {
 
 .form-field input[type="submit"]:hover {
     background-color: #2a4d7a;
-}
-
-.back-link {
-    margin-top: 10px;
-    text-align: center;
-    font-size: 14px;
-}
-
-.back-link a {
-    color: #1e3a5f;
-    text-decoration: none;
-}
-
-.back-link a:hover {
-    text-decoration: underline;
 }

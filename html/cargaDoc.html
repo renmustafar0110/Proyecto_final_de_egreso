@@ -19,8 +19,11 @@
 
     <div class="menu-panel" id="menu-panel">
         <button class="menu-cerrar" id="menu-cerrar" aria-label="Cerrar">X</button>
-        <a href="cargaDoc.html" class="menu-opcion">Documentos</a>
+        <a href="cargaDoc.html" class="menu-opcion">Cargar Documento</a>
+        <a href="documentosCargados.html" class="menu-opcion">Documentos Cargados</a>
         <a href="trazabilidad.html" class="menu-opcion">Trazabilidad</a>
+        <a href="vistaPreviaT.html" class="menu-opcion">Vista Previa</a>
+        <a href="index.html" class="menu-opcion">Volver al inicio</a>
     </div>
 
     <main>
@@ -79,25 +82,6 @@
                     <input type="submit" value="Cargar Documento" id="carga_Documento">
                 </div>
             </form>
-            <p class="back-link"><a href="decisionF.html">&larr; Volver al Panel de Funcionario</a></p>
-            <p class="back-link"><a href="index.html">&larr; Volver al inicio</a></p>
-        </div>
-
-        <div class="panel doc-panel">
-            <h2>Documentos Cargados</h2>
-            <table class="doc-table">
-                <thead>
-                    <tr>
-                        <th>Título</th>
-                        <th>Categoría</th>
-                        <th>Fecha</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="doc-tbody">
-                </tbody>
-            </table>
         </div>
     </main>
 

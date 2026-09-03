@@ -141,68 +141,101 @@ footer {
     padding: 16px 24px;
 }
 
-.panel h2 {
-    font-size: 18px;
-    margin-bottom: 12px;
+.page-panel {
+    width: 100%;
+    max-width: 780px;
+}
+
+.page-panel h2 {
+    font-size: 20px;
+    margin-bottom: 4px;
     color: #1e3a5f;
 }
 
-.left-panel {
-    width: 100%;
-    max-width: 520px;
+.subtitulo {
+    font-size: 13px;
+    color: #5a7a9a;
+    margin-bottom: 16px;
 }
 
-.veh-table {
+/* Carpetas / Categorías */
+.carpeta {
+    margin-bottom: 12px;
+    border: 1px solid #d0dbe8;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.carpeta-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background-color: #e8f0fa;
+    cursor: pointer;
+    user-select: none;
+}
+
+.carpeta-header:hover {
+    background-color: #d8e4f4;
+}
+
+.carpeta-header h3 {
+    font-size: 15px;
+    color: #1e3a5f;
+    flex: 1;
+}
+
+.carpeta-toggle {
+    font-size: 12px;
+    color: #1e3a5f;
+    transition: transform 0.2s ease;
+}
+
+.carpeta-toggle.cerrado {
+    transform: rotate(-90deg);
+}
+
+.carpeta-contenido {
+    padding: 10px 12px;
+    background-color: #ffffff;
+    display: block;
+}
+
+.carpeta-contenido.oculto {
+    display: none;
+}
+
+.doc-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 13px;
 }
 
-.veh-table th,
-.veh-table td {
+.doc-table th,
+.doc-table td {
     border: 1px solid #b8c8dc;
     padding: 6px 8px;
     text-align: left;
 }
 
-.veh-table th {
+.doc-table th {
     background-color: #e8f0fa;
     color: #1e3a5f;
 }
 
-.veh-table .estado {
-    font-weight: bold;
+.doc-table tbody tr:hover {
+    background-color: #f5f8fc;
 }
 
-.veh-table .disponible {
-    color: #2e7d32;
+.vacía {
+    font-size: 13px;
+    color: #8899aa;
+    text-align: center;
+    padding: 10px 0 4px 0;
+    font-style: italic;
 }
 
-.veh-table .ocupado {
-    color: #c62828;
-}
-
-.veh-table .en_curso {
-    color: #1565c0;
-}
-
-.veh-table .en_ruta {
-    color: #6a1b9a;
-}
-
-.btn-mandar {
-    display: inline-block;
-    background-color: #1e3a5f;
-    color: #ffffff;
-    text-decoration: none;
-    border: none;
-    border-radius: 3px;
-    padding: 4px 10px;
-    font-size: 12px;
-    font-family: inherit;
-    cursor: pointer;
-}
-
-.btn-mandar:hover {
-    background-color: #2a4d7a;
+.vacía.oculta {
+    display: none;
 }

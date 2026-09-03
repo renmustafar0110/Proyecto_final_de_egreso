@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Funcionario</title>
-    <link rel="stylesheet" href="../css/decisionF.css">
+    <title>Vista Previa de Ambulancias</title>
+    <link rel="stylesheet" href="../css/vistaPreviaT.css">
 </head>
 <body>
     <header>
@@ -19,25 +19,26 @@
 
     <div class="menu-panel" id="menu-panel">
         <button class="menu-cerrar" id="menu-cerrar" aria-label="Cerrar">X</button>
-        <a href="cargaDoc.html" class="menu-opcion">Módulo Gestión de Documentos</a>
-        <a href="trazabilidad.html" class="menu-opcion">Módulo de Trazabilidad</a>
+        <a href="cargaDoc.html" class="menu-opcion">Cargar Documento</a>
+        <a href="documentosCargados.html" class="menu-opcion">Documentos Cargados</a>
+        <a href="trazabilidad.html" class="menu-opcion">Trazabilidad</a>
         <a href="vistaPreviaT.html" class="menu-opcion">Vista Previa</a>
         <a href="index.html" class="menu-opcion">Volver al inicio</a>
     </div>
 
     <main>
-        <div class="panel">
-            <h2>Seleccione un módulo</h2>
-            <ul class="menu">
-                <li><a href="cargaDoc.html">Módulo Gestión de Documentos</a></li>
-                <li><a href="trazabilidad.html">Módulo de Trazabilidad</a></li>
-            </ul>
+        <div class="panel map-panel">
+            <h2>Mapa de Ambulancias</h2>
+            <div class="mapa" id="mapa">
+                <p class="mapa-placeholder">Aquí se mostrará el mapa con la ubicación de las ambulancias</p>
+            </div>
         </div>
     </main>
 
     <footer>
         <p>&copy; Hospital de Clínicas</p>
     </footer>
+
     <script src="../js/menu.js"></script>
     <script src="../js/fechaYhora.js"></script></body>
 </html>

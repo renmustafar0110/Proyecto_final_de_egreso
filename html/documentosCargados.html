@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentos Cargados</title>
+    <link rel="stylesheet" href="../css/documentosCargados.css">
+</head>
+<body>
+    <header>
+        <img src="../logo_del_proyecto.jpeg" alt="Logo" class="header-logo"> <h1>Hospital de Clínicas</h1>
+        <div class="reloj" id="reloj"></div>
+        <button class="menu-btn" id="menu-btn" aria-label="Menú">
+            <span class="menu-linea"></span>
+            <span class="menu-linea"></span>
+            <span class="menu-linea"></span>
+        </button>
+    </header>
+
+    <div class="menu-panel" id="menu-panel">
+        <button class="menu-cerrar" id="menu-cerrar" aria-label="Cerrar">X</button>
+        <a href="cargaDoc.html" class="menu-opcion">Cargar Documento</a>
+        <a href="documentosCargados.html" class="menu-opcion">Documentos Cargados</a>
+        <a href="trazabilidad.html" class="menu-opcion">Trazabilidad</a>
+        <a href="vistaPreviaT.html" class="menu-opcion">Vista Previa</a>
+        <a href="index.html" class="menu-opcion">Volver al inicio</a>
+    </div>
+
+    <main>
+        <div class="panel page-panel">
+            <h2>Documentos Cargados</h2>
+            <p class="subtitulo">Documentos organizados por categoría</p>
+
+            <div class="carpeta">
+                <div class="carpeta-header" data-target="info-general">
+                    <h3>Información General</h3>
+                    <span class="carpeta-toggle" id="toggle-info-general">&#9660;</span>
+                </div>
+                <div class="carpeta-contenido" id="info-general">
+                    <table class="doc-table">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-info-general">
+                        </tbody>
+                    </table>
+                    <p class="vacía" id="vacía-info-general">No hay documentos en esta categoría.</p>
+                </div>
+            </div>
+
+            <div class="carpeta">
+                <div class="carpeta-header" data-target="indicaciones">
+                    <h3>Indicaciones Médicas</h3>
+                    <span class="carpeta-toggle" id="toggle-indicaciones">&#9660;</span>
+                </div>
+                <div class="carpeta-contenido" id="indicaciones">
+                    <table class="doc-table">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-indicaciones">
+                        </tbody>
+                    </table>
+                    <p class="vacía" id="vacía-indicaciones">No hay documentos en esta categoría.</p>
+                </div>
+            </div>
+
+            <div class="carpeta">
+                <div class="carpeta-header" data-target="estudios">
+                    <h3>Estudios Imagenológicos</h3>
+                    <span class="carpeta-toggle" id="toggle-estudios">&#9660;</span>
+                </div>
+                <div class="carpeta-contenido" id="estudios">
+                    <table class="doc-table">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-estudios">
+                        </tbody>
+                    </table>
+                    <p class="vacía" id="vacía-estudios">No hay documentos en esta categoría.</p>
+                </div>
+            </div>
+
+            <div class="carpeta">
+                <div class="carpeta-header" data-target="enfermeria">
+                    <h3>Enfermería</h3>
+                    <span class="carpeta-toggle" id="toggle-enfermeria">&#9660;</span>
+                </div>
+                <div class="carpeta-contenido" id="enfermeria">
+                    <table class="doc-table">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-enfermeria">
+                        </tbody>
+                    </table>
+                    <p class="vacía" id="vacía-enfermeria">No hay documentos en esta categoría.</p>
+                </div>
+            </div>
+
+            <div class="carpeta">
+                <div class="carpeta-header" data-target="encuestas">
+                    <h3>Encuestas</h3>
+                    <span class="carpeta-toggle" id="toggle-encuestas">&#9660;</span>
+                </div>
+                <div class="carpeta-contenido" id="encuestas">
+                    <table class="doc-table">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-encuestas">
+                        </tbody>
+                    </table>
+                    <p class="vacía" id="vacía-encuestas">No hay documentos en esta categoría.</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; Hospital de Clínicas</p>
+    </footer>
+
+    <script src="../js/documentosCargados.js"></script>
+    <script src="../js/menu.js"></script>
+    <script src="../js/fechaYhora.js"></script>
+</body>
+</html>

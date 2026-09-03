@@ -10,7 +10,18 @@
     <header>
         <img src="../logo_del_proyecto.jpeg" alt="Logo" class="header-logo"><h1>Hospital de Clínicas</h1>
         <div class="reloj" id="reloj"></div>
+        <button class="menu-btn" id="menu-btn" aria-label="Menú">
+            <span class="menu-linea"></span>
+            <span class="menu-linea"></span>
+            <span class="menu-linea"></span>
+        </button>
     </header>
+
+    <div class="menu-panel" id="menu-panel">
+        <button class="menu-cerrar" id="menu-cerrar" aria-label="Cerrar">X</button>
+        <a href="trazabilidad.html" class="menu-opcion">Volver a Trazabilidad</a>
+        <a href="index.html" class="menu-opcion">Volver al inicio</a>
+    </div>
 
     <main>
         <div class="panel form-panel">
@@ -70,7 +81,6 @@
                     <input type="submit" value="Registrar Traslado">
                 </div>
             </form>
-            <p class="back-link"><a href="trazabilidad.html">&larr; Volver a trazabilidad</a></p>
         </div>
     </main>
 
@@ -79,5 +89,6 @@
     </footer>
 
     <script src="../js/GestionT.js"></script>
+    <script src="../js/menu.js"></script>
     <script src="../js/fechaYhora.js"></script></body>
 </html>

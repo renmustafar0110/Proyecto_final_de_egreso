@@ -132,6 +132,15 @@ footer {
     text-align: center;
     padding: 8px 32px;
     font-size: 14px;
+    position: relative;
+}
+
+.footer-fecha {
+    position: absolute;
+    right: 32px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
 }
 
 .panel {
@@ -192,18 +201,10 @@ footer {
     transition: transform 0.2s ease;
 }
 
-.carpeta-toggle.cerrado {
-    transform: rotate(-90deg);
-}
-
 .carpeta-contenido {
     padding: 10px 12px;
     background-color: #ffffff;
     display: block;
-}
-
-.carpeta-contenido.oculto {
-    display: none;
 }
 
 .doc-table {
@@ -234,8 +235,4 @@ footer {
     text-align: center;
     padding: 10px 0 4px 0;
     font-style: italic;
-}
-
-.vacía.oculta {
-    display: none;
 }

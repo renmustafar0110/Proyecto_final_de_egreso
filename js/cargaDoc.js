@@ -11,7 +11,7 @@ boton.addEventListener('click', async (e) => {
     doc.append('nombre', nombre.value);
     doc.append('archivo', archivo.files[0]);
 
-    let respuesta = await fetch('../php/carga.php', {
+    let respuesta = await fetch('../php/cargaDocumentos.php', {
         method: 'POST',
         body: doc
     });

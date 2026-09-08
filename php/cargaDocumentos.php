@@ -1,6 +1,6 @@
 <?php
 
-require_once 'config.php';
+require_once 'conexion.php';
 
 $archivo = $_FILES['archivo'];
 $nombre = $_POST['nombre'];

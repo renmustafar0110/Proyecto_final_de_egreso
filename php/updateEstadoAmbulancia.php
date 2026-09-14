@@ -4,16 +4,16 @@ header('Content-Type: application/json');
 
 require_once 'conexion.php';
 
-$matricula = isset($_POST['matricula']) ? $conexion->real_escape_string($_POST['matricula']) : '';
+$numero = isset($_POST['numero_coche']) ? $conexion->real_escape_string($_POST['numero_coche']) : '';
 $estado = isset($_POST['estado']) ? $conexion->real_escape_string($_POST['estado']) : '';
 
-if ($matricula === '' || $estado === '') {
+if ($numero === '' || $estado === '') {
     echo json_encode(['ok' => false, 'error' => 'Faltan datos']);
     $conexion->close();
     exit;
 }
 
-$estadosValidos = ['Disponible', 'En curso', 'En ruta', 'Finalizado'];
+$estadosValidos = ['Disponible', 'Reservado', 'En curso', 'En ruta', 'Finalizado'];
 
 if (!in_array($estado, $estadosValidos)) {
     echo json_encode(['ok' => false, 'error' => 'Estado inválido']);
@@ -23,10 +23,14 @@ if (!in_array($estado, $estadosValidos)) {
 
 $sql = "UPDATE Ambulancias
         SET estado = '$estado'
-        WHERE matricula = '$matricula'";
+        WHERE numero_coche = '$numero' OR matricula = '$numero'";
 
 if ($conexion->query($sql)) {
-    echo json_encode(['ok' => true]);
+    if ($conexion->affected_rows > 0) {
+        echo json_encode(['ok' => true]);
+    } else {
+        echo json_encode(['ok' => false, 'error' => 'No se encontró el vehículo']);
+    }
 } else {
     echo json_encode(['ok' => false, 'error' => $conexion->error]);
 }

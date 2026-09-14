@@ -17,10 +17,7 @@ boton.addEventListener('click', async (e) => {
     });
 
     let mensaje = await respuesta.text();
+    mensaje = mensaje.trim();
 
-    if (mensaje === 'Registro Exitoso') {
-        alert('Documento cargado exitosamente');
-    } else {
-        alert('Error al cargar el documento');
-    }
+    alert(mensaje);
 });

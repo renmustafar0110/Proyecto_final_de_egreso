@@ -5,10 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "chrome",
+            "type": "editor-browser",
             "request": "launch",
             "name": "Open index.html",
-            "file": "c:\\Users\\Usuario\\Documents\\GitHub\\Proyecto_final_de_egreso\\html\\index.html"
+            "url": "file:///home/alan/Documentos/Proyecto_final_de_egreso1/html/index.html"
         }
     ]
 }

@@ -35,28 +35,28 @@
                         <th>Matrícula</th>
                         <th>Nº Coche</th>
                         <th>Estado</th>
+                        <th>Acciones</th>
                         <th>Ordenar</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="tabla-ambulancias">
+                </tbody>
+            </table>
+        </div>
+        <div class="panel right-panel">
+            <h2>Detalle de Traslados Activos</h2>
+            <table class="tra-table">
+                <thead>
                     <tr>
-                        <td>ABC 1234</td>
-                        <td>01</td>
-                        <td><span class="estado disponible">Disponible</span></td>
-                        <td><a href="GestionT.html" class="btn-mandar">Mandar</a></td>
+                        <th>Matrícula</th>
+                        <th>Conductor</th>
+                        <th>Destino</th>
+                        <th>Estado</th>
+                        <th>Hora salida</th>
                     </tr>
-                    <tr>
-                        <td>DEF 5678</td>
-                        <td>02</td>
-                        <td><span class="estado ocupado">Ocupado</span> <span class="estado en_curso">En curso</span></td>
-                        <td><a href="GestionT.html" class="btn-mandar">Mandar</a></td>
-                    </tr>
-                    <tr>
-                        <td>GHI 9012</td>
-                        <td>03</td>
-                        <td><span class="estado ocupado">Ocupado</span> <span class="estado en_ruta">En ruta</span></td>
-                        <td><a href="GestionT.html" class="btn-mandar">Mandar</a></td>
-                    </tr>
+                </thead>
+                <tbody id="tabla-traslados">
+                    <tr><td colspan="5">No hay traslados activos.</td></tr>
                 </tbody>
             </table>
         </div>
@@ -69,5 +69,6 @@
 
     <script src="../js/auth.js"></script>
     <script src="../js/menu.js"></script>
+    <script src="../js/trazabilidad.js"></script>
     <script src="../js/fechaYhora.js"></script></body>
 </html>

@@ -199,6 +199,66 @@ footer {
     color: #6a1b9a;
 }
 
+.veh-table .finalizado {
+    color: #2e7d32;
+}
+
+.btn-estado {
+    display: inline-block;
+    background-color: #e8f0fa;
+    color: #1e3a5f;
+    border: 1px solid #b8c8dc;
+    border-radius: 3px;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-family: inherit;
+    cursor: pointer;
+    margin: 1px;
+}
+
+.btn-estado:hover {
+    background-color: #d4e2f4;
+}
+
+.btn-estado.activo {
+    background-color: #1e3a5f;
+    color: #ffffff;
+    cursor: default;
+}
+
+.btn-estado.btn-finalizado {
+    background-color: #2e7d32;
+    border-color: #2e7d32;
+    color: #ffffff;
+}
+
+.btn-estado.btn-finalizado:hover {
+    background-color: #388e3c;
+}
+
+.right-panel {
+    width: 100%;
+    max-width: 640px;
+}
+
+.tra-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.tra-table th,
+.tra-table td {
+    border: 1px solid #b8c8dc;
+    padding: 6px 8px;
+    text-align: left;
+}
+
+.tra-table th {
+    background-color: #e8f0fa;
+    color: #1e3a5f;
+}
+
 .btn-mandar {
     display: inline-block;
     background-color: #1e3a5f;

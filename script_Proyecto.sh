@@ -25,7 +25,7 @@ insertar_paciente() {
     read -rp "Nombre: " nombre
     read -rp "Apellido: " apellido
     read -rp "Telefono: " telefono
-    read -rp "Email: " email
+    read -r p "Email: " email
     opcion_mysql "INSERT INTO Pacientes (cedula, nombre, apellido, telefono, email)
                   VALUES ('$cedula', '$nombre', '$apellido', '$telefono', '$email');"
     echo "Paciente registrado con cedula $cedula."

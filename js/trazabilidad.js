@@ -1,61 +1,78 @@
-var AMBULANCIAS_INICIALES = [
+var datosInicialesAmbulancias = [
     { matricula: 'ABC 1234', numero_coche: '01', estado: 'Disponible' },
     { matricula: 'DEF 5678', numero_coche: '02', estado: 'En curso' },
     { matricula: 'GHI 9012', numero_coche: '03', estado: 'En ruta' }
 ];
 
-var ESTADOS = ['Disponible', 'En curso', 'En ruta'];
+var listaDeEstados = ['Disponible', 'En curso', 'En ruta'];
 
-var canalTiempoReal = ('BroadcastChannel' in window)
-    ? new BroadcastChannel('ambulancias-estado')
-    : null;
-
-function obtenerAmbulancias() {
-    var guardadas = localStorage.getItem('ambulancias');
-    if (guardadas) {
-        try {
-            return JSON.parse(guardadas);
-        } catch (e) {
-            return AMBULANCIAS_INICIALES.slice();
-        }
-    }
-    return AMBULANCIAS_INICIALES.slice();
+var canalTiempoReal = null;
+if ('BroadcastChannel' in window) {
+    canalTiempoReal = new BroadcastChannel('ambulancias-estado');
 }
 
-function guardarAmbulancias(ambulancias) {
-    localStorage.setItem('ambulancias', JSON.stringify(ambulancias));
+function obtenerAmbulancias() {
+    var datosGuardados = localStorage.getItem('ambulancias');
+
+    if (!datosGuardados) {
+        return datosInicialesAmbulancias.slice();
+    }
+
+    try {
+        return JSON.parse(datosGuardados);
+    } catch (error) {
+        return datosInicialesAmbulancias.slice();
+    }
+}
+
+function guardarAmbulancias(listaDeAmbulancias) {
+    var texto = JSON.stringify(listaDeAmbulancias);
+    localStorage.setItem('ambulancias', texto);
 }
 
 function notificarCambio(matricula, estado, numeroCoche) {
     if (canalTiempoReal) {
-        canalTiempoReal.postMessage({ matricula: matricula, estado: estado, numero_coche: numeroCoche });
+        var mensaje = {
+            matricula: matricula,
+            estado: estado,
+            numero_coche: numeroCoche
+        };
+        canalTiempoReal.postMessage(mensaje);
     }
 }
 
 if (canalTiempoReal) {
     canalTiempoReal.onmessage = function (evento) {
-        var dato = evento.data;
-        if (dato && dato.matricula) {
-            var ambulancias = obtenerAmbulancias();
-            for (var i = 0; i < ambulancias.length; i++) {
-                if (ambulancias[i].matricula === dato.matricula) {
-                    ambulancias[i].estado = dato.estado;
+        var datoRecibido = evento.data;
+
+        if (datoRecibido && datoRecibido.matricula) {
+            var listaDeAmbulancias = obtenerAmbulancias();
+
+            for (var i = 0; i < listaDeAmbulancias.length; i++) {
+                if (listaDeAmbulancias[i].matricula === datoRecibido.matricula) {
+                    listaDeAmbulancias[i].estado = datoRecibido.estado;
                     break;
                 }
             }
-            guardarAmbulancias(ambulancias);
+
+            guardarAmbulancias(listaDeAmbulancias);
             renderizarTabla();
         }
     };
 }
 
-function claseEstado(estado) {
+function obtenerClaseDeEstado(estado) {
     switch (estado) {
-        case 'Disponible': return 'disponible';
-        case 'En curso': return 'en_curso';
-        case 'En ruta': return 'en_ruta';
-        case 'Finalizado': return 'finalizado';
-        default: return '';
+        case 'Disponible':
+            return 'disponible';
+        case 'En curso':
+            return 'en_curso';
+        case 'En ruta':
+            return 'en_ruta';
+        case 'Finalizado':
+            return 'finalizado';
+        default:
+            return '';
     }
 }
 
@@ -64,58 +81,76 @@ function cambiarEstado(ambulancia, nuevoEstado) {
         nuevoEstado = 'Disponible';
     }
 
-    var ambulancias = obtenerAmbulancias();
-    for (var i = 0; i < ambulancias.length; i++) {
-        if (ambulancias[i].matricula === ambulancia.matricula) {
-            ambulancias[i].estado = nuevoEstado;
+    var listaDeAmbulancias = obtenerAmbulancias();
+
+    for (var i = 0; i < listaDeAmbulancias.length; i++) {
+        if (listaDeAmbulancias[i].matricula === ambulancia.matricula) {
+            listaDeAmbulancias[i].estado = nuevoEstado;
             break;
         }
     }
-    guardarAmbulancias(ambulancias);
+
+    guardarAmbulancias(listaDeAmbulancias);
     notificarCambio(ambulancia.matricula, nuevoEstado, ambulancia.numero_coche);
     renderizarTabla();
 }
 
 function renderizarTabla() {
-    var cuerpo = document.getElementById('tabla-ambulancias');
-    if (!cuerpo) return;
+    var cuerpoDeLaTabla = document.getElementById('tabla-ambulancias');
 
-    var ambulancias = obtenerAmbulancias();
-    var filas = '';
+    if (!cuerpoDeLaTabla) {
+        return;
+    }
 
-    for (var i = 0; i < ambulancias.length; i++) {
-        var ambulancia = ambulancias[i];
+    var listaDeAmbulancias = obtenerAmbulancias();
+    var filasDeLaTabla = '';
+
+    for (var i = 0; i < listaDeAmbulancias.length; i++) {
+        var ambulancia = listaDeAmbulancias[i];
+
         var botones = '';
-        for (var j = 0; j < ESTADOS.length; j++) {
-            var estado = ESTADOS[j];
-            var activo = (estado === ambulancia.estado) ? ' activo' : '';
-            botones += '<button type="button" class="btn-estado' + activo + '" data-matricula="' +
-                ambulancia.matricula + '" data-estado="' + estado + '">' + estado + '</button>';
-        }
-        botones += '<button type="button" class="btn-estado btn-finalizado" data-matricula="' +
-            ambulancia.matricula + '" data-estado="Finalizado">Finalizar</button>';
+        for (var j = 0; j < listaDeEstados.length; j++) {
+            var estadoActual = listaDeEstados[j];
+            var claseActiva = '';
 
-        filas += '<tr>' +
+            if (estadoActual === ambulancia.estado) {
+                claseActiva = ' activo';
+            }
+
+            botones += '<button type="button" class="btn-estado' + claseActiva + '" ' +
+                       'data-matricula="' + ambulancia.matricula + '" ' +
+                       'data-estado="' + estadoActual + '">' + estadoActual + '</button>';
+        }
+
+        botones += '<button type="button" class="btn-estado btn-finalizado" ' +
+                   'data-matricula="' + ambulancia.matricula + '" ' +
+                   'data-estado="Finalizado">Finalizar</button>';
+
+        var claseDelEstado = obtenerClaseDeEstado(ambulancia.estado);
+        filasDeLaTabla += '<tr>' +
             '<td>' + ambulancia.matricula + '</td>' +
             '<td>' + ambulancia.numero_coche + '</td>' +
-            '<td><span class="estado ' + claseEstado(ambulancia.estado) + '">' + ambulancia.estado + '</span></td>' +
+            '<td><span class="estado ' + claseDelEstado + '">' + ambulancia.estado + '</span></td>' +
             '<td>' + botones + '</td>' +
             '<td><a href="GestionT.html" class="btn-mandar">Mandar</a></td>' +
             '</tr>';
     }
 
-    cuerpo.innerHTML = filas;
+    cuerpoDeLaTabla.innerHTML = filasDeLaTabla;
 }
 
 document.addEventListener('click', function (evento) {
-    var boton = evento.target;
-    if (boton.classList && boton.classList.contains('btn-estado')) {
-        var matricula = boton.getAttribute('data-matricula');
-        var estado = boton.getAttribute('data-estado');
-        var ambulancias = obtenerAmbulancias();
-        for (var i = 0; i < ambulancias.length; i++) {
-            if (ambulancias[i].matricula === matricula) {
-                cambiarEstado(ambulancias[i], estado);
+    var elementoClickeado = evento.target;
+
+    if (elementoClickeado.classList && elementoClickeado.classList.contains('btn-estado')) {
+        var matricula = elementoClickeado.getAttribute('data-matricula');
+        var estadoElegido = elementoClickeado.getAttribute('data-estado');
+
+        var listaDeAmbulancias = obtenerAmbulancias();
+
+        for (var i = 0; i < listaDeAmbulancias.length; i++) {
+            if (listaDeAmbulancias[i].matricula === matricula) {
+                cambiarEstado(listaDeAmbulancias[i], estadoElegido);
                 break;
             }
         }

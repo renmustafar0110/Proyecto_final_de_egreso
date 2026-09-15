@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- Metadatos y título de la página -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Traslados</title>
+    <!-- Hoja de estilos de la página -->
     <link rel="stylesheet" href="../css/GestionT.css">
 </head>
 <body>
+    <!-- Encabezado con el logo, el título, el reloj y el botón del menú -->
     <header>
-        <img src="../img/logo_del_proyecto.jpeg" alt="Logo" class="header-logo"><h1>Hospital de Clínicas</h1>
+        <img src="../img/logo_del_proyecto.jpeg" alt="Logo" class="header-logo">
+        <h1>Hospital de Clínicas</h1>
         <div class="reloj" id="reloj"></div>
         <button class="menu-btn" id="menu-btn" aria-label="Menú">
             <span class="menu-linea"></span>
@@ -17,16 +21,19 @@
         </button>
     </header>
 
+    <!-- Panel lateral del menú -->
     <div class="menu-panel" id="menu-panel">
         <button class="menu-cerrar" id="menu-cerrar" aria-label="Cerrar">X</button>
         <a href="trazabilidad.html" class="menu-opcion">Volver a Trazabilidad</a>
         <a href="index.html" class="menu-opcion">Volver al inicio</a>
     </div>
 
+    <!-- Contenido principal: formulario de solicitud de traslado -->
     <main>
         <div class="panel form-panel">
             <h2>Registro de Solicitud de Traslado</h2>
-            <form action="" method="post" >
+            <form action="" method="post">
+                <!-- Campo del elemento a trasladar -->
                 <div class="form-field">
                     <label for="elemento">Paciente o elemento a trasladar:</label>
                     <select id="elemento" name="elemento">
@@ -37,31 +44,37 @@
                     </select>
                 </div>
 
+                <!-- Campo de descripción del elemento (se muestra según la selección) -->
                 <div class="form-field" id="campo_descripcion" style="display: none;">
                     <label for="descripcion_elemento">Descripción del elemento:</label>
                     <textarea id="descripcion_elemento" name="descripcion_elemento" rows="4"></textarea>
                 </div>
 
+                <!-- Campo del punto de origen -->
                 <div class="form-field">
                     <label for="origen">Punto de origen:</label>
                     <input type="text" id="origen" name="origen">
                 </div>
 
+                <!-- Campo del destino -->
                 <div class="form-field">
                     <label for="destino">Destino:</label>
                     <input type="text" id="destino" name="destino">
                 </div>
 
+                <!-- Campo de la hora de salida -->
                 <div class="form-field">
                     <label for="hora_salida">Hora de salida:</label>
                     <input type="time" id="hora_salida" name="hora_salida">
                 </div>
 
+                <!-- Campo de la hora de llegada -->
                 <div class="form-field">
                     <label for="hora_efectiva">Hora de llegada:</label>
                     <input type="time" id="hora_efectiva" name="hora_efectiva">
                 </div>
 
+                <!-- Botón para enviar el formulario -->
                 <div class="form-field">
                     <input type="submit" value="Registrar Traslado">
                 </div>
@@ -69,13 +82,16 @@
         </div>
     </main>
 
+    <!-- Pie de página con la fecha -->
     <footer>
         <p>&copy; Hospital de Clínicas</p>
         <span class="footer-fecha" id="fechaPie"></span>
     </footer>
 
+    <!-- Scripts de control de acceso, gestión de traslados, menú y reloj -->
     <script src="../js/auth.js"></script>
     <script src="../js/GestionT.js"></script>
     <script src="../js/menu.js"></script>
-    <script src="../js/fechaYhora.js"></script></body>
+    <script src="../js/fechaYhora.js"></script>
+</body>
 </html>

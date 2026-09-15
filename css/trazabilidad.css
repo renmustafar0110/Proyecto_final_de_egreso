@@ -1,9 +1,11 @@
+/* ---------- Reset de estilos del navegador ---------- */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* ---------- Estilos del cuerpo de la página ---------- */
 body {
     font-family: Arial, Helvetica, sans-serif;
     background-color: #f0f4f8;
@@ -14,6 +16,7 @@ body {
     flex-direction: column;
 }
 
+/* ---------- Encabezado ---------- */
 header {
     background-color: #1e3a5f;
     color: #ffffff;
@@ -23,17 +26,20 @@ header {
     justify-content: space-between;
 }
 
+/* Título del encabezado */
 header h1 {
     font-size: 22px;
     font-weight: bold;
 }
 
+/* Logo del encabezado */
 .header-logo {
     height: 28px; width: 28px; border-radius: 50%; object-fit: cover;
     margin-right: 10px;
     vertical-align: middle;
 }
 
+/* Reloj del encabezado */
 .reloj {
     margin-left: auto;
     margin-right: 20px;
@@ -43,6 +49,7 @@ header h1 {
     white-space: nowrap;
 }
 
+/* ---------- Botón del menú lateral ---------- */
 .menu-btn {
     width: 42px;
     height: 42px;
@@ -58,6 +65,7 @@ header h1 {
     padding: 0;
 }
 
+/* Línea que forma el botón del menú */
 .menu-linea {
     display: block;
     width: 20px;
@@ -66,6 +74,7 @@ header h1 {
     border-radius: 2px;
 }
 
+/* ---------- Panel del menú lateral ---------- */
 .menu-panel {
     position: fixed;
     top: 0;
@@ -79,10 +88,12 @@ header h1 {
     z-index: 100;
 }
 
+/* Panel abierto (se desliza hacia la izquierda) */
 .menu-panel.abierto {
     transform: translateX(0);
 }
 
+/* Botón para cerrar el menú */
 .menu-cerrar {
     position: absolute;
     top: 15px;
@@ -98,6 +109,7 @@ header h1 {
     font-weight: bold;
 }
 
+/* Opción del menú */
 .menu-opcion {
     display: block;
     padding: 10px 14px;
@@ -110,10 +122,12 @@ header h1 {
     text-align: center;
 }
 
+/* Efecto al pasar el mouse por la opción del menú */
 .menu-opcion:hover {
     background-color: #2a4d7a;
 }
 
+/* ---------- Contenido principal ---------- */
 main {
     flex: 1;
     overflow-y: auto;
@@ -126,6 +140,7 @@ main {
     padding: 16px;
 }
 
+/* ---------- Pie de página ---------- */
 footer {
     background-color: #1e3a5f;
     color: #ffffff;
@@ -135,6 +150,7 @@ footer {
     position: relative;
 }
 
+/* Fecha que se muestra en el pie de página */
 .footer-fecha {
     position: absolute;
     right: 32px;
@@ -143,6 +159,7 @@ footer {
     font-size: 14px;
 }
 
+/* ---------- Panel de la página ---------- */
 .panel {
     background-color: #ffffff;
     border: 1px solid #d0dbe8;
@@ -150,21 +167,25 @@ footer {
     padding: 16px 24px;
 }
 
+/* Título del panel */
 .panel h2 {
     font-size: 18px;
     margin-bottom: 12px;
     color: #1e3a5f;
 }
 
+/* Panel izquierdo (formulario) */
 .left-panel {
     width: 100%;
     max-width: 420px;
 }
 
+/* ---------- Campos del formulario ---------- */
 .form-field {
     margin-bottom: 12px;
 }
 
+/* Etiqueta de cada campo */
 .form-field label {
     display: block;
     font-size: 13px;
@@ -173,6 +194,7 @@ footer {
     color: #1e3a5f;
 }
 
+/* Caja de texto de cada campo */
 .form-field input {
     width: 100%;
     padding: 8px 10px;
@@ -183,11 +205,13 @@ footer {
     color: #1e3a5f;
 }
 
+/* Efecto al seleccionar una caja de texto */
 .form-field input:focus {
     outline: none;
     border-color: #1e3a5f;
 }
 
+/* Botón para cargar un vehículo */
 #btn-cargar-vehiculo {
     width: 100%;
     background-color: #1e3a5f;
@@ -200,16 +224,19 @@ footer {
     cursor: pointer;
 }
 
+/* Efecto al pasar el mouse por el botón */
 #btn-cargar-vehiculo:hover {
     background-color: #2a4d7a;
 }
 
+/* ---------- Tabla de vehículos ---------- */
 .veh-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 13px;
 }
 
+/* Celdas de la tabla de vehículos */
 .veh-table th,
 .veh-table td {
     border: 1px solid #b8c8dc;
@@ -217,15 +244,18 @@ footer {
     text-align: left;
 }
 
+/* Encabezado de la tabla de vehículos */
 .veh-table th {
     background-color: #e8f0fa;
     color: #1e3a5f;
 }
 
+/* Texto del estado del vehículo */
 .veh-table .estado {
     font-weight: bold;
 }
 
+/* Colores según el estado del vehículo */
 .veh-table .disponible {
     color: #2e7d32;
 }
@@ -246,6 +276,7 @@ footer {
     color: #2e7d32;
 }
 
+/* Detalle de la reserva dentro de la tabla */
 .veh-table .detalle-reserva {
     display: block;
     margin-top: 4px;
@@ -255,6 +286,7 @@ footer {
     line-height: 1.4;
 }
 
+/* ---------- Botones de estado ---------- */
 .btn-estado {
     display: inline-block;
     background-color: #e8f0fa;
@@ -268,35 +300,42 @@ footer {
     margin: 1px;
 }
 
+/* Efecto al pasar el mouse por el botón de estado */
 .btn-estado:hover {
     background-color: #d4e2f4;
 }
 
+/* Botón para reservar un vehículo */
 .btn-reservar {
     background-color: #2e7d32;
     border-color: #2e7d32;
     color: #ffffff;
 }
 
+/* Efecto al pasar el mouse por el botón reservar */
 .btn-reservar:hover {
     background-color: #388e3c;
 }
 
+/* Botón para liberar un vehículo */
 .btn-liberar {
     background-color: #e8f0fa;
     border-color: #b8c8dc;
     color: #1e3a5f;
 }
 
+/* Efecto al pasar el mouse por el botón liberar */
 .btn-liberar:hover {
     background-color: #d4e2f4;
 }
 
+/* Panel derecho (tabla de vehículos) */
 .right-panel {
     width: 100%;
     max-width: 720px;
 }
 
+/* Botón para gestionar el traslado */
 .btn-mandar {
     display: inline-block;
     background-color: #1e3a5f;
@@ -310,6 +349,7 @@ footer {
     cursor: pointer;
 }
 
+/* Efecto al pasar el mouse por el botón gestionar */
 .btn-mandar:hover {
     background-color: #2a4d7a;
 }

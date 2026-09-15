@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- Metadatos y título de la página -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vista Previa de Ambulancias</title>
+    <!-- Hoja de estilos de la página -->
     <link rel="stylesheet" href="../css/vistaPreviaT.css">
 </head>
 <body>
+    <!-- Encabezado con el logo, el título, el reloj y el botón del menú -->
     <header>
-        <img src="../img/logo_del_proyecto.jpeg" alt="Logo" class="header-logo"><h1>Hospital de Clínicas</h1>
+        <img src="../img/logo_del_proyecto.jpeg" alt="Logo" class="header-logo">
+        <h1>Hospital de Clínicas</h1>
         <div class="reloj" id="reloj"></div>
         <button class="menu-btn" id="menu-btn" aria-label="Menú">
             <span class="menu-linea"></span>
@@ -17,15 +21,17 @@
         </button>
     </header>
 
+    <!-- Panel lateral del menú -->
     <div class="menu-panel" id="menu-panel">
         <button class="menu-cerrar" id="menu-cerrar" aria-label="Cerrar">X</button>
         <a href="cargaDoc.html" class="menu-opcion">Cargar Documento</a>
         <a href="documentosCargados.html" class="menu-opcion">Documentos Cargados</a>
-        <a href="trazabilidad.html" class="menu-opcion">Vehículos para Reserva</a>
+        <a href="trazabilidad.html" class="menu-opcion">Vehículos para Reservar</a>
         <a href="vistaPreviaT.html" class="menu-opcion">Vista Previa</a>
         <a href="index.html" class="menu-opcion">Volver al inicio</a>
     </div>
 
+    <!-- Contenido principal: mapa de ambulancias -->
     <main>
         <div class="panel map-panel">
             <h2>Mapa de Ambulancias</h2>
@@ -35,12 +41,15 @@
         </div>
     </main>
 
+    <!-- Pie de página con la fecha -->
     <footer>
         <p>&copy; Hospital de Clínicas</p>
         <span class="footer-fecha" id="fechaPie"></span>
     </footer>
 
+    <!-- Scripts de control de acceso, menú y reloj -->
     <script src="../js/auth.js"></script>
     <script src="../js/menu.js"></script>
-    <script src="../js/fechaYhora.js"></script></body>
+    <script src="../js/fechaYhora.js"></script>
+</body>
 </html>

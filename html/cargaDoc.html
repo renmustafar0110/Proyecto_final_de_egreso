@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- Metadatos y título de la página -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carga de Documentos</title>
+    <!-- Hoja de estilos de la página -->
     <link rel="stylesheet" href="../css/cargaDoc.css">
 </head>
 <body>
+    <!-- Encabezado con el logo, el título, el reloj y el botón del menú -->
     <header>
-        <img src="../img/logo_del_proyecto.jpeg" alt="Logo" class="header-logo"> <h1>Hospital de Clínicas</h1>
+        <img src="../img/logo_del_proyecto.jpeg" alt="Logo" class="header-logo">
+        <h1>Hospital de Clínicas</h1>
         <div class="reloj" id="reloj"></div>
         <button class="menu-btn" id="menu-btn" aria-label="Menú">
             <span class="menu-linea"></span>
@@ -17,24 +21,28 @@
         </button>
     </header>
 
+    <!-- Panel lateral del menú -->
     <div class="menu-panel" id="menu-panel">
         <button class="menu-cerrar" id="menu-cerrar" aria-label="Cerrar">X</button>
         <a href="cargaDoc.html" class="menu-opcion">Cargar Documento</a>
         <a href="documentosCargados.html" class="menu-opcion">Documentos Cargados</a>
-        <a href="trazabilidad.html" class="menu-opcion">Vehículos para Reserva</a>
+        <a href="trazabilidad.html" class="menu-opcion">Vehículos para Reservar</a>
         <a href="vistaPreviaT.html" class="menu-opcion">Vista Previa</a>
         <a href="index.html" class="menu-opcion">Volver al inicio</a>
     </div>
 
+    <!-- Contenido principal: formulario de carga de documento -->
     <main>
         <div class="panel form-panel">
             <h2>Cargar Documento</h2>
             <form action="" method="post" enctype="multipart/form-data" novalidate>
+                <!-- Campo para elegir el archivo -->
                 <div class="form-field">
                     <label for="archivo">Archivo (PDF u otro formato estándar):</label>
                     <input type="file" id="archivo" name="archivo" accept=".pdf,.doc,.docx,.odt,.txt">
                 </div>
 
+                <!-- Campo para elegir el título del documento -->
                 <div class="form-field">
                     <label for="titulo">Título del documento:</label>
                     <select id="titulo" name="nombre">
@@ -56,11 +64,13 @@
                     </select>
                 </div>
 
+                <!-- Campo de descripción del documento -->
                 <div class="form-field">
                     <label for="descripcion">Descripción:</label>
                     <textarea id="descripcion" name="descripcion" rows="3"></textarea>
                 </div>
 
+                <!-- Campo para elegir la categoría -->
                 <div class="form-field">
                     <label for="categoria">Categoría:</label>
                     <select id="categoria" name="categoria">
@@ -73,11 +83,13 @@
                     </select>
                 </div>
 
+                <!-- Campo de fecha de publicación -->
                 <div class="form-field">
                     <label for="fecha_publicacion">Fecha de publicación:</label>
                     <input type="date" id="fecha_publicacion" name="fecha_publicacion">
                 </div>
 
+                <!-- Botón para enviar el formulario -->
                 <div class="form-field">
                     <input type="submit" value="Cargar Documento" id="carga_Documento">
                 </div>
@@ -85,13 +97,15 @@
         </div>
     </main>
 
+    <!-- Pie de página con la fecha -->
     <footer>
         <p>&copy; Hospital de Clínicas</p>
         <span class="footer-fecha" id="fechaPie"></span>
     </footer>
 
+    <!-- Scripts de control de acceso, carga, menú y reloj -->
     <script src="../js/auth.js"></script>
-    <script src="../js/cargaDoc.js"></script>
+    <script src="../js/cargaDoc.js?v=4"></script>
     <script src="../js/menu.js"></script>
     <script src="../js/fechaYhora.js"></script>
 </body>

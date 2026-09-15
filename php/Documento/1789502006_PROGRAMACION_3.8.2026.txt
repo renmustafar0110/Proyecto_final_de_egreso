@@ -1,0 +1,46 @@
+Programacion 3.8.2026
+
+Parametros: 
+localhost (servidor)
+root (usuario mysql)
+contraseña (contraseña mysql)
+nombre_BD (nombre Base Dato)
+
+Funciones:
+new mysqli() <- POO
+mysqli:connect <- procedural
+
+Verificacion
+$con -> mysqli_error 
+
+nota: siempre guardar la conexion en una variable para poder reutilizar.
+
+cerrar conexion
+mysqli_close ($con)
+$con -> close() 
+
+--------------------------------
+
+config.php
+
+<?php
+define ('BD_host', 'localhost');
+define ('BD_usuario', 'root');
+define ('BD.contraseña', '');
+define ('BD_nombre', 'nombreBD');
+?>
+
+---------------------------------
+
+CONEXION.PHP
+
+<?php
+
+requiere_once 'config.php';
+$con = new mysqli (BD.host, BD_usuario, BD_contraseña, BD_nombre);
+
+if ($con -> concept_error){
+	die ("Error de conexion: "  , 
+		$con -> conect_error;
+}
+echo "Éxito";

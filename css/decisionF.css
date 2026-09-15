@@ -1,9 +1,11 @@
+/* ---------- Reset de estilos del navegador ---------- */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* ---------- Estilos del cuerpo de la página ---------- */
 body {
     font-family: Arial, Helvetica, sans-serif;
     background-color: #f0f4f8;
@@ -13,6 +15,7 @@ body {
     flex-direction: column;
 }
 
+/* ---------- Encabezado ---------- */
 header {
     background-color: #1e3a5f;
     color: #ffffff;
@@ -21,17 +24,20 @@ header {
     align-items: center;
 }
 
+/* Título del encabezado */
 header h1 {
     font-size: 22px;
     font-weight: bold;
 }
 
+/* Logo del encabezado */
 .header-logo {
     height: 28px; width: 28px; border-radius: 50%; object-fit: cover;
     margin-right: 10px;
     vertical-align: middle;
 }
 
+/* Reloj del encabezado */
 .reloj {
     margin-left: auto;
     margin-right: 20px;
@@ -41,6 +47,7 @@ header h1 {
     white-space: nowrap;
 }
 
+/* ---------- Botón del menú lateral ---------- */
 .menu-btn {
     width: 42px;
     height: 42px;
@@ -56,6 +63,7 @@ header h1 {
     padding: 0;
 }
 
+/* Línea que forma el botón del menú */
 .menu-linea {
     display: block;
     width: 20px;
@@ -64,6 +72,7 @@ header h1 {
     border-radius: 2px;
 }
 
+/* ---------- Panel del menú lateral ---------- */
 .menu-panel {
     position: fixed;
     top: 0;
@@ -77,10 +86,12 @@ header h1 {
     z-index: 100;
 }
 
+/* Panel abierto (se desliza hacia la izquierda) */
 .menu-panel.abierto {
     transform: translateX(0);
 }
 
+/* Botón para cerrar el menú */
 .menu-cerrar {
     position: absolute;
     top: 15px;
@@ -96,6 +107,7 @@ header h1 {
     font-weight: bold;
 }
 
+/* Opción del menú */
 .menu-opcion {
     display: block;
     padding: 10px 14px;
@@ -108,10 +120,12 @@ header h1 {
     text-align: center;
 }
 
+/* Efecto al pasar el mouse por la opción del menú */
 .menu-opcion:hover {
     background-color: #2a4d7a;
 }
 
+/* ---------- Contenido principal ---------- */
 main {
     flex: 1;
     display: flex;
@@ -122,6 +136,7 @@ main {
     padding: 32px;
 }
 
+/* ---------- Pie de página ---------- */
 footer {
     background-color: #1e3a5f;
     color: #ffffff;
@@ -131,6 +146,7 @@ footer {
     position: relative;
 }
 
+/* Fecha que se muestra en el pie de página */
 .footer-fecha {
     position: absolute;
     right: 32px;
@@ -139,6 +155,7 @@ footer {
     font-size: 14px;
 }
 
+/* ---------- Panel de la página ---------- */
 .panel {
     background-color: #ffffff;
     border: 1px solid #d0dbe8;
@@ -146,6 +163,7 @@ footer {
     padding: 24px 32px;
 }
 
+/* Título del panel */
 .panel h2 {
     font-size: 18px;
     margin-bottom: 16px;
@@ -153,6 +171,7 @@ footer {
     text-align: center;
 }
 
+/* ---------- Menú de selección de módulo ---------- */
 .menu {
     list-style: none;
     display: flex;
@@ -161,6 +180,7 @@ footer {
     min-width: 320px;
 }
 
+/* Enlace de cada opción del menú */
 .menu a {
     display: block;
     text-align: center;
@@ -172,6 +192,7 @@ footer {
     font-size: 15px;
 }
 
+/* Efecto al pasar el mouse por la opción del menú */
 .menu a:hover {
     background-color: #2a4d7a;
 }

@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- Metadatos y título de la página -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Funcionario</title>
+    <!-- Hoja de estilos de la página -->
     <link rel="stylesheet" href="../css/decisionF.css">
 </head>
 <body>
+    <!-- Encabezado con el logo, el título, el reloj y el botón del menú -->
     <header>
-        <img src="../img/logo_del_proyecto.jpeg" alt="Logo" class="header-logo"><h1>Hospital de Clínicas</h1>
+        <img src="../img/logo_del_proyecto.jpeg" alt="Logo" class="header-logo">
+        <h1>Hospital de Clínicas</h1>
         <div class="reloj" id="reloj"></div>
         <button class="menu-btn" id="menu-btn" aria-label="Menú">
             <span class="menu-linea"></span>
@@ -17,6 +21,7 @@
         </button>
     </header>
 
+    <!-- Panel lateral del menú -->
     <div class="menu-panel" id="menu-panel">
         <button class="menu-cerrar" id="menu-cerrar" aria-label="Cerrar">X</button>
         <a href="cargaDoc.html" class="menu-opcion">Módulo Gestión de Documentos</a>
@@ -25,6 +30,7 @@
         <a href="index.html" class="menu-opcion">Volver al inicio</a>
     </div>
 
+    <!-- Contenido principal: selección de módulo -->
     <main>
         <div class="panel">
             <h2>Seleccione un módulo</h2>
@@ -35,11 +41,14 @@
         </div>
     </main>
 
+    <!-- Pie de página con la fecha -->
     <footer>
         <p>&copy; Hospital de Clínicas</p>
         <span class="footer-fecha" id="fechaPie"></span>
     </footer>
+    <!-- Scripts de control de acceso, menú y reloj -->
     <script src="../js/auth.js"></script>
     <script src="../js/menu.js"></script>
-    <script src="../js/fechaYhora.js"></script></body>
+    <script src="../js/fechaYhora.js"></script>
+</body>
 </html>

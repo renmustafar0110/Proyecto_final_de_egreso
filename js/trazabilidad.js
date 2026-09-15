@@ -1,30 +1,38 @@
+// Lógica de la página de Vehículos para Reserva
+
+// Canal para mantener actualizadas las pestañas abiertas
 var canalTiempoReal = null;
 if ('BroadcastChannel' in window) {
     canalTiempoReal = new BroadcastChannel('vehiculos-reserva');
 }
 
+// Consulta la lista de vehículos al servidor
 function obtenerVehiculos() {
     return fetch('../php/getAmbulancias.php', { method: 'GET' })
         .then(function (respuesta) {
             return respuesta.json();
         })
         .catch(function () {
+            // Si hay un error se devuelve una lista vacía
             return [];
         });
 }
 
+// Avisa a las otras pestañas que cambió algo
 function notificarCambio() {
     if (canalTiempoReal) {
         canalTiempoReal.postMessage({ tipo: 'actualizar' });
     }
 }
 
+// Si otra pestaña avisa un cambio se vuelve a dibujar la tabla
 if (canalTiempoReal) {
     canalTiempoReal.onmessage = function () {
         renderizarTabla();
     };
 }
 
+// Devuelve el nombre de la clase de color según el estado del vehículo
 function obtenerClaseDeEstado(estado) {
     switch (estado) {
         case 'Disponible':
@@ -42,6 +50,7 @@ function obtenerClaseDeEstado(estado) {
     }
 }
 
+// Dibuja la tabla de vehículos con sus acciones
 function renderizarTabla() {
     var cuerpoTabla = document.getElementById('tabla-vehiculos');
 
@@ -50,6 +59,7 @@ function renderizarTabla() {
     }
 
     obtenerVehiculos().then(function (vehiculos) {
+        // Si no hay vehículos se muestra un mensaje
         if (!Array.isArray(vehiculos) || vehiculos.length === 0) {
             cuerpoTabla.innerHTML = '<tr><td colspan="3">No hay vehículos cargados.</td></tr>';
             return;
@@ -57,10 +67,12 @@ function renderizarTabla() {
 
         var filas = '';
 
+        // Se recorre cada vehículo para armar su fila
         for (var i = 0; i < vehiculos.length; i++) {
             var vehiculo = vehiculos[i];
             var accion = '';
 
+            // Se define el botón según el estado del vehículo
             if (vehiculo.estado === 'Disponible') {
                 accion = '<button type="button" class="btn-estado btn-reservar" ' +
                          'data-numero="' + vehiculo.numero_coche + '" data-estado="Reservado">Reservar</button>';
@@ -74,6 +86,7 @@ function renderizarTabla() {
 
             var claseEstado = obtenerClaseDeEstado(vehiculo.estado);
 
+            // Se arma el detalle del viaje (ruta y horarios)
             var ruta = (vehiculo.origen || '—') + ' → ' + (vehiculo.destino || '—');
             var horaSalida = vehiculo.hora_salida ? 'Salida: ' + vehiculo.hora_salida : 'Salida: --';
             var horaLlegada = vehiculo.hora_llegada ? 'Llegada: ' + vehiculo.hora_llegada : 'Llegada: --';
@@ -82,6 +95,7 @@ function renderizarTabla() {
                 horaSalida + ' · ' + horaLlegada +
                 '</span>';
 
+            // Se arma la fila completa del vehículo
             filas += '<tr>' +
                 '<td>' + vehiculo.numero_coche + detalleViaje + '</td>' +
                 '<td><span class="estado ' + claseEstado + '">' + vehiculo.estado + '</span></td>' +
@@ -89,10 +103,12 @@ function renderizarTabla() {
                 '</tr>';
         }
 
+        // Se colocan las filas dentro de la tabla
         cuerpoTabla.innerHTML = filas;
     });
 }
 
+// Envía al servidor el cambio de estado de un vehículo
 function cambiarEstado(numero, estado) {
     var datos = new URLSearchParams();
     datos.append('numero_coche', numero);
@@ -107,6 +123,7 @@ function cambiarEstado(numero, estado) {
         return respuesta.json();
     })
     .then(function (resultado) {
+        // Si se actualizó bien se refresca la tabla y se avisa a las otras pestañas
         if (resultado.ok) {
             notificarCambio();
             renderizarTabla();
@@ -119,6 +136,7 @@ function cambiarEstado(numero, estado) {
     });
 }
 
+// Al hacer clic en un botón de la tabla se cambia el estado
 document.addEventListener('click', function (evento) {
     var elemento = evento.target;
 
@@ -133,6 +151,7 @@ document.addEventListener('click', function (evento) {
     }
 });
 
+// Formulario para cargar un nuevo vehículo
 var formularioCarga = document.getElementById('form-cargar-vehiculo');
 
 if (formularioCarga) {
@@ -149,6 +168,7 @@ if (formularioCarga) {
             return respuesta.json();
         })
         .then(function (resultado) {
+            // Si se guardó bien se avisa y se refresca la tabla
             if (resultado.ok) {
                 alert('Vehículo cargado correctamente.');
                 formularioCarga.reset();
@@ -164,8 +184,10 @@ if (formularioCarga) {
     });
 }
 
+// Se dibuja la tabla cuando la página termina de cargar
 document.addEventListener('DOMContentLoaded', function () {
     renderizarTabla();
 });
 
+// También se dibuja la tabla de inmediato
 renderizarTabla();

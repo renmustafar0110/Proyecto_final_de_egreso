@@ -441,27 +441,22 @@ flowchart LR
 
     %% ATRIBUTOS - QR
     q_id((id_qr PK))
-    q_cod((codigo))
     q_url((url))
-    q_fcreac((fecha_creacion))
-    q_tipo((tipo))
-    q_act((activo))
     q_ced((cedula FK))
 
     %% ATRIBUTOS - DOCUMENTOS
     d_id((id_documento PK))
     d_nom((nom_doc))
+    d_nombre((nombre))
+    d_arch((archivo))
     d_nompac((nom_pac))
     d_ced((cedula))
     d_idqr((id_qr FK))
-    d_femis((fecha_emision))
-    d_tipodoc((tipo_documento))
 
     %% ATRIBUTOS - ENCUESTAS
     e_prov((proveniencia PK))
     e_preg((preguntas))
     e_ced((cedula FK))
-    e_fcreac((fecha_creacion))
     e_titulo((titulo))
 
     %% ATRIBUTOS - RESPUESTAS
@@ -469,7 +464,6 @@ flowchart LR
     r_graf((grafico))
     r_porc((porcentaje))
     r_prov((proveniencia FK))
-    r_fresp((fecha_respuesta))
     r_coment((comentario))
 
     %% ATRIBUTOS - M. BIOLOGICAS
@@ -479,19 +473,14 @@ flowchart LR
     mb_rec((receptor))
     mb_idt((id_traslado FK))
     mb_frec((fecha_recepcion))
-    mb_temp((temperatura))
 
     %% ATRIBUTOS - FUNCIONARIOS
     f_id((id_funcionario PK))
     f_nombre((nombre))
     f_apellido((apellido))
     f_cargo((cargo))
-    f_fnac((fecha_nac))
     f_ced((cedula FK))
     f_idmb((id_m_biologica FK))
-    f_tel((telefono))
-    f_email((email))
-    f_fingreso((fecha_ingreso))
 
     %% ATRIBUTOS - FUNCIONARIOS_CARGA_DOCUMENTOS
     fcd_idf((id_funcionario FK))
@@ -502,50 +491,41 @@ flowchart LR
     a_mat((matricula PK))
     a_num((numero_coche))
     a_idt((id_traslado FK))
-    a_marca((marca))
-    a_mod((modelo))
-    a_ano((ano_fabricacion))
 
     %% ATRIBUTOS - ACOMPAÑANTES
     ac_ced((cedula_acom PK))
     ac_nom((nombre))
     ac_ape((apellido))
-    ac_cant((cantidad))
     ac_idt((id_traslado FK))
     ac_tel((telefono))
-    ac_par((parentesco))
 
     %% ATRIBUTOS - RUTAS
     ru_id((id_ruta PK))
     ru_dom((domicilio))
     ru_km((km))
     ru_idt((id_traslado FK))
-    ru_dur((duracion_estimada))
     ru_est((estado_trafico))
 
     %% ATRIBUTOS - EQUIPOS
     eq_id((id_equipo PK))
-    eq_mod((modelo))
     eq_func((funcion))
     eq_tipo((tipo))
     eq_idt((id_traslado FK))
-    eq_fadq((fecha_adquisicion))
-    eq_est((estado))
 
     %% CONEXIONES ENTIDAD - ATRIBUTOS
     PACIENTES --- p_ced & p_nombre & p_apellido & p_fnac & p_tel & p_email & p_dir
     TRASLADOS --- t_id & t_hsal & t_hlleg & t_orig & t_dest & t_km & t_est
-    QR --- q_id & q_cod & q_url & q_fcreac & q_tipo & q_act & q_ced
-    DOCUMENTOS --- d_id & d_nom & d_nompac & d_ced & d_idqr & d_femis & d_tipodoc
-    ENCUESTAS --- e_prov & e_preg & e_ced & e_fcreac & e_titulo
-    RESPUESTAS --- r_id & r_graf & r_porc & r_prov & r_fresp & r_coment
-    M_BIOLOGICAS --- mb_id & mb_tipo & mb_cuid & mb_rec & mb_idt & mb_frec & mb_temp
-    FUNCIONARIOS --- f_id & f_nombre & f_apellido & f_cargo & f_fnac & f_ced & f_idmb & f_tel & f_email & f_fingreso
+    QR --- q_id & q_url & q_ced
+    DOCUMENTOS --- d_id & d_nom & d_nombre & d_arch & d_nompac & d_ced & d_idqr
+    ENCUESTAS --- e_prov & e_preg & e_ced & e_titulo
+    RESPUESTAS --- r_id & r_graf & r_porc & r_prov & r_coment
+    M_BIOLOGICAS --- mb_id & mb_tipo & mb_cuid & mb_rec & mb_idt & mb_frec
+    FUNCIONARIOS --- f_id & f_nombre & f_apellido & f_cargo & f_ced & f_idmb
     FC_D --- fcd_idf & fcd_idd & fcd_fcarga
-    AMBULANCIAS --- a_mat & a_num & a_idt & a_marca & a_mod & a_ano
-    ACOMPANANTES --- ac_ced & ac_nom & ac_ape & ac_cant & ac_idt & ac_tel & ac_par
-    RUTAS --- ru_id & ru_dom & ru_km & ru_idt & ru_dur & ru_est
-    EQUIPOS --- eq_id & eq_mod & eq_func & eq_tipo & eq_idt & eq_fadq & eq_est
+    AMBULANCIAS --- a_mat & a_num & a_idt
+    ACOMPANANTES --- ac_ced & ac_nom & ac_ape & ac_idt & ac_tel
+    RUTAS --- ru_id & ru_dom & ru_km & ru_idt & ru_est
+    EQUIPOS --- eq_id & eq_func & eq_tipo & eq_idt
 
     %% CONEXIONES ENTIDAD - RELACION - ENTIDAD
     PACIENTES -- 1 --- tiene1
@@ -586,7 +566,7 @@ flowchart LR
 
     %% APLICAR ESTILOS
     class PACIENTES,TRASLADOS,QR,DOCUMENTOS,ENCUESTAS,RESPUESTAS,M_BIOLOGICAS,FUNCIONARIOS,FC_D,AMBULANCIAS,ACOMPANANTES,RUTAS,EQUIPOS entidad
-    class p_ced,p_nombre,p_apellido,p_fnac,p_tel,p_email,p_dir,t_id,t_hsal,t_hlleg,t_orig,t_dest,t_km,t_est,q_id,q_cod,q_url,q_fcreac,q_tipo,q_act,q_ced,d_id,d_nom,d_nompac,d_ced,d_idqr,d_femis,d_tipodoc,e_prov,e_preg,e_ced,e_fcreac,e_titulo,r_id,r_graf,r_porc,r_prov,r_fresp,r_coment,mb_id,mb_tipo,mb_cuid,mb_rec,mb_idt,mb_frec,mb_temp,f_id,f_nombre,f_apellido,f_cargo,f_fnac,f_ced,f_idmb,f_tel,f_email,f_fingreso,fcd_idf,fcd_idd,fcd_fcarga,a_mat,a_num,a_idt,a_marca,a_mod,a_ano,ac_ced,ac_nom,ac_ape,ac_cant,ac_idt,ac_tel,ac_par,ru_id,ru_dom,ru_km,ru_idt,ru_dur,ru_est,eq_id,eq_mod,eq_func,eq_tipo,eq_idt,eq_fadq,eq_est atributo
+    class p_ced,p_nombre,p_apellido,p_fnac,p_tel,p_email,p_dir,t_id,t_hsal,t_hlleg,t_orig,t_dest,t_km,t_est,q_id,q_url,q_ced,d_id,d_nom,d_nombre,d_arch,d_nompac,d_ced,d_idqr,e_prov,e_preg,e_ced,e_titulo,r_id,r_graf,r_porc,r_prov,r_coment,mb_id,mb_tipo,mb_cuid,mb_rec,mb_idt,mb_frec,f_id,f_nombre,f_apellido,f_cargo,f_ced,f_idmb,fcd_idf,fcd_idd,fcd_fcarga,a_mat,a_num,a_idt,ac_ced,ac_nom,ac_ape,ac_idt,ac_tel,ru_id,ru_dom,ru_km,ru_idt,ru_est,eq_id,eq_func,eq_tipo,eq_idt atributo
     class tiene1,carga_doc,cuida1,contiene1,escanea1,realiza1,genera1,tiene2,lleva1,tiene3,tiene4,carga2 relacion
 ```
 
@@ -596,17 +576,17 @@ flowchart LR
 |---------|-----------|-------------|
 | **Pacientes** | cedula (PK), nombre, apellido, fecha_nac, telefono, email, direccion | Pacientes del hospital que acceden a documentación y completan encuestas |
 | **Traslados** | id_traslado (PK), hora_salida, hora_llegada, origen, destino, km_recorridos, estado | Solicitudes de traslado en ambulancia registradas |
-| **QR** | id_qr (PK), codigo, url, fecha_creacion, tipo, activo, cedula (FK) | Códigos QR generados para documentos o encuestas. `tipo` distingue si es de documento o encuesta; `activo` permite deshabilitar QRs expirados |
-| **Documentos** | id_documento (PK), nom_doc, nom_pac, cedula, id_qr (FK), fecha_emision, tipo_documento | Documentos informativos cargados por los funcionarios, vinculados a un QR |
-| **Encuestas** | proveniencia (PK), preguntas, cedula (FK), fecha_creacion, titulo | Formularios de satisfacción creados por administrativos |
-| **Respuestas** | id_respuesta (PK), grafico, porcentaje, proveniencia (FK), fecha_respuesta, comentario | Respuestas recolectadas de las encuestas |
-| **M. Biológicas** | id_m_biologica (PK), tipo, tipo_cuidado, receptor, id_traslado (FK), fecha_recepcion, temperatura | Muestras biológicas transportadas en los traslados |
-| **Funcionarios** | id_funcionario (PK), nombre, apellido, cargo, fecha_nac, cedula (FK), id_m_biologica (FK), telefono, email, fecha_ingreso | Personal administrativo del hospital que opera los sistemas |
+| **QR** | id_qr (PK), url, cedula (FK) | Códigos QR generados para documentos o encuestas |
+| **Documentos** | id_documento (PK), nom_doc, nombre, archivo, nom_pac, cedula, id_qr (FK) | Documentos informativos cargados por los funcionarios, vinculados a un QR |
+| **Encuestas** | proveniencia (PK), preguntas, cedula (FK), titulo | Formularios de satisfacción creados por administrativos |
+| **Respuestas** | id_respuesta (PK), grafico, porcentaje, proveniencia (FK), comentario | Respuestas recolectadas de las encuestas |
+| **M. Biológicas** | id_m_biologica (PK), tipo, tipo_cuidado, receptor, id_traslado (FK), fecha_recepcion | Muestras biológicas transportadas en los traslados |
+| **Funcionarios** | id_funcionario (PK), nombre, apellido, cargo, cedula (FK), id_m_biologica (FK) | Personal administrativo del hospital que opera los sistemas |
 | **Funcionarios_carga_Documentos** | id_funcionario (FK), id_documento (FK), fecha_carga | Tabla intermedia N:N: registra qué funcionario cargó qué documento y cuándo |
-| **Ambulancias** | matricula (PK), numero_coche, id_traslado (FK), marca, modelo, ano_fabricacion | Vehículos de transporte del hospital |
-| **Acompañantes** | cedula_acom (PK), nombre, apellido, cantidad, id_traslado (FK), telefono, parentesco | Copilotos o acompañantes de los traslados |
-| **Rutas** | id_ruta (PK), domicilio, km, id_traslado (FK), duracion_estimada, estado_trafico | Rutas del circuito nacional gestionadas para los traslados |
-| **Equipos** | id_equipo (PK), modelo, funcion, tipo, id_traslado (FK), fecha_adquisicion, estado | Equipamiento médico u otros insumos transportados |
+| **Ambulancias** | matricula (PK), numero_coche, id_traslado (FK) | Vehículos de transporte del hospital |
+| **Acompañantes** | cedula_acom (PK), nombre, apellido, id_traslado (FK), telefono | Copilotos o acompañantes de los traslados |
+| **Rutas** | id_ruta (PK), domicilio, km, id_traslado (FK), estado_trafico | Rutas del circuito nacional gestionadas para los traslados |
+| **Equipos** | id_equipo (PK), funcion, tipo, id_traslado (FK) | Equipamiento médico u otros insumos transportados |
 
 ### 6.3. Relaciones
 

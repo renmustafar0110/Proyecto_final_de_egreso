@@ -172,11 +172,7 @@ Describe como responde el sistema ante los eventos, expresado mediante diagramas
 +------------------+
 | - id_qr: PK      |
 | - cedula: FK     |
-| - codigo         |
 | - url            |
-| - fecha_creacion |
-| - tipo           |
-| - activo         |
 +------------------+
         | 1
         |
@@ -187,10 +183,10 @@ Describe como responde el sistema ante los eventos, expresado mediante diagramas
 | - id_documento   |
 | - id_qr: FK      |
 | - nom_doc        |
+| - nombre         |
+| - archivo        |
 | - nom_pac        |
 | - cedula         |
-| - fecha_emision  |
-| - tipo_documento |
 +------------------+
         |
         | (tabla intermedia N:N)
@@ -210,8 +206,7 @@ Describe como responde el sistema ante los eventos, expresado mediante diagramas
 | - proveniencia   |<>--------| - id_respuesta    |
 | - cedula: FK     |    1   N | - proveniencia: FK|
 | - preguntas      |          | - grafico         |
-| - fecha_creacion |          | - porcentaje      |
-| - titulo         |          | - fecha_respuesta |
+| - titulo         |          | - porcentaje      |
 +------------------+          | - comentario      |
                               +-------------------+
 
@@ -221,10 +216,10 @@ Describe como responde el sistema ante los eventos, expresado mediante diagramas
 | - id_traslado    |<>--------| - matricula: PK   |
 | - hora_salida    |    1   N | - id_traslado: FK |
 | - hora_llegada   |          | - numero_coche    |
-| - origen         |          | - marca           |
-| - destino        |          | - modelo          |
-| - km_recorridos  |          | - ano_fabricacion |
-| - estado         |          +-------------------+
+| - origen         |          +-------------------+
+| - destino        |
+| - km_recorridos  |
+| - estado         |
 +------------------+
         | 1
         |
@@ -236,9 +231,7 @@ Describe como responde el sistema ante los eventos, expresado mediante diagramas
 | - id_traslado:FK |
 | - nombre         |
 | - apellido       |
-| - cantidad       |
 | - telefono       |
-| - parentesco     |
 +------------------+
 
 +------------------+          +-------------------+
@@ -246,12 +239,10 @@ Describe como responde el sistema ante los eventos, expresado mediante diagramas
 +------------------+          +-------------------+
 | - id_ruta        |          | - id_equipo       |
 | - id_traslado:FK |          | - id_traslado:FK  |
-| - domicilio      |          | - modelo          |
-| - km             |          | - funcion         |
-| - duracion_estim |          | - tipo            |
-| - estado_trafico |          | - fecha_adquisic  |
-+------------------+          | - estado          |
-                              +-------------------+
+| - domicilio      |          | - funcion         |
+| - km             |          | - tipo            |
+| - estado_trafico |          +-------------------+
++------------------+
 
 +------------------+
 |   M_Biologicas   |
@@ -262,7 +253,6 @@ Describe como responde el sistema ante los eventos, expresado mediante diagramas
 | - tipo_cuidado   |
 | - receptor       |
 | - fecha_recepcio |
-| - temperatura    |
 +------------------+
 ```
 

@@ -4,7 +4,6 @@
 var archivo = document.getElementById('archivo');
 var nombre = document.getElementById('titulo');
 var categoria = document.getElementById('categoria');
-var fecha = document.getElementById('fecha_publicacion');
 var boton = document.getElementById('carga_Documento');
 
 // Al hacer clic en el botón se envía el formulario al servidor
@@ -17,7 +16,6 @@ boton.onclick = function (e) {
     doc.append('nombre', nombre.value);
     doc.append('archivo', archivo.files[0]);
     doc.append('tipo_documento', categoria.value);
-    doc.append('fecha_publicacion', fecha.value);
 
     // Se envía el formulario al archivo PHP que guarda el documento
     fetch('../php/cargaDocumentos.php', {

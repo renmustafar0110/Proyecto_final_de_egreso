@@ -1,0 +1,5 @@
+Diagrama UML
+
+Diagrama de actividades
+1: ¿Q es un diagrama de actividad y q aporta al proyecto?
+2: elige 3 escenarios en los que puedas desplegar un diagrama de actividades, ej: "como usuario quiero registrarme en la plataforma", "como debo registrar la ubicacion en google maps"

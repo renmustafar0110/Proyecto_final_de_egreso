@@ -4,7 +4,7 @@
     <!-- Metadatos y título de la página -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vehículos para Reserva</title>
+    <title>Ordenar Traslado</title>
     <!-- Hoja de estilos de la página -->
     <link rel="stylesheet" href="../css/trazabilidad.css">
 </head>
@@ -26,33 +26,60 @@
         <button class="menu-cerrar" id="menu-cerrar" aria-label="Cerrar">X</button>
         <a href="cargaDoc.html" class="menu-opcion">Cargar Documento</a>
         <a href="documentosCargados.html" class="menu-opcion">Documentos Cargados</a>
-        <a href="trazabilidad.html" class="menu-opcion">Vehículos para Reservar</a>
+        <a href="trazabilidad.html" class="menu-opcion">Ordenar un Traslado</a>
         <a href="vistaPreviaT.html" class="menu-opcion">Vista Previa</a>
         <a href="index.html" class="menu-opcion">Volver al inicio</a>
     </div>
 
-    <!-- Contenido principal: formulario y tabla de vehículos -->
+<!-- Contenido principal: formulario y tabla de ambulancias -->
     <main>
-        <!-- Panel izquierdo: formulario para cargar un vehículo -->
+
+        <!-- Panel izquierdo: formulario para ordenar un traslado -->
         <div class="panel left-panel">
-            <h2>Cargar Nuevo Vehículo</h2>
-            <form id="form-cargar-vehiculo" autocomplete="off">
-                <!-- Campo del número de coche -->
+            <h2>Ordenar Traslado</h2>
+            <form id="form-ordenar-traslado" autocomplete="off">
+                <!-- Campo del número de coche (con autocompletado) -->
                 <div class="form-field">
                     <label for="input-numero">Nº de coche:</label>
-                    <input type="text" id="input-numero" name="numero_coche" placeholder="Ej: 04" required>
+                    <input type="text" id="input-numero" name="numero_coche" list="lista-coches"
+                           placeholder="Ej: Coche 01" autocomplete="off" required>
+                    <datalist id="lista-coches"></datalist>
                 </div>
 
-                <!-- Botón para cargar el vehículo -->
+                <!-- Campo del origen -->
                 <div class="form-field">
-                    <button type="submit" id="btn-cargar-vehiculo">Cargar Vehículo</button>
+                    <label for="input-origen">Origen:</label>
+                    <input type="text" id="input-origen" name="origen" placeholder="Ej: Hospital" required>
+                </div>
+
+                <!-- Campo del destino -->
+                <div class="form-field">
+                    <label for="input-destino">Destino:</label>
+                    <input type="text" id="input-destino" name="destino" placeholder="Ej: Clínica 2" required>
+                </div>
+
+                <!-- Campo de la hora de salida -->
+                <div class="form-field">
+                    <label for="input-hora-salida">Hora de salida:</label>
+                    <input type="datetime-local" id="input-hora-salida" name="hora_salida" required>
+                </div>
+
+                <!-- Campo de la hora de llegada -->
+                <div class="form-field">
+                    <label for="input-hora-llegada">Hora de llegada:</label>
+                    <input type="datetime-local" id="input-hora-llegada" name="hora_llegada">
+                </div>
+
+                <!-- Botón para ordenar el traslado -->
+                <div class="form-field">
+                    <button type="submit" id="btn-ordenar-traslado">Ordenar Traslado</button>
                 </div>
             </form>
         </div>
 
-        <!-- Panel derecho: tabla con los vehículos para reservar -->
+        <!-- Panel derecho: tabla con las ambulancias y sus traslados -->
         <div class="panel right-panel">
-            <h2>Vehículos para Reservar</h2>
+            <h2>Ambulancias y Traslados</h2>
             <table class="veh-table">
                 <thead>
                     <tr>

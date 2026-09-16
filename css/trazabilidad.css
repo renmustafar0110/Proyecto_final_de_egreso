@@ -211,8 +211,8 @@ footer {
     border-color: #1e3a5f;
 }
 
-/* Botón para cargar un vehículo */
-#btn-cargar-vehiculo {
+/* Botón para ordenar un traslado */
+#btn-ordenar-traslado {
     width: 100%;
     background-color: #1e3a5f;
     color: #ffffff;
@@ -225,7 +225,7 @@ footer {
 }
 
 /* Efecto al pasar el mouse por el botón */
-#btn-cargar-vehiculo:hover {
+#btn-ordenar-traslado:hover {
     background-color: #2a4d7a;
 }
 
@@ -276,7 +276,7 @@ footer {
     color: #2e7d32;
 }
 
-/* Detalle de la reserva dentro de la tabla */
+/* Detalle del traslado dentro de la tabla */
 .veh-table .detalle-reserva {
     display: block;
     margin-top: 4px;
@@ -284,49 +284,6 @@ footer {
     font-weight: normal;
     color: #6b7f99;
     line-height: 1.4;
-}
-
-/* ---------- Botones de estado ---------- */
-.btn-estado {
-    display: inline-block;
-    background-color: #e8f0fa;
-    color: #1e3a5f;
-    border: 1px solid #b8c8dc;
-    border-radius: 3px;
-    padding: 3px 8px;
-    font-size: 11px;
-    font-family: inherit;
-    cursor: pointer;
-    margin: 1px;
-}
-
-/* Efecto al pasar el mouse por el botón de estado */
-.btn-estado:hover {
-    background-color: #d4e2f4;
-}
-
-/* Botón para reservar un vehículo */
-.btn-reservar {
-    background-color: #2e7d32;
-    border-color: #2e7d32;
-    color: #ffffff;
-}
-
-/* Efecto al pasar el mouse por el botón reservar */
-.btn-reservar:hover {
-    background-color: #388e3c;
-}
-
-/* Botón para liberar un vehículo */
-.btn-liberar {
-    background-color: #e8f0fa;
-    border-color: #b8c8dc;
-    color: #1e3a5f;
-}
-
-/* Efecto al pasar el mouse por el botón liberar */
-.btn-liberar:hover {
-    background-color: #d4e2f4;
 }
 
 /* Panel derecho (tabla de vehículos) */

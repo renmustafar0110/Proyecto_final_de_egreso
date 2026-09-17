@@ -1,6 +1,6 @@
-// Control de acceso de las páginas internas del sistema
+// Control de acceso de las páginas internas
 
-// Si el funcionario no inició sesión se lo envía a la página de login
+// Si no hay sesión, redirige al login
 if (!sessionStorage.getItem('sesion')) {
     alert('Debe iniciar sesión para acceder a esta sección.');
     window.location.replace('loginF.html');

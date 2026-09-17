@@ -1,26 +1,26 @@
 <?php
 
-// Se incluye el archivo de conexión a la base de datos
+// Conexión a la base de datos
 require_once 'conexion.php';
 
-// Se consultan todos los documentos ordenados desde el más reciente
+// Consulta todos los documentos, del más reciente hacia atrás
 $sql = "SELECT id_documento, nombre, archivo, tipo_documento, fecha_publicacion FROM Documentos ORDER BY id_documento DESC";
 $resultado = $conexion->query($sql);
 
-// Se arma el JSON de forma manual (estilo simple para el curso)
+// Arma el JSON de forma manual
 $texto = "[";
 $primero = true;
 
-// Se recorre cada fila del resultado
+// Recorre cada fila del resultado
 while ($fila = $resultado->fetch_assoc()) {
-    // Se agrega una coma entre documento y documento
+    // Agrega coma entre documento y documento
     if ($primero == false) {
         $texto = $texto . ",";
     }
 
     $primero = false;
 
-    // Se arma el objeto JSON con los datos de cada documento
+    // Arma el objeto JSON de cada documento
     $texto = $texto . "{";
     $texto = $texto . '"id_documento":"' . $fila['id_documento'] . '",';
     $texto = $texto . '"nombre":"' . $fila['nombre'] . '",';
@@ -30,12 +30,12 @@ while ($fila = $resultado->fetch_assoc()) {
     $texto = $texto . "}";
 }
 
-// Se cierra el arreglo JSON
+// Cierra el arreglo JSON
 $texto = $texto . "]";
 
-// Se envía la respuesta como JSON
+// Envía la respuesta como JSON
 header('Content-Type: application/json; charset=utf-8');
 echo $texto;
 
-// Se cierra la conexión a la base de datos
+// Cierra la conexión
 $conexion->close();

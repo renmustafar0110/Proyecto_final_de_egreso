@@ -1,11 +1,11 @@
-/* ---------- Reset de estilos del navegador ---------- */
+/* Reset de estilos */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* ---------- Estilos del cuerpo de la página ---------- */
+/* Cuerpo de la página */
 body {
     font-family: Arial, Helvetica, sans-serif;
     background-color: #f0f4f8;
@@ -19,7 +19,7 @@ body {
     background-attachment: fixed;
 }
 
-/* ---------- Encabezado ---------- */
+/* Encabezado */
 header {
     background-color: #1e3a5f;
     color: #ffffff;
@@ -50,7 +50,7 @@ header h1 {
     white-space: nowrap;
 }
 
-/* ---------- Contenido principal ---------- */
+/* Contenido principal */
 main {
     flex: 1;
     display: flex;
@@ -71,7 +71,7 @@ main {
     line-height: 1.5;
 }
 
-/* ---------- Pie de página ---------- */
+/* Pie de página */
 footer {
     background-color: #1e3a5f;
     color: #ffffff;
@@ -90,7 +90,7 @@ footer {
     font-size: 14px;
 }
 
-/* ---------- Menú principal ---------- */
+/* Menú principal */
 .menu {
     list-style: none;
     display: flex;

@@ -13,7 +13,7 @@ function actualizarReloj() {
     document.getElementById('reloj').textContent = texto;
 }
 
-// Actualiza la fecha que se muestra en el pie de página
+// Actualiza la fecha del pie de página
 function actualizarFechaPie() {
     var ahora = new Date();
     var opciones = {
@@ -29,11 +29,11 @@ function actualizarFechaPie() {
     }
 }
 
-// Se muestra el reloj apenas carga la página
+// Muestra el reloj apenas carga la página
 actualizarReloj();
 
 // El reloj se actualiza cada segundo
 setInterval(actualizarReloj, 1000);
 
-// Se muestra la fecha del pie de página
+// Muestra la fecha del pie de página
 actualizarFechaPie();

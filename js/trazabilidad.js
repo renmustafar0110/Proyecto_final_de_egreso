@@ -1,38 +1,18 @@
-// ============================================================================
-// trazabilidad.js
-//
-// El objetivo de este archivo es manejar la página de "Ordenar Traslado".
-// Hace varias cosas:
-//   A) Consultar las ambulancias al servidor y mostrarlas en una tabla.
-//   B) Armar las sugerencias de autocompletado para el "Nº de coche".
-//   C) Cuando se completa el formulario, enviar el traslado al servidor.
-//   D) Autocompletar la hora de salida y la hora de llegada.
-// ============================================================================
+// Maneja la página de ordenar traslado
 
-// ----------------------------------------------------------------------------
-// PARTE A: CONSULTAR LAS AMBULANCIAS
-// ----------------------------------------------------------------------------
-
-// Esta función le pide al servidor la lista de ambulancias.
-// Devuelve una promesa que, cuando se cumple, trae la lista como arreglo.
+// Pide al servidor la lista de ambulancias
 function obtenerAmbulancias() {
     return fetch('../php/trazabilidad.php', { method: 'GET' })
         .then(function (respuesta) {
-            // La respuesta viene en JSON, la convertimos a un arreglo
             return respuesta.json();
         })
         .catch(function () {
-            // Si hay un error, devolvemos una lista vacía
+            // Devuelve lista vacía si hay error
             return [];
         });
 }
 
-// ----------------------------------------------------------------------------
-// PARTE B: PINTAR LA TABLA DE AMBULANCIAS
-// ----------------------------------------------------------------------------
-
-// Devuelve el nombre de la clase de color según el estado.
-// Estas clases están definidas en trazabilidad.css.
+// Devuelve la clase de color según el estado (definida en trazabilidad.css)
 function obtenerClaseDeEstado(estado) {
     switch (estado) {
         case 'Disponible':
@@ -50,7 +30,7 @@ function obtenerClaseDeEstado(estado) {
     }
 }
 
-// Arma el detalle del viaje (ruta e horarios) para mostrar debajo del número
+// Arma el detalle del viaje (ruta y horarios)
 function armarDetalleViaje(ambulancia) {
     var ruta = (ambulancia.origen || '—') + ' → ' + (ambulancia.destino || '—');
 
@@ -63,37 +43,36 @@ function armarDetalleViaje(ambulancia) {
         '</span>';
 }
 
-// Dibuja en la tabla cada ambulancia y además arma las sugerencias del autocompletado
+// Dibuja la tabla de ambulancias y arma el autocompletado
 function renderizarTabla() {
     var cuerpoTabla = document.getElementById('tabla-vehiculos');
     var listaCoches = document.getElementById('lista-coches');
 
-    // Si la tabla no existe, no hay nada que hacer
+    // Si la tabla no existe, no se hace nada
     if (!cuerpoTabla) {
         return;
     }
 
     obtenerAmbulancias().then(function (ambulancias) {
-        // Si no hay ambulancias, mostramos un aviso en la tabla
+        // Muestra un aviso si no hay ambulancias
         if (!Array.isArray(ambulancias) || ambulancias.length === 0) {
             cuerpoTabla.innerHTML = '<tr><td colspan="3">No hay ambulancias cargadas.</td></tr>';
             return;
         }
 
-        // Acá vamos guardando el HTML de todas las filas
+        // Guarda el HTML de las filas
         var filas = '';
 
-        // Acá vamos guardando las sugerencias del autocompletado
+        // Guarda las sugerencias del autocompletado
         var sugerencias = '';
 
-        // Recorremos cada ambulancia para armar su fila
+        // Recorre cada ambulancia para armar su fila
         for (var i = 0; i < ambulancias.length; i++) {
             var ambulancia = ambulancias[i];
 
             var claseEstado = obtenerClaseDeEstado(ambulancia.estado);
 
-            // Si la ambulancia está disponible, la agregamos a las sugerencias
-            // para poder ordenarle un traslado. Si no, ofrecemos gestionarla.
+            // Disponible: sugerencia de traslado; si no, ofrecer gestionarla
             var accion = '';
             if (ambulancia.estado === 'Disponible') {
                 sugerencias += '<option value="Coche ' + ambulancia.numero_coche + '"></option>';
@@ -101,13 +80,13 @@ function renderizarTabla() {
                 accion = '<a href="GestionT.html" class="btn-mandar">Gestionar</a>';
             }
 
-            // Si tiene un traslado asignado, mostramos el detalle del viaje
+            // Muestra el detalle del viaje si tiene traslado asignado
             var detalleViaje = '';
             if (ambulancia.id_traslado) {
                 detalleViaje = armarDetalleViaje(ambulancia);
             }
 
-            // Armamos la fila completa de la tabla
+            // Arma la fila de la tabla
             filas += '<tr>' +
                 '<td>' + ambulancia.numero_coche + detalleViaje + '</td>' +
                 '<td><span class="estado ' + claseEstado + '">' + ambulancia.estado + '</span></td>' +
@@ -115,33 +94,31 @@ function renderizarTabla() {
                 '</tr>';
         }
 
-        // Colocamos las filas dentro de la tabla
+        // Inserta las filas en la tabla
         cuerpoTabla.innerHTML = filas;
 
-        // Y llenamos el autocompletado con las ambulancias disponibles
+        // Llena el autocompletado con las ambulancias disponibles
         if (listaCoches) {
             listaCoches.innerHTML = sugerencias;
         }
     });
 }
 
-// ----------------------------------------------------------------------------
-// PARTE C: ENVIAR EL TRASLADO
-// ----------------------------------------------------------------------------
+// Enviar el traslado
 
 var formularioTraslado = document.getElementById('form-ordenar-traslado');
 
-// Solo configuramos el envío si el formulario existe en la página
+// Configura el envío solo si el formulario existe
 if (formularioTraslado) {
     formularioTraslado.addEventListener('submit', function (evento) {
 
-        // Evitamos que la página se recargue al enviar el formulario
+        // Evita que la página se recargue al enviar
         evento.preventDefault();
 
-        // Tomamos todos los datos del formulario
+        // Toma los datos del formulario
         var datos = new FormData(formularioTraslado);
 
-        // Se los enviamos al servidor como POST
+        // Envía los datos al servidor
         fetch('../php/trazabilidad.php', {
             method: 'POST',
             body: datos
@@ -150,7 +127,7 @@ if (formularioTraslado) {
             return respuesta.json();
         })
         .then(function (resultado) {
-            // Si el servidor respondió ok, avisamos y refrescamos la tabla
+            // Si el servidor respondió ok, avisa y refresca la tabla
             if (resultado.ok) {
                 alert('Traslado ordenado correctamente.');
                 formularioTraslado.reset();
@@ -165,23 +142,20 @@ if (formularioTraslado) {
     });
 }
 
-// ----------------------------------------------------------------------------
-// PARTE D: AUTOCOMPLETAR LAS HORAS
-// ----------------------------------------------------------------------------
+// Autocompletar las horas
 
-// Coloca la fecha y hora actuales en un campo de tipo datetime-local.
-// Recibe el id del campo que se quiere completar.
+// Pone la fecha y hora actuales en un campo
 function autocompletarHora(idCampo) {
     var campo = document.getElementById(idCampo);
 
-    // Si el campo no existe en la página, no hacemos nada
+    // Si el campo no existe, no se hace nada
     if (!campo) {
         return;
     }
 
     var ahora = new Date();
 
-    // El campo datetime-local necesita este formato: 2026-09-15T10:30
+    // Formato que necesita el campo datetime-local: 2026-09-15T10:30
     var anio = ahora.getFullYear();
     var mes = ('0' + (ahora.getMonth() + 1)).slice(-2);
     var dia = ('0' + ahora.getDate()).slice(-2);
@@ -197,11 +171,8 @@ function autocompletarHoras() {
     autocompletarHora('input-hora-llegada');
 }
 
-// ----------------------------------------------------------------------------
-// AL ABRIR LA PÁGINA
-// ----------------------------------------------------------------------------
+// Al abrir la página
 
-// El script se carga al final del HTML, así que el documento ya está listo:
-// dibujamos la tabla y completamos las horas.
+// Dibuja la tabla y completa las horas al cargar
 renderizarTabla();
 autocompletarHoras();

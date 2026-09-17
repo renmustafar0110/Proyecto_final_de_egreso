@@ -7,7 +7,7 @@ function obtenerDocumentos() {
             return respuesta.json();
         })
         .catch(function () {
-            // Si hay un error se devuelve una lista vacía
+            // Devuelve lista vacía si hay error
             return [];
         });
 }
@@ -52,12 +52,12 @@ function llenarCategoria(idCuerpo, idAviso, claveCategoria, documentos) {
 
     var filas = '';
 
-    // Se recorren todos los documentos buscando los de esa categoría
+    // Recorre los documentos buscando los de esa categoría
     for (var i = 0; i < documentos.length; i++) {
         var documento = documentos[i];
         var tipo = documento.tipo_documento;
 
-        // Si no tiene categoría se toma como "informacion_general"
+        // Sin categoría se toma como "informacion_general"
         if (tipo == null || tipo == '') {
             tipo = 'informacion_general';
         }
@@ -67,10 +67,10 @@ function llenarCategoria(idCuerpo, idAviso, claveCategoria, documentos) {
         }
     }
 
-    // Se colocan las filas dentro de la tabla
+    // Coloca las filas en la tabla
     cuerpoTabla.innerHTML = filas;
 
-    // Se muestra el aviso solo si no hay documentos en la categoría
+    // Muestra el aviso solo si no hay documentos
     if (aviso != null) {
         if (filas == '') {
             aviso.style.display = 'block';

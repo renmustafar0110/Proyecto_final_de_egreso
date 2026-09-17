@@ -1,11 +1,11 @@
-/* ---------- Reset de estilos del navegador ---------- */
+/* Reset de estilos */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* ---------- Estilos del cuerpo de la página ---------- */
+/* Cuerpo de la página */
 body {
     font-family: Arial, Helvetica, sans-serif;
     background-color: #f0f4f8;
@@ -16,7 +16,7 @@ body {
     flex-direction: column;
 }
 
-/* ---------- Encabezado ---------- */
+/* Encabezado */
 header {
     background-color: #1e3a5f;
     color: #ffffff;
@@ -49,7 +49,7 @@ header h1 {
     white-space: nowrap;
 }
 
-/* ---------- Botón del menú lateral ---------- */
+/* Botón del menú lateral */
 .menu-btn {
     width: 42px;
     height: 42px;
@@ -74,7 +74,7 @@ header h1 {
     border-radius: 2px;
 }
 
-/* ---------- Panel del menú lateral ---------- */
+/* Panel del menú lateral */
 .menu-panel {
     position: fixed;
     top: 0;
@@ -127,7 +127,7 @@ header h1 {
     background-color: #2a4d7a;
 }
 
-/* ---------- Contenido principal ---------- */
+/* Contenido principal */
 main {
     flex: 1;
     overflow-y: auto;
@@ -140,7 +140,7 @@ main {
     padding: 16px;
 }
 
-/* ---------- Pie de página ---------- */
+/* Pie de página */
 footer {
     background-color: #1e3a5f;
     color: #ffffff;
@@ -159,7 +159,7 @@ footer {
     font-size: 14px;
 }
 
-/* ---------- Panel de la página ---------- */
+/* Panel de la página */
 .panel {
     background-color: #ffffff;
     border: 1px solid #d0dbe8;
@@ -187,7 +187,7 @@ footer {
     margin-bottom: 16px;
 }
 
-/* ---------- Carpetas / Categorías ---------- */
+/* Carpetas y categorías */
 .carpeta {
     margin-bottom: 12px;
     border: 1px solid #d0dbe8;
@@ -225,7 +225,7 @@ footer {
     display: block;
 }
 
-/* ---------- Tabla de documentos ---------- */
+/* Tabla de documentos */
 .doc-table {
     width: 100%;
     border-collapse: collapse;

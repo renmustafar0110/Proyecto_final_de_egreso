@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <!-- Metadatos y título de la página -->
+    <!-- Metadatos -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carga de Documentos</title>
-    <!-- Hoja de estilos de la página -->
+    <!-- Estilos -->
     <link rel="stylesheet" href="../css/cargaDoc.css">
 </head>
 <body>
-    <!-- Encabezado con el logo, el título, el reloj y el botón del menú -->
+    <!-- Encabezado -->
     <header>
         <img src="../img/logo_del_proyecto.jpeg" alt="Logo" class="header-logo">
         <h1>Hospital de Clínicas</h1>
@@ -21,7 +21,7 @@
         </button>
     </header>
 
-    <!-- Panel lateral del menú -->
+    <!-- Menú lateral -->
     <div class="menu-panel" id="menu-panel">
         <button class="menu-cerrar" id="menu-cerrar" aria-label="Cerrar">X</button>
         <a href="cargaDoc.html" class="menu-opcion">Cargar Documento</a>
@@ -31,18 +31,18 @@
         <a href="index.html" class="menu-opcion">Volver al inicio</a>
     </div>
 
-    <!-- Contenido principal: formulario de carga de documento -->
+    <!-- Contenido principal -->
     <main>
         <div class="panel form-panel">
             <h2>Cargar Documento</h2>
             <form action="" method="post" enctype="multipart/form-data" novalidate>
-                <!-- Campo para elegir el archivo -->
+                <!-- Archivo -->
                 <div class="form-field">
                     <label for="archivo">Archivo (PDF u otro formato estándar):</label>
                     <input type="file" id="archivo" name="archivo" accept=".pdf,.doc,.docx,.odt,.txt">
                 </div>
 
-                <!-- Campo para elegir el título del documento -->
+                <!-- Título del documento -->
                 <div class="form-field">
                     <label for="titulo">Título del documento:</label>
                     <select id="titulo" name="nombre">
@@ -64,7 +64,7 @@
                     </select>
                 </div>
 
-                <!-- Campo para elegir la categoría -->
+                <!-- Categoría -->
                 <div class="form-field">
                     <label for="categoria">Categoría:</label>
                     <select id="categoria" name="categoria">
@@ -77,7 +77,7 @@
                     </select>
                 </div>
 
-                <!-- Botón para enviar el formulario -->
+                <!-- Botón de envío -->
                 <div class="form-field">
                     <input type="submit" value="Cargar Documento" id="carga_Documento">
                 </div>
@@ -85,13 +85,13 @@
         </div>
     </main>
 
-    <!-- Pie de página con la fecha -->
+    <!-- Pie de página -->
     <footer>
         <p>&copy; Hospital de Clínicas</p>
         <span class="footer-fecha" id="fechaPie"></span>
     </footer>
 
-    <!-- Scripts de control de acceso, carga, menú y reloj -->
+    <!-- Scripts -->
     <script src="../js/auth.js"></script>
     <script src="../js/cargaDoc.js?v=6"></script>
     <script src="../js/menu.js"></script>

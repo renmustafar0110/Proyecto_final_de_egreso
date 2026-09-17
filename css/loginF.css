@@ -1,11 +1,11 @@
-/* ---------- Reset de estilos del navegador ---------- */
+/* Reset de estilos */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* ---------- Estilos del cuerpo de la página ---------- */
+/* Cuerpo de la página */
 body {
     font-family: Arial, Helvetica, sans-serif;
     background-color: #f0f4f8;
@@ -15,7 +15,7 @@ body {
     flex-direction: column;
 }
 
-/* ---------- Encabezado ---------- */
+/* Encabezado */
 header {
     background-color: #1e3a5f;
     color: #ffffff;
@@ -46,7 +46,7 @@ header h1 {
     white-space: nowrap;
 }
 
-/* ---------- Contenido principal ---------- */
+/* Contenido principal */
 main {
     flex: 1;
     display: flex;
@@ -57,7 +57,7 @@ main {
     padding: 32px;
 }
 
-/* ---------- Pie de página ---------- */
+/* Pie de página */
 footer {
     background-color: #1e3a5f;
     color: #ffffff;
@@ -76,7 +76,7 @@ footer {
     font-size: 14px;
 }
 
-/* ---------- Panel de la página ---------- */
+/* Panel de la página */
 .panel {
     background-color: #ffffff;
     border: 1px solid #d0dbe8;
@@ -97,7 +97,7 @@ footer {
     color: #1e3a5f;
 }
 
-/* ---------- Campos del formulario ---------- */
+/* Campos del formulario */
 .form-field {
     margin-bottom: 16px;
 }
@@ -155,7 +155,7 @@ footer {
     background-color: #2a4d7a;
 }
 
-/* ---------- Enlace para volver al inicio ---------- */
+/* Enlace para volver al inicio */
 .back-link {
     margin-top: 20px;
     text-align: center;

@@ -1,6 +1,4 @@
-// Reloj del encabezado y fecha del pie de página
 
-// Actualiza el reloj con la hora de Montevideo
 function actualizarReloj() {
     var ahora = new Date();
     var opciones = {
@@ -13,7 +11,6 @@ function actualizarReloj() {
     document.getElementById('reloj').textContent = texto;
 }
 
-// Actualiza la fecha del pie de página
 function actualizarFechaPie() {
     var ahora = new Date();
     var opciones = {
@@ -29,11 +26,8 @@ function actualizarFechaPie() {
     }
 }
 
-// Muestra el reloj apenas carga la página
 actualizarReloj();
 
-// El reloj se actualiza cada segundo
 setInterval(actualizarReloj, 1000);
 
-// Muestra la fecha del pie de página
 actualizarFechaPie();

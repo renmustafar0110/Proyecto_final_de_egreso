@@ -1,18 +1,14 @@
-// Lógica de la página de Documentos Cargados
 
-// Consulta la lista de documentos al servidor
 function obtenerDocumentos() {
     return fetch('../php/listarDocumentos.php')
         .then(function (respuesta) {
             return respuesta.json();
         })
         .catch(function () {
-            // Devuelve lista vacía si hay error
             return [];
         });
 }
 
-// Convierte la fecha de formato aaaa-mm-dd a dd/mm/aaaa
 function formatearFecha(valor) {
     if (valor == null || valor == '') {
         return '—';
@@ -27,7 +23,6 @@ function formatearFecha(valor) {
     return partes[2] + '/' + partes[1] + '/' + partes[0];
 }
 
-// Arma la fila de la tabla con los datos de un documento
 function crearFila(documento) {
     var ruta = '../php/' + documento.archivo;
 
@@ -41,7 +36,6 @@ function crearFila(documento) {
     return fila;
 }
 
-// Llena una categoría con los documentos que le corresponden
 function llenarCategoria(idCuerpo, idAviso, claveCategoria, documentos) {
     var cuerpoTabla = document.getElementById(idCuerpo);
     var aviso = document.getElementById(idAviso);
@@ -52,12 +46,10 @@ function llenarCategoria(idCuerpo, idAviso, claveCategoria, documentos) {
 
     var filas = '';
 
-    // Recorre los documentos buscando los de esa categoría
     for (var i = 0; i < documentos.length; i++) {
         var documento = documentos[i];
         var tipo = documento.tipo_documento;
 
-        // Sin categoría se toma como "informacion_general"
         if (tipo == null || tipo == '') {
             tipo = 'informacion_general';
         }
@@ -67,10 +59,8 @@ function llenarCategoria(idCuerpo, idAviso, claveCategoria, documentos) {
         }
     }
 
-    // Coloca las filas en la tabla
     cuerpoTabla.innerHTML = filas;
 
-    // Muestra el aviso solo si no hay documentos
     if (aviso != null) {
         if (filas == '') {
             aviso.style.display = 'block';
@@ -80,7 +70,6 @@ function llenarCategoria(idCuerpo, idAviso, claveCategoria, documentos) {
     }
 }
 
-// Muestra todos los documentos en sus categorías
 function renderizarTabla() {
     obtenerDocumentos().then(function (documentos) {
         if (documentos == null) {
@@ -95,7 +84,6 @@ function renderizarTabla() {
     });
 }
 
-// Al cargar la página se muestran los documentos
 window.onload = function () {
     renderizarTabla();
 };

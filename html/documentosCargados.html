@@ -140,6 +140,41 @@
         </div>
     </main>
 
+    <div class="modal" id="edit-modal">
+        <div class="modal-panel">
+            <h3>Editar Documento</h3>
+            <form id="edit-form" novalidate>
+                <input type="hidden" id="edit-id">
+
+                <div class="modal-field">
+                    <label for="edit-titulo">Título del documento:</label>
+                    <input type="text" id="edit-titulo" autocomplete="off">
+                </div>
+
+                <div class="modal-field">
+                    <label for="edit-categoria">Categoría:</label>
+                    <select id="edit-categoria">
+                        <option value="informacion_general">Información general</option>
+                        <option value="indicaciones">Indicaciones médicas</option>
+                        <option value="estudios">Estudios imagenológicos</option>
+                        <option value="enfermeria">Enfermería</option>
+                        <option value="encuestas">Encuestas</option>
+                    </select>
+                </div>
+
+                <div class="modal-field">
+                    <label for="edit-fecha">Fecha de publicación:</label>
+                    <input type="date" id="edit-fecha">
+                </div>
+
+                <div class="modal-acciones">
+                    <button type="button" id="edit-cancelar" class="btn-modal-secundario">Cancelar</button>
+                    <button type="submit" class="btn-modal-primario">Guardar cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <footer>
         <p>&copy; Hospital de Clínicas</p>
         <span class="footer-fecha" id="fechaPie"></span>
@@ -148,6 +183,6 @@
     <script src="../js/auth.js"></script>
     <script src="../js/menu.js"></script>
     <script src="../js/fechaYhora.js"></script>
-    <script src="../js/documentosCargados.js?v=4"></script>
+    <script src="../js/documentosCargados.js?v=5"></script>
 </body>
 </html>

@@ -83,7 +83,8 @@ footer {
 .menu {
     list-style: none;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     gap: 16px;
 }
 
@@ -94,8 +95,17 @@ footer {
     color: #ffffff;
     background-color: #1e3a5f;
     border-radius: 25px;
+    text-align: center;
 }
 
 .menu a:hover {
     background-color: #2a4d7a;
+}
+
+.menu a.menu-admin {
+    background-color: #2a4d7a;
+}
+
+.menu a.menu-admin:hover {
+    background-color: #3a6699;
 }

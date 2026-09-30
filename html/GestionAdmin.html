@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión Administrativa</title>
+    <link rel="stylesheet" href="../css/GestionAdmin.css">
+</head>
+<body>
+    <header>
+        <img src="../img/logo_del_proyecto.jpeg" alt="Logo" class="header-logo">
+        <h1>Hospital de Clínicas</h1>
+        <div class="reloj" id="reloj"></div>
+        <button class="menu-btn" id="menu-btn" aria-label="Menú">
+            <span class="menu-linea"></span>
+            <span class="menu-linea"></span>
+            <span class="menu-linea"></span>
+        </button>
+    </header>
+
+    <div class="menu-panel" id="menu-panel">
+        <button class="menu-cerrar" id="menu-cerrar" aria-label="Cerrar">X</button>
+        <a href="index.html" class="menu-opcion">Volver al inicio</a>
+    </div>
+
+    <main>
+        <div class="contenedores">
+            <div class="panel form-panel">
+                <h2>Añadir Funcionario</h2>
+                <form action="" method="post" novalidate id="form_funcionario">
+                    <div class="form-field">
+                        <label for="cedula_funcionario">Cédula:</label>
+                        <input type="text" id="cedula_funcionario" name="cedula_funcionario">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="nombre_funcionario">Nombre:</label>
+                        <input type="text" id="nombre_funcionario" name="nombre_funcionario">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="apellido_funcionario">Apellido:</label>
+                        <input type="text" id="apellido_funcionario" name="apellido_funcionario">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="cargo_funcionario">Cargo:</label>
+                        <input type="text" id="cargo_funcionario" name="cargo_funcionario">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="password_funcionario">Contraseña:</label>
+                        <input type="password" id="password_funcionario" name="password_funcionario">
+                    </div>
+
+                    <div class="form-field">
+                        <input type="submit" value="Registrar Funcionario">
+                    </div>
+                </form>
+            </div>
+
+            <div class="panel form-panel">
+                <h2>Añadir Paciente</h2>
+                <form action="" method="post" novalidate id="form_paciente">
+                    <div class="form-field">
+                        <label for="cedula_paciente">Cédula:</label>
+                        <input type="text" id="cedula_paciente" name="cedula_paciente">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="nombre_paciente">Nombre:</label>
+                        <input type="text" id="nombre_paciente" name="nombre_paciente">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="apellido_paciente">Apellido:</label>
+                        <input type="text" id="apellido_paciente" name="apellido_paciente">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="fecha_nac">Fecha de nacimiento:</label>
+                        <input type="date" id="fecha_nac" name="fecha_nac">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="telefono">Teléfono:</label>
+                        <input type="text" id="telefono" name="telefono">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="direccion">Dirección:</label>
+                        <input type="text" id="direccion" name="direccion">
+                    </div>
+
+                    <div class="form-field">
+                        <input type="submit" value="Registrar Paciente">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; Hospital de Clínicas</p>
+        <span class="footer-fecha" id="fechaPie"></span>
+    </footer>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/menu.js"></script>
+    <script src="../js/fechaYhora.js"></script>
+    <script src="../js/GestionAdmin.js"></script>
+</body>
+</html>

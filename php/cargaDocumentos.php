@@ -2,6 +2,14 @@
 
 require_once 'conexion.php';
 
+$tamanoMaximo = 10 * 1024 * 1024; // 10 MB
+
+if (!isset($_FILES['archivo'])) {
+    echo "No se seleccionó ningún archivo";
+    $conexion->close();
+    exit;
+}
+
 $archivo = $_FILES['archivo'];
 $nombre = $_POST['nombre'];
 
@@ -26,7 +34,23 @@ if (!is_dir($carpetaDestino)) {
 }
 
 if ($archivo['error'] !== 0) {
-    echo "Error al subir el archivo (código " . $archivo['error'] . ")";
+    if ($archivo['error'] === UPLOAD_ERR_INI_SIZE || $archivo['error'] === UPLOAD_ERR_FORM_SIZE) {
+        echo "El archivo supera el límite permitido de 10 MB";
+    } else {
+        echo "Error al subir el archivo (código " . $archivo['error'] . ")";
+    }
+    $conexion->close();
+    exit;
+}
+
+if ($archivo['size'] > $tamanoMaximo) {
+    echo "El archivo supera el límite permitido de 10 MB";
+    $conexion->close();
+    exit;
+}
+
+if (!is_uploaded_file($archivo['tmp_name']) || filesize($archivo['tmp_name']) !== $archivo['size']) {
+    echo "El archivo llegó incompleto al servidor, intente de nuevo";
     $conexion->close();
     exit;
 }

@@ -21,17 +21,8 @@ if (isset($_POST['tipo_documento'])) {
 }
 
 $fecha = date('Y-m-d');
-if (isset($_POST['fecha_publicacion'])) {
-    if ($_POST['fecha_publicacion'] != '') {
-        $fecha = $_POST['fecha_publicacion'];
-    }
-}
 
 $carpetaDestino = __DIR__ . '/Documento/';
-
-if (!is_dir($carpetaDestino)) {
-    mkdir($carpetaDestino, 0777, true);
-}
 
 if ($archivo['error'] !== 0) {
     if ($archivo['error'] === UPLOAD_ERR_INI_SIZE || $archivo['error'] === UPLOAD_ERR_FORM_SIZE) {
@@ -53,6 +44,10 @@ if (!is_uploaded_file($archivo['tmp_name']) || filesize($archivo['tmp_name']) !=
     echo "El archivo llegó incompleto al servidor, intente de nuevo";
     $conexion->close();
     exit;
+}
+
+if (!is_dir($carpetaDestino)) {
+    mkdir($carpetaDestino, 0777, true);
 }
 
 $nombreArchivo = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '_', $archivo['name']);

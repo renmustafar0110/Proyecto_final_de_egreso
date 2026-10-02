@@ -180,12 +180,6 @@ footer {
     gap: 10px;
     padding: 10px 16px;
     background-color: #e8f0fa;
-    cursor: pointer;
-    user-select: none;
-}
-
-.carpeta-header:hover {
-    background-color: #d8e4f4;
 }
 
 .carpeta-header h3 {
@@ -197,7 +191,6 @@ footer {
 .carpeta-contenido {
     padding: 10px 12px;
     background-color: #ffffff;
-    display: block;
 }
 
 .doc-table {

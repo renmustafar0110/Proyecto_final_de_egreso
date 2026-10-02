@@ -177,9 +177,7 @@ footer {
     color: #1e3a5f;
 }
 
-.form-field input,
-.form-field select,
-.form-field textarea {
+.form-field input {
     width: 100%;
     padding: 5px 8px;
     border: 1px solid #b8c8dc;
@@ -188,7 +186,6 @@ footer {
     font-family: inherit;
     background-color: #ffffff;
     color: #1e3a5f;
-    resize: vertical;
 }
 
 .form-field input[type="submit"] {

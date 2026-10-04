@@ -65,7 +65,7 @@ function renderizarTabla() {
             if (ambulancia.estado === 'Disponible') {
                 sugerencias += '<option value="Coche ' + ambulancia.numero_coche + '"></option>';
             } else {
-                accion = '<a href="GestionT.html" class="btn-mandar">Gestionar</a>';
+                accion = '<a href="gestion_Traslados.html" class="btn-mandar">Gestionar</a>';
             }
 
             var detalleViaje = '';

@@ -20,7 +20,7 @@ formulario.addEventListener('submit', function (evento) {
 
     if (cedula === '12345678' && password === 'proyecto123') {
         sessionStorage.setItem('sesion', cedula);
-        window.location.href = 'GestionAdmin.html';
+        window.location.href = 'gestion_Administrativa.html';
     } else {
         alert('Cédula o contraseña incorrecta.');
         campoCedula.focus();

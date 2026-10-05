@@ -6,7 +6,7 @@ require_once 'conexion.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
-    $sql = "SELECT a.matricula, a.numero_coche, a.id_traslado,
+    $sql = "SELECT a.numero_coche, a.id_traslado,
                    t.origen, t.destino, t.hora_salida, t.hora_llegada, t.estado
             FROM Ambulancias a
             LEFT JOIN Traslados t ON t.id_traslado = a.id_traslado
@@ -28,14 +28,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     }
 
     echo json_encode($ambulancias);
-    $conexion->close();
-    exit;
+exit;
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['ok' => false, 'error' => 'Método no permitido']);
-    $conexion->close();
-    exit;
+exit;
 }
 
 
@@ -50,8 +48,7 @@ $numero = trim($numero);
 
 if ($numero === '' || $origen === '' || $destino === '' || $horaSalida === '') {
     echo json_encode(['ok' => false, 'error' => 'Debe completar todos los campos obligatorios']);
-    $conexion->close();
-    exit;
+exit;
 }
 
 $numero      = $conexion->real_escape_string($numero);
@@ -79,14 +76,12 @@ $ambulancia = $resultado ? $resultado->fetch_assoc() : null;
 
 if (!$ambulancia) {
     echo json_encode(['ok' => false, 'error' => 'No existe una ambulancia con ese número de coche']);
-    $conexion->close();
-    exit;
+exit;
 }
 
 if ($ambulancia['estado'] !== null && $ambulancia['estado'] !== 'Finalizado') {
     echo json_encode(['ok' => false, 'error' => 'La ambulancia ya tiene un traslado en curso']);
-    $conexion->close();
-    exit;
+exit;
 }
 
 $sql = "INSERT INTO Traslados (hora_salida, hora_llegada, origen, destino, estado)
@@ -94,8 +89,7 @@ $sql = "INSERT INTO Traslados (hora_salida, hora_llegada, origen, destino, estad
 
 if (!$conexion->query($sql)) {
     echo json_encode(['ok' => false, 'error' => $conexion->error]);
-    $conexion->close();
-    exit;
+exit;
 }
 
 $idTraslado = $conexion->insert_id;
@@ -105,9 +99,7 @@ $actualizar = "UPDATE Ambulancias SET id_traslado = $idTraslado
 
 if (!$conexion->query($actualizar)) {
     echo json_encode(['ok' => false, 'error' => $conexion->error]);
-    $conexion->close();
-    exit;
+exit;
 }
 
 echo json_encode(['ok' => true, 'id_traslado' => $idTraslado]);
-$conexion->close();

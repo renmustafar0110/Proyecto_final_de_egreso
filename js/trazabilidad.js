@@ -1,4 +1,3 @@
-
 function obtenerAmbulancias() {
     return fetch('../php/trazabilidad.php', { method: 'GET' })
         .then(function (respuesta) {

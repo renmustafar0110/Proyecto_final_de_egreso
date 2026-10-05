@@ -1,4 +1,3 @@
-
 function actualizarReloj() {
     var ahora = new Date();
     var opciones = {

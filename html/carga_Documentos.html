@@ -30,7 +30,7 @@
     <main>
         <div class="panel form-panel">
             <h2>Cargar Documento</h2>
-            <form action="" method="post" enctype="multipart/form-data" novalidate>
+            <form action="" method="post" enctype="multipart/form-data">
                 <div class="form-field">
                     <label for="archivo">Archivo (PDF u otro formato estándar, máximo 10 MB):</label>
                     <input type="file" id="archivo" name="archivo" accept=".pdf,.doc,.docx,.odt,.txt">
@@ -38,7 +38,7 @@
 
                 <div class="form-field">
                     <label for="titulo">Título del documento:</label>
-                    <select id="titulo" name="nombre">
+                    <select id="titulo" name="titulo_del_documento">
                         <option value="" disabled selected>Seleccione un documento...</option>
                         <option value="interrupcion_embarazo">Indicaciones de interrupción voluntaria del embarazo</option>
                         <option value="prostatectomia">Prostatectomía radical (indicaciones e información para el paciente)</option>
@@ -59,7 +59,7 @@
 
                 <div class="form-field">
                     <label for="categoria">Categoría:</label>
-                    <select id="categoria" name="categoria">
+                    <select id="categoria" name="categoria_del_documento">
                         <option value="" disabled selected>Seleccione una categoría...</option>
                         <option value="informacion_general">Información general</option>
                         <option value="indicaciones">Indicaciones médicas</option>
@@ -67,6 +67,26 @@
                         <option value="enfermeria">Enfermería</option>
                         <option value="encuestas">Encuestas</option>
                     </select>
+                </div>
+
+                <div class="form-field">
+                    <label for="fecha">Fecha de publicación:</label>
+                    <input type="date" id="fecha" name="fecha" autocomplete="off">
+                </div>
+
+                <div class="form-field">
+                    <label for="nom_doc">Nombre del doctor que lo sube:</label>
+                    <input type="text" id="nom_doc" name="nom_doc" maxlength="200" placeholder="Nombre y apellido del doctor">
+                </div>
+
+                <div class="form-field">
+                    <label for="nom_pac">Nombre del paciente al que corresponde:</label>
+                    <input type="text" id="nom_pac" name="nom_pac" maxlength="100" placeholder="Nombre y apellido del paciente">
+                </div>
+
+                <div class="form-field">
+                    <label for="cedula">Cédula del paciente:</label>
+                    <input type="text" id="cedula" name="cedula" maxlength="20" inputmode="numeric" placeholder="Cédula del paciente">
                 </div>
 
                 <div class="form-field">
@@ -82,7 +102,7 @@
     </footer>
 
     <script src="../js/auth.js"></script>
-    <script src="../js/carga_Documentos.js?v=7"></script>
+    <script src="../js/carga_Documentos.js?v=9"></script>
     <script src="../js/menu.js"></script>
     <script src="../js/fecha_Y_hora.js"></script>
 </body>

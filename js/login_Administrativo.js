@@ -1,4 +1,3 @@
-
 var campoCedula = document.getElementById('cedula');
 var campoPassword = document.getElementById('password');
 var formulario = document.querySelector('form');

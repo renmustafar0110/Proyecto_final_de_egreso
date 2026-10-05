@@ -1,4 +1,3 @@
-
 var selectElemento = document.getElementById('elemento');
 var campoDescripcion = document.getElementById('campo_descripcion');
 

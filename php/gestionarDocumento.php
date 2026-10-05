@@ -3,11 +3,8 @@
 require_once 'conexion.php';
 
 function responder($ok, $mensaje) {
-    global $conexion;
-
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode(array('ok' => $ok, 'mensaje' => $mensaje));
-    $conexion->close();
     exit;
 }
 
@@ -27,11 +24,11 @@ if ($id <= 0) {
 }
 
 if ($accion === 'editar') {
-    $nombre = isset($_POST['nombre']) ? trim($_POST['nombre']) : '';
-    $categoria = isset($_POST['tipo_documento']) ? trim($_POST['tipo_documento']) : '';
+    $titulo = isset($_POST['titulo_del_documento']) ? trim($_POST['titulo_del_documento']) : '';
+    $categoria = isset($_POST['categoria_del_documento']) ? trim($_POST['categoria_del_documento']) : '';
     $fecha = isset($_POST['fecha_publicacion']) ? trim($_POST['fecha_publicacion']) : '';
 
-    if ($nombre === '') {
+    if ($titulo === '') {
         responder(false, 'El título no puede quedar vacío');
     }
 
@@ -48,8 +45,8 @@ if ($accion === 'editar') {
         responder(false, 'La fecha no es válida');
     }
 
-    $sentencia = $conexion->prepare("UPDATE Documentos SET nombre = ?, tipo_documento = ?, fecha_publicacion = ? WHERE id_documento = ?");
-    $sentencia->bind_param('sssi', $nombre, $categoria, $fecha, $id);
+    $sentencia = $conexion->prepare("UPDATE Documentos SET titulo_del_documento = ?, categoria_del_documento = ?, fecha_publicacion = ? WHERE id_documento = ?");
+    $sentencia->bind_param('sssi', $titulo, $categoria, $fecha, $id);
 
     if ($sentencia->execute()) {
         responder(true, 'Documento actualizado');

@@ -1,4 +1,3 @@
-
 var listaDocumentos = [];
 
 var modal = document.getElementById('edit-modal');
@@ -62,7 +61,7 @@ function crearFila(documento) {
     var claseEstado = activo ? 'estado-activo' : 'estado-inactivo';
 
     var fila = '<tr>';
-    fila = fila + '<td>' + escapar(documento.nombre) + '</td>';
+    fila = fila + '<td>' + escapar(documento.titulo_del_documento) + '</td>';
     fila = fila + '<td>' + formatearFecha(documento.fecha_publicacion) + '</td>';
     fila = fila + '<td><span class="' + claseEstado + '">' + textoEstado + '</span></td>';
     fila = fila + '<td class="acciones">';
@@ -89,7 +88,7 @@ function llenarCategoria(idCuerpo, idAviso, claveCategoria, documentos) {
     for (var i = 0; i < documentos.length; i++) {
         var documento = documentos[i];
 
-        if (normalizarCategoria(documento.tipo_documento) === claveCategoria) {
+        if (normalizarCategoria(documento.categoria_del_documento) === claveCategoria) {
             filas = filas + crearFila(documento);
         }
     }
@@ -163,8 +162,8 @@ function abrirEdicion(id) {
     }
 
     campoId.value = documento.id_documento;
-    campoTitulo.value = documento.nombre;
-    campoCategoria.value = normalizarCategoria(documento.tipo_documento);
+    campoTitulo.value = documento.titulo_del_documento;
+    campoCategoria.value = normalizarCategoria(documento.categoria_del_documento);
     campoFecha.value = (documento.fecha_publicacion == null) ? '' : documento.fecha_publicacion;
 
     modal.classList.add('abierto');
@@ -219,7 +218,7 @@ document.addEventListener('click', function (evento) {
             return;
         }
 
-        if (!confirm('¿Eliminar "' + documento.nombre + '"? Esta acción no se puede deshacer y se borrará el archivo del servidor.')) {
+        if (!confirm('¿Eliminar "' + documento.titulo_del_documento + '"? Esta acción no se puede deshacer y se borrará el archivo del servidor.')) {
             return;
         }
 
@@ -255,8 +254,8 @@ formEditar.onsubmit = function (evento) {
     var datos = new FormData();
     datos.append('accion', 'editar');
     datos.append('id_documento', campoId.value);
-    datos.append('nombre', campoTitulo.value.trim());
-    datos.append('tipo_documento', campoCategoria.value);
+    datos.append('titulo_del_documento', campoTitulo.value.trim());
+    datos.append('categoria_del_documento', campoCategoria.value);
     datos.append('fecha_publicacion', campoFecha.value);
 
     enviarGestion(datos, function () {

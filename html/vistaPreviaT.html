@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vista Previa de Ambulancias</title>
     <link rel="stylesheet" href="../css/vistaPreviaT.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""/>
+
 </head>
 <body>
     <header>
@@ -30,9 +34,7 @@
     <main>
         <div class="panel map-panel">
             <h2>Mapa de Ambulancias</h2>
-            <div class="mapa" id="mapa">
-                <p class="mapa-placeholder">Aquí se mostrará el mapa con la ubicación de las ambulancias</p>
-            </div>
+            <div class="mapa" id="mapa"></div>
         </div>
     </main>
 
@@ -44,5 +46,10 @@
     <script src="../js/auth.js"></script>
     <script src="../js/menu.js"></script>
     <script src="../js/fecha_Y_hora.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+    <script src="../js/vistaPreviaT.js"></script>
+
 </body>
 </html>

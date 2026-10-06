@@ -17,7 +17,7 @@ formulario.addEventListener('submit', function (evento) {
     var cedula = campoCedula.value.trim();
     var password = campoPassword.value.trim();
 
-    if (cedula === '12345678' && password === 'proyecto123') {
+    if (cedula == '12345678' && password == 'proyecto123') {
         sessionStorage.setItem('sesion', cedula);
         window.location.href = 'eleccion_Funcionario.html';
     } else {

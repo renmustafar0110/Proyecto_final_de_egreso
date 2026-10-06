@@ -259,14 +259,3 @@ footer {
     color: #6b7f99;
     line-height: 1.4;
 }
-
-.mapa-aviso {
-    background-color: #ffffff;
-    border: 1px solid #b8c8dc;
-    border-radius: 4px;
-    padding: 6px 10px;
-    font-size: 12px;
-    color: #6b7f99;
-    font-family: Arial, Helvetica, sans-serif;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-}

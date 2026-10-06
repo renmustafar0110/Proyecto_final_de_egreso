@@ -16,101 +16,128 @@ $categoriasValidas = array(
     'encuestas'
 );
 
-$accion = isset($_POST['accion']) ? $_POST['accion'] : '';
-$id = isset($_POST['id_documento']) ? intval($_POST['id_documento']) : 0;
+$accion = '';
+if (isset($_POST['accion'])) {
+    $accion = $_POST['accion'];
+}
+
+$id = 0;
+if (isset($_POST['id_documento'])) {
+    $id = intval($_POST['id_documento']);
+}
 
 if ($id <= 0) {
     responder(false, 'Documento no válido');
 }
 
-if ($accion === 'editar') {
-    $titulo = isset($_POST['titulo_del_documento']) ? trim($_POST['titulo_del_documento']) : '';
-    $categoria = isset($_POST['categoria_del_documento']) ? trim($_POST['categoria_del_documento']) : '';
-    $fecha = isset($_POST['fecha_publicacion']) ? trim($_POST['fecha_publicacion']) : '';
+if ($accion == 'editar') {
 
-    if ($titulo === '') {
+    $titulo = '';
+    if (isset($_POST['titulo_del_documento'])) {
+        $titulo = trim($_POST['titulo_del_documento']);
+    }
+
+    $categoria = '';
+    if (isset($_POST['categoria_del_documento'])) {
+        $categoria = trim($_POST['categoria_del_documento']);
+    }
+
+    $fecha = '';
+    if (isset($_POST['fecha_publicacion'])) {
+        $fecha = trim($_POST['fecha_publicacion']);
+    }
+
+    if ($titulo == '') {
         responder(false, 'El título no puede quedar vacío');
     }
 
-    if (!in_array($categoria, $categoriasValidas, true)) {
+    if (!in_array($categoria, $categoriasValidas)) {
         responder(false, 'Categoría no válida');
     }
 
-    $partes = explode('-', $fecha);
-    $dia = isset($partes[2]) ? intval($partes[2]) : 0;
-    $mes = isset($partes[1]) ? intval($partes[1]) : 0;
-    $anio = isset($partes[0]) ? intval($partes[0]) : 0;
+    $partesFecha = explode('-', $fecha);
 
-    if (count($partes) !== 3 || !checkdate($mes, $dia, $anio)) {
+    if (count($partesFecha) != 3) {
         responder(false, 'La fecha no es válida');
     }
 
-    $sentencia = $conexion->prepare("UPDATE Documentos SET titulo_del_documento = ?, categoria_del_documento = ?, fecha_publicacion = ? WHERE id_documento = ?");
-    $sentencia->bind_param('sssi', $titulo, $categoria, $fecha, $id);
+    $anio = intval($partesFecha[0]);
+    $mes = intval($partesFecha[1]);
+    $dia = intval($partesFecha[2]);
 
-    if ($sentencia->execute()) {
+    if (!checkdate($mes, $dia, $anio)) {
+        responder(false, 'La fecha no es válida');
+    }
+
+    $tituloEscapado = $conexion->real_escape_string($titulo);
+    $categoriaEscapada = $conexion->real_escape_string($categoria);
+    $fechaEscapada = $conexion->real_escape_string($fecha);
+
+    $sql = "UPDATE Documentos
+            SET titulo_del_documento = '$tituloEscapado',
+                categoria_del_documento = '$categoriaEscapada',
+                fecha_publicacion = '$fechaEscapada'
+            WHERE id_documento = $id";
+
+    if ($conexion->query($sql)) {
         responder(true, 'Documento actualizado');
+    } else {
+        responder(false, 'Falló la actualización: ' . $conexion->error);
     }
-
-    responder(false, 'Falló la actualización: ' . $sentencia->error);
 }
 
-if ($accion === 'estado') {
-    $estado = (isset($_POST['estado']) && intval($_POST['estado']) === 1) ? 1 : 0;
+if ($accion == 'estado') {
 
-    $sentencia = $conexion->prepare("UPDATE Documentos SET estado = ? WHERE id_documento = ?");
-    $sentencia->bind_param('ii', $estado, $id);
-
-    if ($sentencia->execute() && $sentencia->affected_rows > 0) {
-        responder(true, $estado === 1 ? 'Documento activado' : 'Documento desactivado');
+    $estado = 0;
+    if (isset($_POST['estado']) && intval($_POST['estado']) == 1) {
+        $estado = 1;
     }
 
-    if ($sentencia->error !== '') {
-        responder(false, 'Falló el cambio de estado: ' . $sentencia->error);
+    $sql = "UPDATE Documentos SET estado = $estado WHERE id_documento = $id";
+
+    if ($conexion->query($sql)) {
+        if ($conexion->affected_rows > 0) {
+            if ($estado == 1) {
+                responder(true, 'Documento activado');
+            } else {
+                responder(true, 'Documento desactivado');
+            }
+        }
+
+        $comprobacion = $conexion->query("SELECT id_documento FROM Documentos WHERE id_documento = $id");
+        if ($comprobacion && $comprobacion->num_rows > 0) {
+            responder(true, 'El documento ya estaba en ese estado');
+        }
+
+        responder(false, 'El documento no existe');
+    } else {
+        responder(false, 'Falló el cambio de estado: ' . $conexion->error);
     }
-
-    $sentencia->close();
-
-    $comprobacion = $conexion->prepare("SELECT id_documento FROM Documentos WHERE id_documento = ?");
-    $comprobacion->bind_param('i', $id);
-    $comprobacion->execute();
-    $comprobacion->store_result();
-
-    if ($comprobacion->num_rows > 0) {
-        responder(true, 'El documento ya estaba en ese estado');
-    }
-
-    responder(false, 'El documento no existe');
 }
 
-if ($accion === 'eliminar') {
-    $sentencia = $conexion->prepare("SELECT archivo FROM Documentos WHERE id_documento = ?");
-    $sentencia->bind_param('i', $id);
-    $sentencia->execute();
-    $sentencia->store_result();
-    $sentencia->bind_result($rutaArchivo);
+if ($accion == 'eliminar') {
 
-    if ($sentencia->num_rows === 0) {
+    $sql = "SELECT archivo FROM Documentos WHERE id_documento = $id";
+    $resultado = $conexion->query($sql);
+
+    if (!$resultado || $resultado->num_rows == 0) {
         responder(false, 'El documento no existe');
     }
 
-    $sentencia->fetch();
-    $sentencia->close();
+    $fila = $resultado->fetch_assoc();
+    $rutaArchivo = $fila['archivo'];
 
-    $sentencia = $conexion->prepare("DELETE FROM Documentos WHERE id_documento = ?");
-    $sentencia->bind_param('i', $id);
+    $sql = "DELETE FROM Documentos WHERE id_documento = $id";
 
-    if (!$sentencia->execute()) {
-        responder(false, 'Falló la eliminación: ' . $sentencia->error);
+    if (!$conexion->query($sql)) {
+        responder(false, 'Falló la eliminación: ' . $conexion->error);
     }
 
-    $sentencia->close();
+    $nombreArchivo = basename($rutaArchivo);
+    $rutaCompleta = __DIR__ . '/Documento/' . $nombreArchivo;
 
-    $carpetaReal = realpath(__DIR__ . '/Documento');
-    $archivoReal = realpath(__DIR__ . '/Documento/' . basename($rutaArchivo));
-
-    if ($carpetaReal !== false && $archivoReal !== false && is_file($archivoReal) && strpos($archivoReal, $carpetaReal) === 0) {
-        unlink($archivoReal);
+    if (is_file($rutaCompleta)) {
+        unlink($rutaCompleta);
     }
 
     responder(true, 'Documento eliminado');

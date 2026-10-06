@@ -7,68 +7,67 @@ var cedula = document.getElementById('cedula');
 var fecha = document.getElementById('fecha');
 var boton = document.getElementById('carga_Documento');
 
-var TAMANO_MAXIMO = 10 * 1024 * 1024; // 10 MB
+var tamanoMaximo = 10 * 1024 * 1024; // 10 MB
 
-boton.onclick = function (e) {
-    e.preventDefault();
+function validarFormulario() {
 
-    if (archivo.files.length === 0) {
+    if (archivo.files.length == 0) {
         alert('Seleccione un archivo primero.');
-        return;
+        return false;
     }
 
-    if (archivo.files[0].size > TAMANO_MAXIMO) {
+    if (archivo.files[0].size > tamanoMaximo) {
         alert('El archivo supera el límite permitido de 10 MB.');
-        return;
+        return false;
     }
 
-    var doctor = nomDoc.value.trim();
-    var paciente = nomPac.value.trim();
-    var ced = cedula.value.trim();
-    var fechaDoc = fecha.value;
-
-    if (fechaDoc === '') {
+    if (fecha.value == '') {
         alert('Seleccione la fecha de publicación.');
         fecha.focus();
-        return;
+        return false;
     }
 
-    if (doctor === '') {
+    if (nomDoc.value.trim() == '') {
         alert('Ingrese el nombre del doctor que sube el documento.');
         nomDoc.focus();
-        return;
+        return false;
     }
 
-    if (paciente === '') {
+    if (nomPac.value.trim() == '') {
         alert('Ingrese el nombre del paciente al que corresponde el documento.');
         nomPac.focus();
-        return;
+        return false;
     }
 
-    if (ced === '') {
+    if (cedula.value.trim() == '') {
         alert('Ingrese la cédula del paciente.');
         cedula.focus();
-        return;
+        return false;
     }
 
-    if (!/^\d+$/.test(ced)) {
+    if (!/^\d+$/.test(cedula.value.trim())) {
         alert('La cédula del paciente solo puede contener números.');
         cedula.focus();
-        return;
+        return false;
     }
 
-    var doc = new FormData();
-    doc.append('titulo_del_documento', nombre.value);
-    doc.append('archivo', archivo.files[0]);
-    doc.append('categoria_del_documento', categoria.value);
-    doc.append('nom_doc', doctor);
-    doc.append('nom_pac', paciente);
-    doc.append('cedula', ced);
-    doc.append('fecha', fechaDoc);
+    return true;
+}
+
+function enviarDocumento() {
+
+    var datos = new FormData();
+    datos.append('titulo_del_documento', nombre.value);
+    datos.append('archivo', archivo.files[0]);
+    datos.append('categoria_del_documento', categoria.value);
+    datos.append('nom_doc', nomDoc.value.trim());
+    datos.append('nom_pac', nomPac.value.trim());
+    datos.append('cedula', cedula.value.trim());
+    datos.append('fecha', fecha.value);
 
     fetch('../php/cargaDocumentos.php', {
         method: 'POST',
-        body: doc
+        body: datos
     })
     .then(function (respuesta) {
         return respuesta.text();
@@ -76,4 +75,14 @@ boton.onclick = function (e) {
     .then(function (mensaje) {
         alert(mensaje.trim());
     });
+}
+
+boton.onclick = function (e) {
+    e.preventDefault();
+
+    if (validarFormulario() == false) {
+        return;
+    }
+
+    enviarDocumento();
 };

@@ -9,30 +9,54 @@ function obtenerAmbulancias() {
 }
 
 function obtenerClaseDeEstado(estado) {
-    switch (estado) {
-        case 'Disponible':
-            return 'disponible';
-        case 'Reservado':
-            return 'reservado';
-        case 'En curso':
-            return 'en_curso';
-        case 'En ruta':
-            return 'en_ruta';
-        case 'Finalizado':
-            return 'finalizado';
-        default:
-            return '';
+    if (estado == 'Disponible') {
+        return 'disponible';
     }
+
+    if (estado == 'Reservado') {
+        return 'reservado';
+    }
+
+    if (estado == 'En curso') {
+        return 'en_curso';
+    }
+
+    if (estado == 'En ruta') {
+        return 'en_ruta';
+    }
+
+    if (estado == 'Finalizado') {
+        return 'finalizado';
+    }
+
+    return '';
 }
 
 function armarDetalleViaje(ambulancia) {
-    var ruta = (ambulancia.origen || '—') + ' → ' + (ambulancia.destino || '—');
+    var origen = '—';
+    var destino = '—';
 
-    var textoSalida = ambulancia.hora_salida ? 'Salida: ' + ambulancia.hora_salida : 'Salida: --';
-    var textoLlegada = ambulancia.hora_llegada ? 'Llegada: ' + ambulancia.hora_llegada : 'Llegada: --';
+    if (ambulancia.origen) {
+        origen = ambulancia.origen;
+    }
+
+    if (ambulancia.destino) {
+        destino = ambulancia.destino;
+    }
+
+    var textoSalida = 'Salida: --';
+    var textoLlegada = 'Llegada: --';
+
+    if (ambulancia.hora_salida) {
+        textoSalida = 'Salida: ' + ambulancia.hora_salida;
+    }
+
+    if (ambulancia.hora_llegada) {
+        textoLlegada = 'Llegada: ' + ambulancia.hora_llegada;
+    }
 
     return '<span class="detalle-reserva">' +
-        ruta + '<br>' +
+        origen + ' → ' + destino + '<br>' +
         textoSalida + ' · ' + textoLlegada +
         '</span>';
 }
@@ -41,28 +65,26 @@ function renderizarTabla() {
     var cuerpoTabla = document.getElementById('tabla-vehiculos');
     var listaCoches = document.getElementById('lista-coches');
 
-    if (!cuerpoTabla) {
+    if (cuerpoTabla == null) {
         return;
     }
 
     obtenerAmbulancias().then(function (ambulancias) {
-        if (!Array.isArray(ambulancias) || ambulancias.length === 0) {
+        if (ambulancias.length == 0) {
             cuerpoTabla.innerHTML = '<tr><td colspan="3">No hay ambulancias cargadas.</td></tr>';
             return;
         }
 
         var filas = '';
-
         var sugerencias = '';
 
         for (var i = 0; i < ambulancias.length; i++) {
             var ambulancia = ambulancias[i];
-
             var claseEstado = obtenerClaseDeEstado(ambulancia.estado);
-
             var accion = '';
-            if (ambulancia.estado === 'Disponible') {
-                sugerencias += '<option value="Coche ' + ambulancia.numero_coche + '"></option>';
+
+            if (ambulancia.estado == 'Disponible') {
+                sugerencias = sugerencias + '<option value="Coche ' + ambulancia.numero_coche + '"></option>';
             } else {
                 accion = '<a href="gestion_Traslados.html" class="btn-mandar">Gestionar</a>';
             }
@@ -72,7 +94,7 @@ function renderizarTabla() {
                 detalleViaje = armarDetalleViaje(ambulancia);
             }
 
-            filas += '<tr>' +
+            filas = filas + '<tr>' +
                 '<td>' + ambulancia.numero_coche + detalleViaje + '</td>' +
                 '<td><span class="estado ' + claseEstado + '">' + ambulancia.estado + '</span></td>' +
                 '<td>' + accion + '</td>' +
@@ -86,7 +108,6 @@ function renderizarTabla() {
         }
     });
 }
-
 
 var formularioTraslado = document.getElementById('form-ordenar-traslado');
 
@@ -105,12 +126,16 @@ if (formularioTraslado) {
             return respuesta.json();
         })
         .then(function (resultado) {
-            if (resultado.ok) {
+            if (resultado.ok == true) {
                 alert('Traslado ordenado correctamente.');
                 formularioTraslado.reset();
                 renderizarTabla();
             } else {
-                alert('Error: ' + (resultado.error || 'No se pudo ordenar el traslado.'));
+                var mensajeError = resultado.error;
+                if (mensajeError == null) {
+                    mensajeError = 'No se pudo ordenar el traslado.';
+                }
+                alert('Error: ' + mensajeError);
             }
         })
         .catch(function () {
@@ -119,11 +144,10 @@ if (formularioTraslado) {
     });
 }
 
-
 function autocompletarHora(idCampo) {
     var campo = document.getElementById(idCampo);
 
-    if (!campo) {
+    if (campo == null) {
         return;
     }
 
@@ -142,7 +166,6 @@ function autocompletarHoras() {
     autocompletarHora('input-hora-salida');
     autocompletarHora('input-hora-llegada');
 }
-
 
 renderizarTabla();
 autocompletarHoras();

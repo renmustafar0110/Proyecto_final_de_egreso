@@ -1,37 +1,3 @@
-function obtenerAmbulancias() {
-    return fetch('../php/trazabilidad.php', { method: 'GET' })
-        .then(function (respuesta) {
-            return respuesta.json();
-        })
-        .catch(function () {
-            return [];
-        });
-}
-
-function obtenerClaseDeEstado(estado) {
-    if (estado == 'Disponible') {
-        return 'disponible';
-    }
-
-    if (estado == 'Reservado') {
-        return 'reservado';
-    }
-
-    if (estado == 'En curso') {
-        return 'en_curso';
-    }
-
-    if (estado == 'En ruta') {
-        return 'en_ruta';
-    }
-
-    if (estado == 'Finalizado') {
-        return 'finalizado';
-    }
-
-    return '';
-}
-
 function armarDetalleViaje(ambulancia) {
     var origen = '—';
     var destino = '—';

@@ -6,30 +6,6 @@ var COORDENADAS_HOSPITAL = {
 var mapa = null;
 var capaAmbulancias = null;
 
-function obtenerClaseDeEstado(estado) {
-    if (estado == 'Disponible') {
-        return 'disponible';
-    }
-
-    if (estado == 'Reservado') {
-        return 'reservado';
-    }
-
-    if (estado == 'En curso') {
-        return 'en_curso';
-    }
-
-    if (estado == 'En ruta') {
-        return 'en_ruta';
-    }
-
-    if (estado == 'Finalizado') {
-        return 'finalizado';
-    }
-
-    return 'disponible';
-}
-
 function calcularPosicion(indice) {
     var filas = Math.floor(indice / 3);
     var columna = indice % 3;
@@ -150,16 +126,6 @@ function ajustarVista(cantidad) {
     }
 
     mapa.fitBounds(capaAmbulancias.getBounds().pad(0.35), { maxZoom: 16 });
-}
-
-function obtenerAmbulancias() {
-    return fetch('../php/trazabilidad.php', { method: 'GET' })
-        .then(function (respuesta) {
-            return respuesta.json();
-        })
-        .catch(function () {
-            return [];
-        });
 }
 
 function iniciarMapa() {

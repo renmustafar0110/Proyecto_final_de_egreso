@@ -2,89 +2,63 @@
 
 require_once 'conexion.php';
 
-$tamanoMaximo = 10 * 1024 * 1024; // 10 MB
+function responder($ok, $mensaje, $extra = array()) {
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(array_merge(array('ok' => $ok, 'mensaje' => $mensaje), $extra));
+    exit;
+}
+
+function campoPost($clave) {
+    if (isset($_POST[$clave])) {
+        return trim($_POST[$clave]);
+    }
+    return '';
+}
 
 if (!isset($_FILES['archivo'])) {
-    echo "No se seleccionó ningún archivo";
-    exit;
+    responder(false, 'No se seleccionó ningún archivo');
 }
 
 $archivo = $_FILES['archivo'];
 
-$titulo = '';
-if (isset($_POST['titulo_del_documento'])) {
-    $titulo = trim($_POST['titulo_del_documento']);
-}
-
-$nomDoc = '';
-if (isset($_POST['nom_doc'])) {
-    $nomDoc = trim($_POST['nom_doc']);
-}
-
-$nomPac = '';
-if (isset($_POST['nom_pac'])) {
-    $nomPac = trim($_POST['nom_pac']);
-}
-
-$cedula = '';
-if (isset($_POST['cedula'])) {
-    $cedula = trim($_POST['cedula']);
-}
-
-$fecha = '';
-if (isset($_POST['fecha'])) {
-    $fecha = trim($_POST['fecha']);
-}
+$titulo = campoPost('titulo_del_documento');
+$nomDoc = campoPost('nom_doc');
+$nomPac = campoPost('nom_pac');
+$cedula = campoPost('cedula');
+$fecha = campoPost('fecha');
 
 if ($titulo == '') {
-    echo "Seleccione el titulo del documento";
-    exit;
+    responder(false, 'Seleccione el titulo del documento');
 }
 
 if ($fecha == '') {
-    echo "Seleccione la fecha de publicación";
-    exit;
+    responder(false, 'Seleccione la fecha de publicación');
 }
 
 $partesFecha = explode('-', $fecha);
 
-if (count($partesFecha) != 3) {
-    echo "La fecha de publicación no es valida";
-    exit;
-}
-
-$anio = $partesFecha[0];
-$mes = $partesFecha[1];
-$dia = $partesFecha[2];
-
-if (!ctype_digit($anio) || !ctype_digit($mes) || !ctype_digit($dia)) {
-    echo "La fecha de publicación no es valida";
-    exit;
-}
-
-if (!checkdate(intval($mes), intval($dia), intval($anio))) {
-    echo "La fecha de publicación no es valida";
-    exit;
+if (count($partesFecha) != 3
+    || !ctype_digit($partesFecha[0])
+    || !ctype_digit($partesFecha[1])
+    || !ctype_digit($partesFecha[2])
+    || !checkdate(intval($partesFecha[1]), intval($partesFecha[2]), intval($partesFecha[0]))) {
+    responder(false, 'La fecha de publicación no es valida');
 }
 
 if ($nomDoc == '') {
-    echo "Ingrese el nombre del doctor que sube el documento";
-    exit;
+    responder(false, 'Ingrese el nombre del doctor que sube el documento');
 }
 
 if ($nomPac == '') {
-    echo "Ingrese el nombre del paciente al que corresponde el documento";
-    exit;
+    responder(false, 'Ingrese el nombre del paciente al que corresponde el documento');
 }
 
 if ($cedula == '') {
-    echo "Ingrese la cedula del paciente";
-    exit;
+    responder(false, 'Ingrese la cedula del paciente');
 }
 
 if (!ctype_digit($cedula)) {
-    echo "La cedula del paciente solo puede contener numeros";
-    exit;
+    responder(false, 'La cedula del paciente solo puede contener numeros');
 }
 
 $categoria = 'informacion_general';
@@ -92,37 +66,34 @@ if (isset($_POST['categoria_del_documento']) && $_POST['categoria_del_documento'
     $categoria = $_POST['categoria_del_documento'];
 }
 
-$carpetaDestino = __DIR__ . '/Documento/';
+$tamanoMaximo = 10 * 1024 * 1024; // 10 MB
 
 if ($archivo['error'] != 0) {
     if ($archivo['error'] == UPLOAD_ERR_INI_SIZE || $archivo['error'] == UPLOAD_ERR_FORM_SIZE) {
-        echo "El archivo supera el límite permitido de 10 MB";
-    } else {
-        echo "Error al subir el archivo (código " . $archivo['error'] . ")";
+        responder(false, 'El archivo supera el límite permitido de 10 MB');
     }
-    exit;
+    responder(false, 'Error al subir el archivo (código ' . $archivo['error'] . ')');
 }
 
 if ($archivo['size'] > $tamanoMaximo) {
-    echo "El archivo supera el límite permitido de 10 MB";
-    exit;
+    responder(false, 'El archivo supera el límite permitido de 10 MB');
 }
+
+$carpetaDestino = __DIR__ . '/Documento/';
 
 if (!is_dir($carpetaDestino)) {
     mkdir($carpetaDestino, 0777, true);
 }
 
-$nombreOriginal = $archivo['name'];
-$nombreLimpio = preg_replace('/[^a-zA-Z0-9._-]/', '_', $nombreOriginal);
+$nombreLimpio = preg_replace('/[^a-zA-Z0-9._-]/', '_', $archivo['name']);
 $nombreArchivo = time() . '_' . $nombreLimpio;
 $ruta = $carpetaDestino . $nombreArchivo;
 
 if (!move_uploaded_file($archivo['tmp_name'], $ruta)) {
-    echo "No se pudo guardar el archivo en el servidor";
-    exit;
+    responder(false, 'No se pudo guardar el archivo en el servidor');
 }
 
-$rutaBD = "Documento/" . $nombreArchivo;
+$rutaBD = 'Documento/' . $nombreArchivo;
 
 $tituloEscapado = $conexion->real_escape_string($titulo);
 $categoriaEscapada = $conexion->real_escape_string($categoria);
@@ -132,8 +103,8 @@ $nomPacEscapado = $conexion->real_escape_string($nomPac);
 $sql = "INSERT INTO Documentos(nom_doc, nom_pac, cedula, titulo_del_documento, archivo, categoria_del_documento, fecha_publicacion)
         VALUES ('$nomDocEscapado', '$nomPacEscapado', '$cedula', '$tituloEscapado', '$rutaBD', '$categoriaEscapada', '$fecha')";
 
-if ($conexion->query($sql)) {
-    echo "Registro Exitoso";
-} else {
-    echo "Falló el registro: " . $conexion->error;
+if (!$conexion->query($sql)) {
+    responder(false, 'Falló el registro: ' . $conexion->error);
 }
+
+responder(true, 'Registro Exitoso', array('archivo' => $rutaBD));

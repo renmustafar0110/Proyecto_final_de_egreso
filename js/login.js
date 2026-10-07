@@ -2,13 +2,10 @@ var campoCedula = document.getElementById('cedula');
 var campoPassword = document.getElementById('password');
 var formulario = document.querySelector('form');
 var togglePassword = document.getElementById('togglePassword');
+var destino = formulario.getAttribute('data-destino');
 
 togglePassword.addEventListener('change', function () {
-    if (togglePassword.checked) {
-        campoPassword.type = 'text';
-    } else {
-        campoPassword.type = 'password';
-    }
+    campoPassword.type = togglePassword.checked ? 'text' : 'password';
 });
 
 formulario.addEventListener('submit', function (evento) {
@@ -19,7 +16,7 @@ formulario.addEventListener('submit', function (evento) {
 
     if (cedula == '12345678' && password == 'proyecto123') {
         sessionStorage.setItem('sesion', cedula);
-        window.location.href = 'gestion_Administrativa.html';
+        window.location.href = destino;
     } else {
         alert('Cédula o contraseña incorrecta.');
         campoCedula.focus();

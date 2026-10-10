@@ -32,7 +32,20 @@
             <h2>Documentos Cargados</h2>
             <p class="subtitulo">Documentos organizados por categoría</p>
 
-            <div class="carpeta">
+            <div class="filtros">
+                <input type="text" id="buscar-titulo" placeholder="Buscar por título..." autocomplete="off">
+                <select id="filtrar-categoria">
+                    <option value="">Todas las categorías</option>
+                    <option value="informacion_general">Información general</option>
+                    <option value="indicaciones">Indicaciones médicas</option>
+                    <option value="estudios">Estudios imagenológicos</option>
+                    <option value="enfermeria">Enfermería</option>
+                    <option value="encuestas">Encuestas</option>
+                </select>
+            </div>
+            <p class="sin-resultados" id="sin-resultados">No se encontraron documentos con ese criterio.</p>
+
+            <div class="carpeta" data-categoria="informacion_general">
                 <div class="carpeta-header">
                     <h3>Información General</h3>
                 </div>
@@ -46,14 +59,14 @@
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody id="tbody-info-general">
+                        <tbody>
                         </tbody>
                     </table>
-                    <p class="vacía" id="vacía-info-general">No hay documentos en esta categoría.</p>
+                    <p class="vacia">No hay documentos en esta categoría.</p>
                 </div>
             </div>
 
-            <div class="carpeta">
+            <div class="carpeta" data-categoria="indicaciones">
                 <div class="carpeta-header">
                     <h3>Indicaciones Médicas</h3>
                 </div>
@@ -67,14 +80,14 @@
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody id="tbody-indicaciones">
+                        <tbody>
                         </tbody>
                     </table>
-                    <p class="vacía" id="vacía-indicaciones">No hay documentos en esta categoría.</p>
+                    <p class="vacia">No hay documentos en esta categoría.</p>
                 </div>
             </div>
 
-            <div class="carpeta">
+            <div class="carpeta" data-categoria="estudios">
                 <div class="carpeta-header">
                     <h3>Estudios Imagenológicos</h3>
                 </div>
@@ -88,14 +101,14 @@
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody id="tbody-estudios">
+                        <tbody>
                         </tbody>
                     </table>
-                    <p class="vacía" id="vacía-estudios">No hay documentos en esta categoría.</p>
+                    <p class="vacia">No hay documentos en esta categoría.</p>
                 </div>
             </div>
 
-            <div class="carpeta">
+            <div class="carpeta" data-categoria="enfermeria">
                 <div class="carpeta-header">
                     <h3>Enfermería</h3>
                 </div>
@@ -109,14 +122,14 @@
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody id="tbody-enfermeria">
+                        <tbody>
                         </tbody>
                     </table>
-                    <p class="vacía" id="vacía-enfermeria">No hay documentos en esta categoría.</p>
+                    <p class="vacia">No hay documentos en esta categoría.</p>
                 </div>
             </div>
 
-            <div class="carpeta">
+            <div class="carpeta" data-categoria="encuestas">
                 <div class="carpeta-header">
                     <h3>Encuestas</h3>
                 </div>
@@ -130,10 +143,10 @@
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody id="tbody-encuestas">
+                        <tbody>
                         </tbody>
                     </table>
-                    <p class="vacía" id="vacía-encuestas">No hay documentos en esta categoría.</p>
+                    <p class="vacia">No hay documentos en esta categoría.</p>
                 </div>
             </div>
 

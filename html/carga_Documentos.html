@@ -36,6 +36,12 @@
                     <input type="file" id="archivo" name="archivo" accept=".pdf,.doc,.docx,.odt,.txt">
                 </div>
 
+                <div class="form-field" id="preview-contenedor" style="display: none;">
+                    <label>Vista previa:</label>
+                    <div id="preview-documento"></div>
+                    <p id="preview-info"></p>
+                </div>
+
                 <div class="form-field">
                     <label for="titulo">Título del documento:</label>
                     <select id="titulo" name="titulo_del_documento">
@@ -102,6 +108,7 @@
     </footer>
 
     <script src="../js/auth.js"></script>
+    <script src="../js/qrcode.min.js"></script>
     <script src="../js/carga_Documentos.js"></script>
     <script src="../js/menu.js"></script>
     <script src="../js/fecha_Y_hora.js"></script>

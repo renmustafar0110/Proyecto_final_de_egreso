@@ -107,4 +107,7 @@ if (!$conexion->query($sql)) {
     responder(false, 'Falló el registro: ' . $conexion->error);
 }
 
-responder(true, 'Registro Exitoso', array('archivo' => $rutaBD));
+responder(true, 'Registro Exitoso', array(
+    'archivo' => $rutaBD,
+    'id_documento' => $conexion->insert_id
+));

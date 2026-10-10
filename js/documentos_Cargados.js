@@ -7,6 +7,10 @@ var campoTitulo = document.getElementById('edit-titulo');
 var campoCategoria = document.getElementById('edit-categoria');
 var campoFecha = document.getElementById('edit-fecha');
 
+var campoBuscar = document.getElementById('buscar-titulo');
+var selectCategoria = document.getElementById('filtrar-categoria');
+var avisoSinResultados = document.getElementById('sin-resultados');
+
 function obtenerDocumentos() {
     return fetch('../php/listarDocumentos.php')
         .then(function (respuesta) {
@@ -87,33 +91,85 @@ function crearFila(documento) {
     return fila;
 }
 
-function llenarCategoria(idCuerpo, idAviso, claveCategoria, documentos) {
-    var cuerpoTabla = document.getElementById(idCuerpo);
-    var aviso = document.getElementById(idAviso);
+function aplicarFiltros() {
+    var texto = '';
 
-    if (cuerpoTabla == null) {
-        return;
+    if (campoBuscar != null) {
+        texto = campoBuscar.value.trim().toLowerCase();
     }
 
-    var filas = '';
+    var categoriaSeleccionada = '';
 
-    for (var i = 0; i < documentos.length; i++) {
-        var documento = documentos[i];
+    if (selectCategoria != null) {
+        categoriaSeleccionada = selectCategoria.value;
+    }
 
-        if (normalizarCategoria(documento.categoria_del_documento) == claveCategoria) {
+    var carpetas = document.querySelectorAll('.carpeta');
+    var totalVisibles = 0;
+
+    for (var i = 0; i < carpetas.length; i++) {
+        var carpeta = carpetas[i];
+        var clave = carpeta.getAttribute('data-categoria');
+
+        if (categoriaSeleccionada != '' && categoriaSeleccionada != clave) {
+            carpeta.style.display = 'none';
+            continue;
+        }
+
+        var cuerpoTabla = carpeta.querySelector('tbody');
+        var aviso = carpeta.querySelector('.vacia');
+        var filas = '';
+        var coincidencias = 0;
+
+        for (var j = 0; j < listaDocumentos.length; j++) {
+            var documento = listaDocumentos[j];
+
+            if (normalizarCategoria(documento.categoria_del_documento) != clave) {
+                continue;
+            }
+
+            var titulo = '';
+
+            if (documento.titulo_del_documento != null) {
+                titulo = String(documento.titulo_del_documento).toLowerCase();
+            }
+
+            if (texto != '' && titulo.indexOf(texto) == -1) {
+                continue;
+            }
+
             filas = filas + crearFila(documento);
+            coincidencias++;
+        }
+
+        cuerpoTabla.innerHTML = filas;
+
+        if (aviso != null) {
+            if (coincidencias == 0) {
+                aviso.style.display = 'block';
+            } else {
+                aviso.style.display = 'none';
+            }
+        }
+
+        carpeta.style.display = '';
+
+        if (coincidencias > 0) {
+            totalVisibles = totalVisibles + coincidencias;
         }
     }
 
-    cuerpoTabla.innerHTML = filas;
+    if (avisoSinResultados != null) {
+        var hayFiltro = texto != '' || categoriaSeleccionada != '';
 
-    if (aviso != null) {
-        if (filas == '') {
-            aviso.style.display = 'block';
+        if (hayFiltro && totalVisibles == 0) {
+            avisoSinResultados.style.display = 'block';
         } else {
-            aviso.style.display = 'none';
+            avisoSinResultados.style.display = 'none';
         }
     }
+
+    conectarBotones();
 }
 
 function conectarBotones() {
@@ -149,14 +205,16 @@ function renderizarTabla() {
 
         listaDocumentos = documentos;
 
-        llenarCategoria('tbody-info-general', 'vacía-info-general', 'informacion_general', documentos);
-        llenarCategoria('tbody-indicaciones', 'vacía-indicaciones', 'indicaciones', documentos);
-        llenarCategoria('tbody-estudios', 'vacía-estudios', 'estudios', documentos);
-        llenarCategoria('tbody-enfermeria', 'vacía-enfermeria', 'enfermeria', documentos);
-        llenarCategoria('tbody-encuestas', 'vacía-encuestas', 'encuestas', documentos);
-
-        conectarBotones();
+        aplicarFiltros();
     });
+}
+
+if (campoBuscar != null) {
+    campoBuscar.addEventListener('input', aplicarFiltros);
+}
+
+if (selectCategoria != null) {
+    selectCategoria.addEventListener('change', aplicarFiltros);
 }
 
 function buscarDocumento(id) {

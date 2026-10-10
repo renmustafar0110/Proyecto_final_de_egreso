@@ -7,50 +7,20 @@ var cedula = document.getElementById('cedula');
 var fecha = document.getElementById('fecha');
 var boton = document.getElementById('carga_Documento');
 
+var contenedorPreview = document.getElementById('preview-contenedor');
+var cajaPreview = document.getElementById('preview-documento');
+var infoPreview = document.getElementById('preview-info');
+var urlPreview = null;
+
 var tamanoMaximo = 10 * 1024 * 1024; // 10 MB
 
-var FUENTES_QR = [
-    '../js/qrcode.min.js',
-    'https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js'
-];
+function construirUrlDocumento(archivo) {
+    var partes = String(archivo).split('/');
+    var nombreArchivo = partes[partes.length - 1];
 
-var promesaQR = null;
-
-function cargarScript(ruta) {
-    return new Promise(function (resolver, rechazar) {
-        var etiqueta = document.createElement('script');
-        etiqueta.src = ruta;
-        etiqueta.onload = function () {
-            if (typeof QRCode != 'undefined') {
-                resolver();
-            } else {
-                rechazar(new Error('La librería QR no expone QRCode: ' + ruta));
-            }
-        };
-        etiqueta.onerror = function () {
-            rechazar(new Error('No se pudo cargar: ' + ruta));
-        };
-        document.head.appendChild(etiqueta);
-    });
-}
-
-function asegurarLibreriaQR() {
-    if (promesaQR === null) {
-        promesaQR = (function intentar(indice) {
-            if (indice >= FUENTES_QR.length) {
-                return Promise.reject(new Error('No se pudo cargar la librería QR'));
-            }
-            return cargarScript(FUENTES_QR[indice]).catch(function () {
-                return intentar(indice + 1);
-            });
-        })(0);
-    }
-    return promesaQR;
-}
-
-function construirUrlDocumento(rutaBD) {
-    var base = new URL('../php/', window.location.href);
-    return new URL(rutaBD, base).href;
+    var base = new URL('../php/verDocumento.php', window.location.href);
+    base.searchParams.set('archivo', nombreArchivo);
+    return base.href;
 }
 
 function crearModalQR() {
@@ -96,6 +66,12 @@ function generarQR(url) {
     var contenedor = document.getElementById('modal-qr-codigo');
     contenedor.innerHTML = '';
 
+    if (typeof QRCode == 'undefined') {
+        contenedor.innerHTML =
+            '<p class="modal-qr-error">No se pudo generar el QR. Copie la URL del documento.</p>';
+        return;
+    }
+
     new QRCode(contenedor, {
         text: url,
         width: 224,
@@ -109,8 +85,15 @@ function generarQR(url) {
     var descarga = document.getElementById('modal-qr-descargar');
 
     if (lienzo) {
+        var nombreQr = 'qr_documento.png';
+        var archivoQr = new URL(url).searchParams.get('archivo');
+
+        if (archivoQr) {
+            nombreQr = 'qr_' + archivoQr.replace(/\.[^.]+$/, '') + '.png';
+        }
+
         descarga.href = lienzo.toDataURL('image/png');
-        descarga.download = 'qr_' + url.split('/').pop().replace(/[^a-zA-Z0-9._-]/g, '_') + '.png';
+        descarga.download = nombreQr;
         descarga.style.display = '';
     } else {
         descarga.style.display = 'none';
@@ -126,12 +109,7 @@ function mostrarQRExitoso(mensaje, url) {
     document.getElementById('modal-qr-descargar').style.display = 'none';
     document.getElementById('modal-qr').style.display = 'flex';
 
-    asegurarLibreriaQR().then(function () {
-        generarQR(url);
-    }).catch(function () {
-        document.getElementById('modal-qr-codigo').innerHTML =
-            '<p class="modal-qr-error">No se pudo generar el QR. Copie la URL del documento.</p>';
-    });
+    generarQR(url);
 }
 
 function parsearRespuesta(texto) {
@@ -140,6 +118,74 @@ function parsearRespuesta(texto) {
     } catch (error) {
         return null;
     }
+}
+
+function limpiarPreview() {
+    if (urlPreview) {
+        URL.revokeObjectURL(urlPreview);
+        urlPreview = null;
+    }
+
+    if (cajaPreview) {
+        cajaPreview.innerHTML = '';
+    }
+}
+
+function pesoLegible(bytes) {
+    return (bytes / 1024 / 1024).toFixed(2) + ' MB';
+}
+
+function mostrarPreview() {
+    if (contenedorPreview == null || cajaPreview == null) {
+        return;
+    }
+
+    limpiarPreview();
+
+    if (archivo.files.length == 0) {
+        contenedorPreview.style.display = 'none';
+        return;
+    }
+
+    var seleccionado = archivo.files[0];
+    var nombreArchivo = seleccionado.name.toLowerCase();
+
+    contenedorPreview.style.display = 'block';
+    infoPreview.textContent = seleccionado.name + ' · ' + pesoLegible(seleccionado.size);
+
+    if (seleccionado.size > tamanoMaximo) {
+        cajaPreview.innerHTML = '<p class="preview-placeholder">El archivo supera el límite permitido de 10 MB.</p>';
+        return;
+    }
+
+    urlPreview = URL.createObjectURL(seleccionado);
+
+    if (seleccionado.type == 'application/pdf' || nombreArchivo.endsWith('.pdf')) {
+        cajaPreview.innerHTML = '<iframe src="' + urlPreview + '" title="Vista previa del documento"></iframe>';
+        return;
+    }
+
+    if (seleccionado.type.indexOf('image/') == 0) {
+        cajaPreview.innerHTML = '<img src="' + urlPreview + '" alt="Vista previa del documento">';
+        return;
+    }
+
+    if (seleccionado.type == 'text/plain' || nombreArchivo.endsWith('.txt')) {
+        var lector = new FileReader();
+
+        lector.onload = function (evento) {
+            cajaPreview.innerHTML = '<pre class="preview-texto">' +
+                evento.target.result.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</pre>';
+        };
+
+        lector.readAsText(seleccionado);
+        return;
+    }
+
+    cajaPreview.innerHTML = '<div class="preview-placeholder">' +
+        '<div class="icono">&#128196;</div>' +
+        'Este formato no tiene previsualización en el navegador.<br>' +
+        'El archivo se subirá igual al confirmar.</div>';
 }
 
 function validarFormulario() {
@@ -210,6 +256,8 @@ function enviarDocumento() {
 
         if (respuesta && respuesta.ok && respuesta.archivo) {
             boton.form.reset();
+            limpiarPreview();
+            contenedorPreview.style.display = 'none';
             mostrarQRExitoso(respuesta.mensaje || 'Registro Exitoso', construirUrlDocumento(respuesta.archivo));
             return;
         }
@@ -221,6 +269,8 @@ function enviarDocumento() {
     });
 }
 
+archivo.addEventListener('change', mostrarPreview);
+
 boton.onclick = function (e) {
     e.preventDefault();
 
@@ -230,5 +280,3 @@ boton.onclick = function (e) {
 
     enviarDocumento();
 };
-
-asegurarLibreriaQR().catch(function () {});

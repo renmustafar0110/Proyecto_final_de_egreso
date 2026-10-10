@@ -167,6 +167,42 @@ footer {
     margin-bottom: 16px;
 }
 
+.filtros {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.filtros input,
+.filtros select {
+    padding: 6px 10px;
+    border: 1px solid #b8c8dc;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: inherit;
+    color: #1e3a5f;
+    background-color: #ffffff;
+}
+
+.filtros input {
+    flex: 1;
+    min-width: 180px;
+}
+
+.filtros select {
+    min-width: 180px;
+}
+
+.sin-resultados {
+    display: none;
+    font-size: 13px;
+    color: #8899aa;
+    text-align: center;
+    padding: 10px 0;
+    font-style: italic;
+}
+
 .carpeta {
     margin-bottom: 12px;
     border: 1px solid #d0dbe8;
@@ -215,7 +251,7 @@ footer {
     background-color: #f5f8fc;
 }
 
-.vacía {
+.vacia {
     font-size: 13px;
     color: #8899aa;
     text-align: center;

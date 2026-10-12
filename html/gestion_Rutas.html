@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Rutas</title>
+    <link rel="stylesheet" href="../css/gestion_Rutas.css">
+</head>
+<body>
+    <header>
+        <img src="../img/logo_del_proyecto.jpeg" alt="Logo" class="header-logo">
+        <h1>Hospital de Clínicas</h1>
+        <div class="reloj" id="reloj"></div>
+        <button class="menu-btn" id="menu-btn" aria-label="Menú">
+            <span class="menu-linea"></span>
+            <span class="menu-linea"></span>
+            <span class="menu-linea"></span>
+        </button>
+    </header>
+
+    <div class="menu-panel" id="menu-panel">
+        <button class="menu-cerrar" id="menu-cerrar" aria-label="Cerrar">X</button>
+        <a href="trazabilidad.html" class="menu-opcion">Ordenar un Traslado</a>
+        <a href="panel_Traslados.html" class="menu-opcion">Panel de Traslados</a>
+        <a href="gestion_Rutas.html" class="menu-opcion">Gestión de Rutas</a>
+        <a href="historico_Traslados.html" class="menu-opcion">Histórico</a>
+        <a href="vistaPreviaT.html" class="menu-opcion">Vista Previa</a>
+        <a href="index.html" class="menu-opcion">Volver al inicio</a>
+    </div>
+
+    <main>
+        <div class="panel form-panel">
+            <h2 id="titulo-form">Registrar Ruta</h2>
+
+            <form id="form-ruta" autocomplete="off">
+                <input type="hidden" id="id_ruta" name="id_ruta" value="">
+
+                <div class="form-field">
+                    <label for="domicilio">Domicilio o tramo:</label>
+                    <input type="text" id="domicilio" name="domicilio" maxlength="200"
+                           placeholder="Ej: Ruta 5 hacia Canelones" required>
+                </div>
+
+                <div class="form-field">
+                    <label for="km">Kilómetros (opcional):</label>
+                    <input type="number" id="km" name="km" step="0.01" min="0" placeholder="Ej: 45.5">
+                </div>
+
+                <div class="form-field">
+                    <label for="estado_trafico">Estado del tráfico:</label>
+                    <select id="estado_trafico" name="estado_trafico">
+                        <option value="Libre">Libre</option>
+                        <option value="Congestionada">Congestionada</option>
+                        <option value="Cortada">Cortada</option>
+                        <option value="En obras">En obras</option>
+                    </select>
+                </div>
+
+                <div class="form-field">
+                    <label for="id_traslado">Asociar a traslado (opcional):</label>
+                    <select id="id_traslado" name="id_traslado">
+                        <option value="">Disponible (sin traslado)</option>
+                    </select>
+                </div>
+
+                <div class="form-field acciones-form">
+                    <input type="submit" id="btn-guardar" value="Registrar Ruta">
+                    <button type="button" id="btn-cancelar" class="btn-secundario" style="display: none;">Cancelar edición</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="panel tabla-panel">
+            <h2>Rutas registradas</h2>
+            <p class="aviso" id="aviso-lista" style="display: none;">No hay rutas registradas.</p>
+
+            <table class="rutas-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Domicilio / tramo</th>
+                        <th>Km</th>
+                        <th>Tráfico</th>
+                        <th>Traslado asociado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-rutas">
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; Hospital de Clínicas</p>
+        <span class="footer-fecha" id="fechaPie"></span>
+    </footer>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/menu.js"></script>
+    <script src="../js/fecha_Y_hora.js"></script>
+    <script src="../js/gestion_Rutas.js"></script>
+</body>
+</html>

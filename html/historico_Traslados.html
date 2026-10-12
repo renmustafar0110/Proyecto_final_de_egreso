@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histórico de Traslados</title>
+    <link rel="stylesheet" href="../css/historico_Traslados.css">
+</head>
+<body>
+    <header>
+        <img src="../img/logo_del_proyecto.jpeg" alt="Logo" class="header-logo">
+        <h1>Hospital de Clínicas</h1>
+        <div class="reloj" id="reloj"></div>
+        <button class="menu-btn" id="menu-btn" aria-label="Menú">
+            <span class="menu-linea"></span>
+            <span class="menu-linea"></span>
+            <span class="menu-linea"></span>
+        </button>
+    </header>
+
+    <div class="menu-panel" id="menu-panel">
+        <button class="menu-cerrar" id="menu-cerrar" aria-label="Cerrar">X</button>
+        <a href="carga_Documentos.html" class="menu-opcion">Cargar Documento</a>
+        <a href="documentos_Cargados.html" class="menu-opcion">Documentos Cargados</a>
+        <a href="trazabilidad.html" class="menu-opcion">Ordenar un Traslado</a>
+        <a href="panel_Traslados.html" class="menu-opcion">Panel de Traslados</a>
+        <a href="historico_Traslados.html" class="menu-opcion">Histórico</a>
+        <a href="gestion_Rutas.html" class="menu-opcion">Gestión de Rutas</a>
+        <a href="vistaPreviaT.html" class="menu-opcion">Vista Previa</a>
+        <a href="index.html" class="menu-opcion">Volver al inicio</a>
+    </div>
+
+    <main>
+        <div class="panel page-panel">
+            <h2>Histórico de Traslados</h2>
+            <p class="subtitulo">Consulte traslados por fecha, conductor, paciente o ID.</p>
+
+            <div class="filtros">
+                <div class="filtro">
+                    <label for="filtro-id">ID de traslado:</label>
+                    <input type="number" id="filtro-id" min="1" placeholder="Ej: 5">
+                </div>
+
+                <div class="filtro">
+                    <label for="filtro-conductor">Conductor:</label>
+                    <input type="text" id="filtro-conductor" placeholder="Nombre o apellido">
+                </div>
+
+                <div class="filtro">
+                    <label for="filtro-paciente">Paciente / elemento:</label>
+                    <input type="text" id="filtro-paciente" placeholder="Nombre o descripción">
+                </div>
+
+                <div class="filtro">
+                    <label for="filtro-desde">Fecha desde:</label>
+                    <input type="date" id="filtro-desde">
+                </div>
+
+                <div class="filtro">
+                    <label for="filtro-hasta">Fecha hasta:</label>
+                    <input type="date" id="filtro-hasta">
+                </div>
+
+                <div class="filtro">
+                    <label for="filtro-estado">Estado:</label>
+                    <select id="filtro-estado">
+                        <option value="Finalizado" selected>Finalizado</option>
+                        <option value="">Todos</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="En curso">En curso</option>
+                        <option value="En ruta">En ruta</option>
+                        <option value="Llegada a destino">Llegada a destino</option>
+                        <option value="Retorno">Retorno</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="botonera">
+                <button type="button" id="btn-buscar">Buscar</button>
+                <button type="button" id="btn-limpiar" class="btn-secundario">Limpiar filtros</button>
+                <button type="button" id="btn-exportar" class="btn-secundario">Exportar CSV</button>
+            </div>
+
+            <p class="aviso" id="aviso-historico" style="display: none;">No se encontraron traslados con ese criterio.</p>
+
+            <table class="historico-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nº Coche</th>
+                        <th>Conductor</th>
+                        <th>Paciente / elemento</th>
+                        <th>Origen</th>
+                        <th>Destino</th>
+                        <th>Salida</th>
+                        <th>Llegada</th>
+                        <th>Estado</th>
+                        <th>Detalle</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-historico">
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; Hospital de Clínicas</p>
+        <span class="footer-fecha" id="fechaPie"></span>
+    </footer>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/menu.js"></script>
+    <script src="../js/fecha_Y_hora.js"></script>
+    <script src="../js/utilidades.js"></script>
+    <script src="../js/historico_Traslados.js"></script>
+</body>
+</html>

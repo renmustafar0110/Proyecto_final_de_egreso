@@ -67,17 +67,34 @@ function esImagen($extension) {
     return in_array($extension, $imagenes, true);
 }
 
-function servirArchivo($rutaCompleta, $nombre) {
-    $tipo = 'application/octet-stream';
+function tipoDeArchivo($extension) {
+    $tipos = array(
+        'pdf' => 'application/pdf',
+        'txt' => 'text/plain',
+        'html' => 'text/html',
+        'htm' => 'text/html',
+        'jpg' => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'png' => 'image/png',
+        'gif' => 'image/gif',
+        'webp' => 'image/webp',
+        'bmp' => 'image/bmp',
+        'doc' => 'application/msword',
+        'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'xls' => 'application/vnd.ms-excel',
+        'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    );
 
-    if (class_exists('finfo')) {
-        $finfo = new finfo(FILEINFO_MIME_TYPE);
-        $detectado = $finfo->file($rutaCompleta);
-
-        if ($detectado) {
-            $tipo = $detectado;
-        }
+    if (isset($tipos[$extension])) {
+        return $tipos[$extension];
     }
+
+    return 'application/octet-stream';
+}
+
+function servirArchivo($rutaCompleta, $nombre) {
+    $extension = obtenerExtension($nombre);
+    $tipo = tipoDeArchivo($extension);
 
     header('Content-Type: ' . $tipo);
     header('Content-Disposition: inline; filename="' . $nombre . '"');

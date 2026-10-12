@@ -162,6 +162,93 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         exit;
     }
 
+    // US-10: histórico de traslados con filtros
+    if ($accion == 'historico') {
+
+        $id = 0;
+        if (isset($_GET['id']) && $_GET['id'] != '') {
+            $id = intval($_GET['id']);
+        }
+
+        $conductor = '';
+        if (isset($_GET['conductor'])) {
+            $conductor = trim($_GET['conductor']);
+        }
+
+        $paciente = '';
+        if (isset($_GET['paciente'])) {
+            $paciente = trim($_GET['paciente']);
+        }
+
+        $fechaDesde = '';
+        if (isset($_GET['fecha_desde'])) {
+            $fechaDesde = trim($_GET['fecha_desde']);
+        }
+
+        $fechaHasta = '';
+        if (isset($_GET['fecha_hasta'])) {
+            $fechaHasta = trim($_GET['fecha_hasta']);
+        }
+
+        $estado = '';
+        if (isset($_GET['estado'])) {
+            $estado = trim($_GET['estado']);
+        }
+
+        $sql = "SELECT t.id_traslado, t.origen, t.destino, t.hora_salida, t.hora_llegada, t.estado,
+                       t.elemento_tipo, t.elemento_descripcion,
+                       c.nombre AS conductor_nombre, c.apellido AS conductor_apellido,
+                       a.numero_coche
+                FROM Traslados t
+                LEFT JOIN Conductores c ON c.id_conductor = t.id_conductor
+                LEFT JOIN Ambulancias a ON a.id_traslado = t.id_traslado
+                WHERE 1 = 1";
+
+        if ($id > 0) {
+            $sql = $sql . " AND t.id_traslado = $id";
+        }
+
+        if ($conductor != '') {
+            $conductorEscapado = $conexion->real_escape_string($conductor);
+            $sql = $sql . " AND (c.nombre LIKE '%$conductorEscapado%' OR c.apellido LIKE '%$conductorEscapado%')";
+        }
+
+        if ($paciente != '') {
+            $pacienteEscapado = $conexion->real_escape_string($paciente);
+            $sql = $sql . " AND t.elemento_descripcion LIKE '%$pacienteEscapado%'";
+        }
+
+        if ($fechaDesde != '') {
+            $desdeEscapada = $conexion->real_escape_string($fechaDesde);
+            $sql = $sql . " AND DATE(t.hora_salida) >= '$desdeEscapada'";
+        }
+
+        if ($fechaHasta != '') {
+            $hastaEscapada = $conexion->real_escape_string($fechaHasta);
+            $sql = $sql . " AND DATE(t.hora_salida) <= '$hastaEscapada'";
+        }
+
+        if ($estado != '') {
+            $estadoEscapado = $conexion->real_escape_string($estado);
+            $sql = $sql . " AND t.estado = '$estadoEscapado'";
+        }
+
+        $sql = $sql . " ORDER BY t.hora_salida DESC, t.id_traslado DESC";
+
+        $resultado = $conexion->query($sql);
+
+        $traslados = array();
+
+        if ($resultado) {
+            while ($fila = $resultado->fetch_assoc()) {
+                $traslados[] = $fila;
+            }
+        }
+
+        echo json_encode($traslados);
+        exit;
+    }
+
     $sql = "SELECT a.numero_coche, a.id_traslado,
                    t.origen, t.destino, t.hora_salida, t.hora_llegada, t.estado
             FROM Ambulancias a

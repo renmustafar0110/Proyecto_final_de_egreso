@@ -52,7 +52,7 @@ function renderizarTabla() {
             if (ambulancia.estado == 'Disponible') {
                 sugerencias = sugerencias + '<option value="Coche ' + ambulancia.numero_coche + '"></option>';
             } else {
-                accion = '<a href="gestion_Traslados.html" class="btn-mandar">Gestionar</a>';
+                accion = '<a href="gestion_Traslados.html?id=' + encodeURIComponent(ambulancia.id_traslado) + '" class="btn-mandar">Gestionar</a>';
             }
 
             var detalleViaje = '';
@@ -93,7 +93,7 @@ if (formularioTraslado) {
         })
         .then(function (resultado) {
             if (resultado.ok == true) {
-                alert('Traslado ordenado correctamente.');
+                alert('Traslado #' + resultado.id_traslado + ' ordenado correctamente.');
                 formularioTraslado.reset();
                 renderizarTabla();
             } else {
@@ -133,5 +133,71 @@ function autocompletarHoras() {
     autocompletarHora('input-hora-llegada');
 }
 
+function escaparOpcion(valor) {
+    if (valor == null) {
+        return '';
+    }
+
+    return String(valor)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+function armarOpciones(lista, idSelect, campoId, textoInicial, textoVacio) {
+    var select = document.getElementById(idSelect);
+
+    if (select == null) {
+        return;
+    }
+
+    if (!Array.isArray(lista) || lista.length == 0) {
+        select.innerHTML = '<option value="">' + textoVacio + '</option>';
+        return;
+    }
+
+    var html = '<option value="">' + textoInicial + '</option>';
+
+    for (var i = 0; i < lista.length; i++) {
+        var persona = lista[i];
+
+        html = html + '<option value="' + persona[campoId] + '">' +
+            escaparOpcion(persona.nombre) + ' ' + escaparOpcion(persona.apellido) +
+            ' (' + escaparOpcion(persona.cedula) + ')</option>';
+    }
+
+    select.innerHTML = html;
+}
+
+function cargarPersonal() {
+    fetch('../php/trazabilidad.php?accion=conductores')
+        .then(function (respuesta) {
+            return respuesta.json();
+        })
+        .then(function (lista) {
+            armarOpciones(lista, 'input-conductor', 'id_conductor',
+                'Seleccione un conductor...', 'No hay conductores cargados');
+        })
+        .catch(function () {
+            armarOpciones([], 'input-conductor', 'id_conductor',
+                'Seleccione un conductor...', 'No se pudieron cargar los conductores');
+        });
+
+    fetch('../php/trazabilidad.php?accion=acompanantes')
+        .then(function (respuesta) {
+            return respuesta.json();
+        })
+        .then(function (lista) {
+            armarOpciones(lista, 'input-acompanante', 'id_acompanante',
+                'Sin acompañante', 'Sin acompañante');
+        })
+        .catch(function () {
+            armarOpciones([], 'input-acompanante', 'id_acompanante',
+                'Sin acompañante', 'Sin acompañante');
+        });
+}
+
 renderizarTabla();
 autocompletarHoras();
+cargarPersonal();

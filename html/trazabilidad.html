@@ -23,6 +23,7 @@
         <a href="carga_Documentos.html" class="menu-opcion">Cargar Documento</a>
         <a href="documentos_Cargados.html" class="menu-opcion">Documentos Cargados</a>
         <a href="trazabilidad.html" class="menu-opcion">Ordenar un Traslado</a>
+        <a href="panel_Traslados.html" class="menu-opcion">Panel de Traslados</a>
         <a href="vistaPreviaT.html" class="menu-opcion">Vista Previa</a>
         <a href="index.html" class="menu-opcion">Volver al inicio</a>
     </div>
@@ -37,6 +38,35 @@
                     <input type="text" id="input-numero" name="numero_coche" list="lista-coches"
                            placeholder="Ej: Coche 01" autocomplete="off" required>
                     <datalist id="lista-coches"></datalist>
+                </div>
+
+                <div class="form-field">
+                    <label for="input-conductor">Conductor:</label>
+                    <select id="input-conductor" name="id_conductor" required>
+                        <option value="">Cargando conductores...</option>
+                    </select>
+                </div>
+
+                <div class="form-field">
+                    <label for="input-acompanante">Acompañante (opcional):</label>
+                    <select id="input-acompanante" name="id_acompanante">
+                        <option value="">Sin acompañante</option>
+                    </select>
+                </div>
+
+                <div class="form-field">
+                    <label for="input-elemento-tipo">Tipo de elemento:</label>
+                    <select id="input-elemento-tipo" name="elemento_tipo" required>
+                        <option value="paciente_biologico" selected>Paciente biológico</option>
+                        <option value="equipamiento_medico">Equipamiento médico</option>
+                        <option value="otros_insumos">Otros insumos</option>
+                    </select>
+                </div>
+
+                <div class="form-field">
+                    <label for="input-elemento-descripcion">Paciente o elemento a trasladar:</label>
+                    <input type="text" id="input-elemento-descripcion" name="elemento_descripcion"
+                           placeholder="Ej: Juan Pérez / respirador portátil" required>
                 </div>
 
                 <div class="form-field">
@@ -55,7 +85,7 @@
                 </div>
 
                 <div class="form-field">
-                    <label for="input-hora-llegada">Hora de llegada:</label>
+                    <label for="input-hora-llegada">Hora estimada de llegada:</label>
                     <input type="datetime-local" id="input-hora-llegada" name="hora_llegada">
                 </div>
 

@@ -1,0 +1,179 @@
+var cuerpoTabla = document.getElementById('tabla-panel');
+var selectEstado = document.getElementById('filtro-estado');
+var campoFecha = document.getElementById('filtro-fecha');
+var avisoPanel = document.getElementById('aviso-panel');
+var botonLimpiar = document.getElementById('btn-limpiar');
+var botonActualizar = document.getElementById('btn-actualizar');
+
+var SEGUNDOS_REFRESCO = 15000;
+var TEXTO_SIN_RESULTADOS = 'No hay traslados con ese criterio.';
+
+function escapar(valor) {
+    if (valor == null) {
+        return '';
+    }
+
+    var texto = String(valor);
+    texto = texto.replace(/&/g, '&amp;');
+    texto = texto.replace(/</g, '&lt;');
+    texto = texto.replace(/>/g, '&gt;');
+    texto = texto.replace(/"/g, '&quot;');
+
+    return texto;
+}
+
+function formatearFechaHora(valor) {
+    if (valor == null || valor == '') {
+        return '—';
+    }
+
+    var partes = valor.split(' ');
+    var fecha = partes[0];
+    var hora = '';
+
+    if (partes.length > 1) {
+        hora = partes[1].substring(0, 5);
+    }
+
+    var dia = fecha.split('-');
+
+    if (dia.length != 3) {
+        return valor;
+    }
+
+    var texto = dia[2] + '/' + dia[1] + '/' + dia[0];
+
+    if (hora != '') {
+        texto = texto + ' ' + hora;
+    }
+
+    return texto;
+}
+
+function etiquetaElemento(tipo) {
+    if (tipo == 'equipamiento_medico') {
+        return 'Equipamiento';
+    }
+
+    if (tipo == 'otros_insumos') {
+        return 'Insumo';
+    }
+
+    return 'Paciente';
+}
+
+function claseEstado(estado) {
+    if (estado == 'Pendiente') {
+        return 'estado-pendiente';
+    }
+
+    if (estado == 'En curso') {
+        return 'estado-en-curso';
+    }
+
+    if (estado == 'En ruta') {
+        return 'estado-en-ruta';
+    }
+
+    if (estado == 'Llegada a destino') {
+        return 'estado-llegada';
+    }
+
+    if (estado == 'Retorno') {
+        return 'estado-retorno';
+    }
+
+    if (estado == 'Finalizado') {
+        return 'estado-finalizado';
+    }
+
+    return '';
+}
+
+function armarFila(traslado) {
+    var conductor = 'Sin asignar';
+
+    if (traslado.conductor_nombre != null) {
+        conductor = traslado.conductor_nombre + ' ' + traslado.conductor_apellido;
+    }
+
+    var coche = '—';
+    if (traslado.numero_coche != null) {
+        coche = traslado.numero_coche;
+    }
+
+    var elemento = etiquetaElemento(traslado.elemento_tipo) + ': ' + (traslado.elemento_descripcion || '—');
+
+    var clase = 'fila-finalizada';
+
+    if (traslado.estado != 'Finalizado') {
+        clase = 'fila-activa';
+    }
+
+    var fila = '<tr class="' + clase + '">';
+    fila = fila + '<td>#' + escapar(traslado.id_traslado) + '</td>';
+    fila = fila + '<td>' + escapar(coche) + '</td>';
+    fila = fila + '<td>' + escapar(conductor) + '</td>';
+    fila = fila + '<td>' + escapar(elemento) + '</td>';
+    fila = fila + '<td>' + escapar(traslado.destino) + '</td>';
+    fila = fila + '<td>' + formatearFechaHora(traslado.hora_salida) + '</td>';
+    fila = fila + '<td><span class="estado ' + claseEstado(traslado.estado) + '">' + escapar(traslado.estado) + '</span></td>';
+    fila = fila + '<td><a href="gestion_Traslados.html?id=' + encodeURIComponent(traslado.id_traslado) + '" class="btn-gestionar">Gestionar</a></td>';
+    fila = fila + '</tr>';
+
+    return fila;
+}
+
+function cargarPanel() {
+    var parametros = 'accion=panel';
+
+    if (selectEstado.value != '') {
+        parametros = parametros + '&estado=' + encodeURIComponent(selectEstado.value);
+    }
+
+    if (campoFecha.value != '') {
+        parametros = parametros + '&fecha=' + encodeURIComponent(campoFecha.value);
+    }
+
+    fetch('../php/trazabilidad.php?' + parametros)
+        .then(function (respuesta) {
+            return respuesta.json();
+        })
+        .then(function (traslados) {
+            if (!Array.isArray(traslados) || traslados.length == 0) {
+                cuerpoTabla.innerHTML = '';
+                avisoPanel.textContent = TEXTO_SIN_RESULTADOS;
+                avisoPanel.style.display = 'block';
+                return;
+            }
+
+            avisoPanel.style.display = 'none';
+
+            var filas = '';
+
+            for (var i = 0; i < traslados.length; i++) {
+                filas = filas + armarFila(traslados[i]);
+            }
+
+            cuerpoTabla.innerHTML = filas;
+        })
+        .catch(function () {
+            cuerpoTabla.innerHTML = '';
+            avisoPanel.textContent = 'No se pudo conectar con el servidor.';
+            avisoPanel.style.display = 'block';
+        });
+}
+
+selectEstado.addEventListener('change', cargarPanel);
+campoFecha.addEventListener('change', cargarPanel);
+
+botonLimpiar.onclick = function () {
+    selectEstado.value = '';
+    campoFecha.value = '';
+    cargarPanel();
+};
+
+botonActualizar.onclick = cargarPanel;
+
+cargarPanel();
+setInterval(cargarPanel, SEGUNDOS_REFRESCO);

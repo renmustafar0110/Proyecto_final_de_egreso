@@ -8,8 +8,7 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     background-color: #f0f4f8;
     color: #1e3a5f;
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
@@ -75,6 +74,7 @@ header h1 {
     box-shadow: -4px 0 12px rgba(0, 0, 0, 0.2);
     padding: 70px 20px 20px 20px;
     transform: translateX(100%);
+    transition: transform 0.2s ease;
     z-index: 100;
 }
 
@@ -119,8 +119,6 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 16px;
     padding: 16px;
 }
 
@@ -145,12 +143,12 @@ footer {
     background-color: #ffffff;
     border: 1px solid #d0dbe8;
     border-radius: 6px;
-    padding: 16px 24px;
+    padding: 20px 24px;
 }
 
 .form-panel {
     width: 100%;
-    max-width: 480px;
+    max-width: 520px;
 }
 
 .form-panel h2 {
@@ -159,29 +157,105 @@ footer {
     color: #1e3a5f;
 }
 
+.subtitulo {
+    font-size: 15px;
+    margin: 18px 0 8px 0;
+    color: #1e3a5f;
+}
+
+.detalle p {
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+.detalle strong {
+    color: #1e3a5f;
+}
+
+.aviso {
+    background-color: #fff4e5;
+    border: 1px solid #f0c48a;
+    color: #8a5a00;
+    border-radius: 4px;
+    padding: 10px 14px;
+    font-size: 13px;
+}
+
+.aviso-finalizado {
+    background-color: #e8f5e9;
+    border: 1px solid #93c99a;
+    color: #2e7d32;
+    border-radius: 4px;
+    padding: 10px 14px;
+    font-size: 13px;
+}
+
+.historial {
+    list-style: none;
+    border-left: 3px solid #b8c8dc;
+    padding-left: 14px;
+    margin-bottom: 16px;
+}
+
+.historial li {
+    position: relative;
+    padding: 6px 0 6px 4px;
+    font-size: 13px;
+}
+
+.historial li::before {
+    content: '';
+    position: absolute;
+    left: -21px;
+    top: 10px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background-color: #1e3a5f;
+}
+
+.historial-estado {
+    font-weight: bold;
+    margin-right: 8px;
+    color: #1e3a5f;
+}
+
+.historial-fecha {
+    color: #6b7f99;
+}
+
+.historial-vacio {
+    color: #6b7f99;
+}
+
 .form-field {
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 
 .form-field label {
     display: block;
     margin-bottom: 3px;
     font-size: 13px;
+    font-weight: bold;
     color: #1e3a5f;
 }
 
 .form-field input,
-.form-field select,
-.form-field textarea {
+.form-field select {
     width: 100%;
-    padding: 5px 8px;
+    padding: 8px 10px;
     border: 1px solid #b8c8dc;
     border-radius: 4px;
     font-size: 14px;
     font-family: inherit;
     background-color: #ffffff;
     color: #1e3a5f;
-    resize: vertical;
+}
+
+.form-field input:focus,
+.form-field select:focus {
+    outline: none;
+    border-color: #1e3a5f;
 }
 
 .form-field input[type="submit"] {
@@ -190,7 +264,7 @@ footer {
     border: none;
     cursor: pointer;
     font-weight: bold;
-    padding: 8px;
+    padding: 10px;
 }
 
 .form-field input[type="submit"]:hover {

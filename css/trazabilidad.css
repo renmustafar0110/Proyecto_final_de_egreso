@@ -173,7 +173,9 @@ footer {
     color: #1e3a5f;
 }
 
-.form-field input {
+.form-field input,
+.form-field select,
+.form-field textarea {
     width: 100%;
     padding: 8px 10px;
     border: 1px solid #b8c8dc;
@@ -181,9 +183,12 @@ footer {
     font-size: 14px;
     font-family: inherit;
     color: #1e3a5f;
+    background-color: #ffffff;
 }
 
-.form-field input:focus {
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
     outline: none;
     border-color: #1e3a5f;
 }
@@ -231,6 +236,10 @@ footer {
 }
 
 .veh-table .reservado {
+    color: #e65100;
+}
+
+.veh-table .pendiente {
     color: #e65100;
 }
 

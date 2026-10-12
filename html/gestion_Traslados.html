@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Traslados</title>
+    <title>Gestión de Traslado</title>
     <link rel="stylesheet" href="../css/gestion_Traslados.css">
 </head>
 <body>
@@ -20,53 +20,49 @@
 
     <div class="menu-panel" id="menu-panel">
         <button class="menu-cerrar" id="menu-cerrar" aria-label="Cerrar">X</button>
-        <a href="trazabilidad.html" class="menu-opcion">Volver a Trazabilidad</a>
+        <a href="trazabilidad.html" class="menu-opcion">Ordenar un Traslado</a>
+        <a href="panel_Traslados.html" class="menu-opcion">Panel de Traslados</a>
+        <a href="vistaPreviaT.html" class="menu-opcion">Vista Previa</a>
         <a href="index.html" class="menu-opcion">Volver al inicio</a>
     </div>
 
     <main>
         <div class="panel form-panel">
-            <h2>Registro de Solicitud de Traslado</h2>
-            <form>
-                <div class="form-field">
-                    <label for="elemento">Paciente o elemento a trasladar:</label>
-                    <select id="elemento" name="elemento">
-                        <option value="" disabled selected>Seleccione una opción...</option>
-                        <option value="paciente_biologico">Paciente biológico</option>
-                        <option value="equipamiento_medico">Equipamiento médico</option>
-                        <option value="otros_insumos">Otros insumos</option>
-                    </select>
+            <h2 id="titulo-traslado">Actualizar Estado del Traslado</h2>
+            <p class="aviso" id="aviso-detalle" style="display: none;"></p>
+
+            <div id="contenido-traslado" style="display: none;">
+                <div class="detalle">
+                    <p><strong>ID:</strong> <span id="detalle-id"></span></p>
+                    <p><strong>Nº de coche:</strong> <span id="detalle-coche"></span></p>
+                    <p><strong>Conductor:</strong> <span id="detalle-conductor"></span></p>
+                    <p><strong>Paciente / elemento:</strong> <span id="detalle-elemento"></span></p>
+                    <p><strong>Origen:</strong> <span id="detalle-origen"></span></p>
+                    <p><strong>Destino:</strong> <span id="detalle-destino"></span></p>
+                    <p><strong>Hora de salida:</strong> <span id="detalle-salida"></span></p>
+                    <p><strong>Estado actual:</strong> <span id="detalle-estado"></span></p>
                 </div>
 
-                <div class="form-field" id="campo_descripcion" style="display: none;">
-                    <label for="descripcion_elemento">Descripción del elemento:</label>
-                    <textarea id="descripcion_elemento" name="descripcion_elemento" rows="4"></textarea>
-                </div>
+                <h3 class="subtitulo">Historial de estados</h3>
+                <ul class="historial" id="historial-estados"></ul>
 
-                <div class="form-field">
-                    <label for="origen">Punto de origen:</label>
-                    <input type="text" id="origen" name="origen">
-                </div>
+                <form id="form-estado">
+                    <div class="form-field" id="campo-nuevo-estado">
+                        <label for="nuevo-estado">Nuevo estado:</label>
+                        <select id="nuevo-estado" name="estado" required>
+                            <option value="">Seleccione un estado...</option>
+                        </select>
+                    </div>
 
-                <div class="form-field">
-                    <label for="destino">Destino:</label>
-                    <input type="text" id="destino" name="destino">
-                </div>
+                    <div class="form-field">
+                        <input type="submit" id="btn-actualizar-estado" value="Actualizar Estado">
+                    </div>
 
-                <div class="form-field">
-                    <label for="hora_salida">Hora de salida:</label>
-                    <input type="time" id="hora_salida" name="hora_salida">
-                </div>
-
-                <div class="form-field">
-                    <label for="hora_efectiva">Hora de llegada:</label>
-                    <input type="time" id="hora_efectiva" name="hora_efectiva">
-                </div>
-
-                <div class="form-field">
-                    <input type="submit" value="Registrar Traslado">
-                </div>
-            </form>
+                    <p class="aviso-finalizado" id="aviso-finalizado" style="display: none;">
+                        El traslado ya está finalizado y no admite más cambios.
+                    </p>
+                </form>
+            </div>
         </div>
     </main>
 
@@ -76,8 +72,8 @@
     </footer>
 
     <script src="../js/auth.js"></script>
-    <script src="../js/gestion_Traslados.js"></script>
     <script src="../js/menu.js"></script>
     <script src="../js/fecha_Y_hora.js"></script>
+    <script src="../js/gestion_Traslados.js"></script>
 </body>
 </html>

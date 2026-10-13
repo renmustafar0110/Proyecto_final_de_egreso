@@ -1,0 +1,236 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f0f4f8;
+    color: #1e3a5f;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.enc-header {
+    background-color: #1e3a5f;
+    color: #ffffff;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.enc-header .marca {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.categoria-badge {
+    background-color: #ffffff;
+    color: #1e3a5f;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 5px 12px;
+    border-radius: 20px;
+}
+
+.enc-main {
+    flex: 1;
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 20px 16px 34px;
+}
+
+.enc-titulo {
+    font-size: 21px;
+    line-height: 1.3;
+    margin-bottom: 8px;
+    word-wrap: break-word;
+}
+
+.enc-descripcion {
+    font-size: 14px;
+    color: #5a7a9a;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.enc-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.pregunta {
+    background-color: #ffffff;
+    border: 1px solid #d0dbe8;
+    border-radius: 10px;
+    padding: 16px;
+}
+
+.pregunta-texto {
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.opcion {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 6px 4px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.opcion input {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.escala {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.escala-opcion {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.escala-opcion input {
+    width: 22px;
+    height: 22px;
+}
+
+.escala-etiquetas {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #5a7a9a;
+}
+
+textarea {
+    width: 100%;
+    border: 1px solid #c7d5e6;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-family: inherit;
+    font-size: 15px;
+    resize: vertical;
+    color: #1e3a5f;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: #1e3a5f;
+}
+
+.btn-enviar {
+    width: 100%;
+    min-height: 50px;
+    background-color: #1e3a5f;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-enviar:hover {
+    background-color: #16304d;
+}
+
+.tarjeta-exito {
+    background-color: #ffffff;
+    border: 1px solid #d0dbe8;
+    border-radius: 10px;
+    padding: 34px 24px;
+    text-align: center;
+    margin-top: 30px;
+}
+
+.exito-icono {
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background-color: #e3f4e8;
+    color: #2e7d32;
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.tarjeta-exito h1 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.tarjeta-exito p {
+    font-size: 14px;
+    color: #5a7a9a;
+}
+
+.enc-footer {
+    background-color: #ffffff;
+    border-top: 1px solid #d0dbe8;
+    color: #5a7a9a;
+    font-size: 12px;
+    text-align: center;
+    padding: 14px;
+}
+
+.pagina-error {
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.tarjeta-error {
+    background-color: #ffffff;
+    border: 1px solid #d0dbe8;
+    border-radius: 8px;
+    padding: 34px 26px;
+    max-width: 380px;
+    text-align: center;
+}
+
+.error-icono {
+    width: 54px;
+    height: 54px;
+    line-height: 54px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background-color: #f0f4f8;
+    color: #1e3a5f;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.tarjeta-error h1 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.tarjeta-error p {
+    font-size: 14px;
+    color: #5a7a9a;
+}

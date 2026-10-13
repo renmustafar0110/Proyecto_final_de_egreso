@@ -1,0 +1,358 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f0f4f8;
+    color: #1e3a5f;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    background-color: #1e3a5f;
+    color: #ffffff;
+    padding: 10px 32px;
+    display: flex;
+    align-items: center;
+}
+
+header h1 {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.header-logo {
+    height: 28px; width: 28px; border-radius: 50%; object-fit: cover;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+.reloj {
+    margin-left: auto;
+    margin-right: 20px;
+    color: #ffffff;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.menu-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 0;
+}
+
+.menu-linea {
+    display: block;
+    width: 20px;
+    height: 3px;
+    background-color: #000000;
+    border-radius: 2px;
+}
+
+.menu-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 220px;
+    height: 100%;
+    background-color: #ffffff;
+    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.2);
+    padding: 70px 20px 20px 20px;
+    transform: translateX(100%);
+    transition: transform 0.25s ease;
+    z-index: 100;
+    overflow-y: auto;
+}
+
+.menu-panel.abierto {
+    transform: translateX(0);
+}
+
+.menu-cerrar {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #1e3a5f;
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.menu-opcion {
+    display: block;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    background-color: #1e3a5f;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.menu-opcion:hover {
+    background-color: #2a4d7a;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 24px 16px;
+}
+
+.page-panel {
+    width: 100%;
+    max-width: 860px;
+}
+
+.panel {
+    background-color: #ffffff;
+    border: 1px solid #d0dbe8;
+    border-radius: 6px;
+    padding: 20px 24px;
+    height: fit-content;
+}
+
+.panel h2 {
+    font-size: 18px;
+    margin-bottom: 6px;
+    color: #1e3a5f;
+}
+
+.subtitulo {
+    font-size: 13px;
+    color: #5a7a9a;
+    margin-bottom: 16px;
+}
+
+.filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: flex-end;
+    margin-bottom: 18px;
+}
+
+.filtro {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 220px;
+}
+
+.filtro label {
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+.filtro select {
+    padding: 7px 8px;
+    border: 1px solid #b8c8dc;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: inherit;
+    background-color: #ffffff;
+    color: #1e3a5f;
+}
+
+.filtro button {
+    background-color: #1e3a5f;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    padding: 9px 14px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.filtro button:hover {
+    background-color: #2a4d7a;
+}
+
+.aviso {
+    display: none;
+    font-size: 14px;
+    color: #5a7a9a;
+    margin: 10px 0;
+}
+
+.tarjeta-resumen {
+    background-color: #eef3f9;
+    border: 1px solid #d0dbe8;
+    border-radius: 8px;
+    padding: 16px 20px;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    min-width: 180px;
+}
+
+.tarjeta-resumen .numero {
+    font-size: 34px;
+    font-weight: bold;
+    color: #1e3a5f;
+    line-height: 1;
+}
+
+.tarjeta-resumen .etiqueta {
+    font-size: 13px;
+    color: #5a7a9a;
+    margin-top: 6px;
+}
+
+.tarjeta-pregunta {
+    border: 1px solid #d0dbe8;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    background-color: #ffffff;
+}
+
+.pregunta-encabezado {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.pregunta-encabezado h3 {
+    font-size: 15px;
+    line-height: 1.4;
+    color: #1e3a5f;
+}
+
+.tipo-badge {
+    background-color: #eef3f9;
+    color: #5a7a9a;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 12px;
+    white-space: nowrap;
+}
+
+.resultado-cuerpo {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.barras {
+    flex: 1;
+    min-width: 260px;
+}
+
+.barra-fila {
+    display: grid;
+    grid-template-columns: 110px 1fr 92px;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+
+.barra-etiqueta {
+    color: #1e3a5f;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.barra-pista {
+    background-color: #eef3f9;
+    border-radius: 6px;
+    height: 18px;
+    overflow: hidden;
+    display: block;
+}
+
+.barra-relleno {
+    display: block;
+    height: 100%;
+    background-color: #1e3a5f;
+    border-radius: 6px;
+}
+
+.barra-valor {
+    text-align: right;
+    color: #5a7a9a;
+}
+
+.grafico-torta {
+    flex-shrink: 0;
+}
+
+.respuestas-texto ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.respuestas-texto li {
+    background-color: #f9fbfd;
+    border: 1px solid #e3ebf3;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+footer {
+    background-color: #1e3a5f;
+    color: #ffffff;
+    text-align: center;
+    padding: 8px 32px;
+    font-size: 14px;
+    position: relative;
+}
+
+.footer-fecha {
+    position: absolute;
+    right: 32px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+}
+
+@media (max-width: 600px) {
+    header {
+        padding: 10px 16px;
+    }
+
+    .resultado-cuerpo {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .grafico-torta {
+        margin: 0 auto;
+    }
+
+    .barra-fila {
+        grid-template-columns: 90px 1fr 74px;
+    }
+}

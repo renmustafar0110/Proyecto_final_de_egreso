@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados de Encuestas</title>
+    <link rel="stylesheet" href="../css/resultados_Encuestas.css">
+</head>
+<body>
+    <header>
+        <img src="../img/logo_del_proyecto.jpeg" alt="Logo" class="header-logo">
+        <h1>Hospital de Clínicas</h1>
+        <div class="reloj" id="reloj"></div>
+        <button class="menu-btn" id="menu-btn" aria-label="Menú">
+            <span class="menu-linea"></span>
+            <span class="menu-linea"></span>
+            <span class="menu-linea"></span>
+        </button>
+    </header>
+
+    <div class="menu-panel" id="menu-panel">
+        <button class="menu-cerrar" id="menu-cerrar" aria-label="Cerrar">X</button>
+        <a href="carga_Documentos.html" class="menu-opcion">Cargar Documento</a>
+        <a href="documentos_Cargados.html" class="menu-opcion">Documentos Cargados</a>
+        <a href="gestion_Encuestas.html" class="menu-opcion">Gestión de Encuestas</a>
+        <a href="resultados_Encuestas.html" class="menu-opcion">Resultados de Encuestas</a>
+        <a href="trazabilidad.html" class="menu-opcion">Ordenar un Traslado</a>
+        <a href="panel_Traslados.html" class="menu-opcion">Panel de Traslados</a>
+        <a href="gestion_Rutas.html" class="menu-opcion">Gestión de Rutas</a>
+        <a href="historico_Traslados.html" class="menu-opcion">Histórico</a>
+        <a href="index.html" class="menu-opcion">Volver al inicio</a>
+    </div>
+
+    <main>
+        <div class="panel page-panel">
+            <h2>Resultados de Encuestas</h2>
+            <p class="subtitulo">Indicadores de satisfacción por encuesta.</p>
+
+            <div class="filtros">
+                <div class="filtro">
+                    <label for="select-encuesta">Encuesta:</label>
+                    <select id="select-encuesta">
+                        <option value="">Cargando encuestas...</option>
+                    </select>
+                </div>
+
+                <div class="filtro">
+                    <button type="button" id="btn-exportar">Exportar CSV</button>
+                </div>
+            </div>
+
+            <p class="aviso" id="aviso-resultados">Seleccione una encuesta para ver sus resultados.</p>
+
+            <div class="resumen" id="resumen" style="display: none;">
+                <div class="tarjeta-resumen">
+                    <span class="numero" id="total-respuestas">0</span>
+                    <span class="etiqueta">Respuestas recibidas</span>
+                </div>
+            </div>
+
+            <div id="contenedor-resultados"></div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; Hospital de Clínicas</p>
+        <span class="footer-fecha" id="fechaPie"></span>
+    </footer>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/menu.js"></script>
+    <script src="../js/fecha_Y_hora.js"></script>
+    <script src="../js/utilidades.js"></script>
+    <script src="../js/resultados_Encuestas.js"></script>
+</body>
+</html>

@@ -1,6 +1,9 @@
 <?php
 
 require_once 'conexion.php';
+require_once 'sesion.php';
+
+requiereSesion(array('admin_documentos', 'super_admin'));
 
 function responder($ok, $mensaje) {
     header('Content-Type: application/json; charset=utf-8');
@@ -95,24 +98,20 @@ if ($accion == 'estado') {
 
     $sql = "UPDATE Documentos SET estado = $estado WHERE id_documento = $id";
 
-    if ($conexion->query($sql)) {
-        if ($conexion->affected_rows > 0) {
-            if ($estado == 1) {
-                responder(true, 'Documento activado');
-            } else {
-                responder(true, 'Documento desactivado');
-            }
-        }
-
-        $comprobacion = $conexion->query("SELECT id_documento FROM Documentos WHERE id_documento = $id");
-        if ($comprobacion && $comprobacion->num_rows > 0) {
-            responder(true, 'El documento ya estaba en ese estado');
-        }
-
-        responder(false, 'El documento no existe');
-    } else {
+    if (!$conexion->query($sql)) {
         responder(false, 'Falló el cambio de estado: ' . $conexion->error);
     }
+
+    if ($conexion->affected_rows > 0) {
+        responder(true, $estado == 1 ? 'Documento activado' : 'Documento desactivado');
+    }
+
+    $comprobacion = $conexion->query("SELECT id_documento FROM Documentos WHERE id_documento = $id");
+    if ($comprobacion && $comprobacion->num_rows > 0) {
+        responder(true, 'El documento ya estaba en ese estado');
+    }
+
+    responder(false, 'El documento no existe');
 }
 
 if ($accion == 'eliminar') {

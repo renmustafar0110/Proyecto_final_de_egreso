@@ -3,6 +3,9 @@
 header('Content-Type: application/json; charset=utf-8');
 
 require_once 'conexion.php';
+require_once 'sesion.php';
+
+requiereSesion(array('admin_ambulancias', 'super_admin'));
 
 $estadosTrafico = array('Libre', 'Congestionada', 'Cortada', 'En obras');
 

@@ -1,6 +1,9 @@
 <?php
 
 require_once 'conexion.php';
+require_once 'sesion.php';
+
+requiereSesion(array('admin_documentos', 'super_admin'));
 
 $sql = "SELECT id_documento, titulo_del_documento, archivo, categoria_del_documento, fecha_publicacion, estado
         FROM Documentos

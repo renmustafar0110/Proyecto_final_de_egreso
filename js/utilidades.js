@@ -10,6 +10,7 @@ function escapar(valor) {
     texto = texto.replace(/</g, '&lt;');
     texto = texto.replace(/>/g, '&gt;');
     texto = texto.replace(/"/g, '&quot;');
+    texto = texto.replace(/'/g, '&#39;');
 
     return texto;
 }
@@ -49,6 +50,10 @@ function etiquetaElemento(tipo) {
 
     if (tipo == 'otros_insumos') {
         return 'Insumo';
+    }
+
+    if (tipo == 'otro') {
+        return 'Otro';
     }
 
     return 'Paciente';

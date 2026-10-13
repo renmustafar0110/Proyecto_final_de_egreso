@@ -1,6 +1,9 @@
 <?php
 
 require_once 'conexion.php';
+require_once 'sesion.php';
+
+requiereSesion(array('admin_documentos', 'super_admin'));
 
 function responder($ok, $mensaje, $extra = array()) {
     header('Content-Type: application/json; charset=utf-8');
@@ -77,6 +80,24 @@ if ($archivo['error'] != 0) {
 
 if ($archivo['size'] > $tamanoMaximo) {
     responder(false, 'El archivo supera el límite permitido de 10 MB');
+}
+
+// US-01: solo se aceptan documentos PDF (validado por extensión y tipo MIME real)
+$extension = strtolower(pathinfo($archivo['name'], PATHINFO_EXTENSION));
+
+if ($extension !== 'pdf') {
+    responder(false, 'Solo se permiten archivos en formato PDF');
+}
+
+$tipoReal = '';
+if (function_exists('finfo_open')) {
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    $tipoReal = finfo_file($finfo, $archivo['tmp_name']);
+    finfo_close($finfo);
+}
+
+if ($tipoReal !== '' && $tipoReal !== 'application/pdf') {
+    responder(false, 'El archivo no es un PDF válido');
 }
 
 $carpetaDestino = __DIR__ . '/Documento/';

@@ -3,6 +3,9 @@
 header('Content-Type: application/json');
 
 require_once 'conexion.php';
+require_once 'sesion.php';
+
+requiereSesion(array('admin_ambulancias', 'super_admin'));
 
 // US-08: orden de los estados (no se puede retroceder)
 $ordenEstados = array('Pendiente', 'En curso', 'En ruta', 'Llegada a destino', 'Retorno', 'Finalizado');
@@ -376,7 +379,7 @@ if (isset($_POST['id_acompanante'])) {
     $idAcompanante = intval($_POST['id_acompanante']);
 }
 
-$tiposValidos = array('paciente_biologico', 'equipamiento_medico', 'otros_insumos');
+$tiposValidos = array('paciente_biologico', 'equipamiento_medico', 'otros_insumos', 'otro');
 
 $elementoTipo = 'paciente_biologico';
 if (isset($_POST['elemento_tipo']) && in_array($_POST['elemento_tipo'], $tiposValidos, true)) {

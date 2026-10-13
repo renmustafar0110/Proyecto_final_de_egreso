@@ -146,6 +146,13 @@ $categoria = etiquetaCategoria($documento['categoria_del_documento']);
 $fecha = formatearFecha($documento['fecha_publicacion']);
 $urlArchivo = 'verDocumento.php?archivo=' . urlencode($archivo) . '&amp;raw=1';
 
+$agente = '';
+if (isset($_SERVER['HTTP_USER_AGENT'])) {
+    $agente = $_SERVER['HTTP_USER_AGENT'];
+}
+
+$esIOS = (bool) preg_match('/iPad|iPhone|iPod/', $agente);
+
 header('Content-Type: text/html; charset=utf-8');
 ?>
 <!DOCTYPE html>
@@ -171,6 +178,9 @@ header('Content-Type: text/html; charset=utf-8');
                 <a class="btn-abrir" href="<?php echo $urlArchivo; ?>" target="_blank" rel="noopener">Abrir documento</a>
                 <a class="btn-descargar" href="<?php echo $urlArchivo; ?>" download>Descargar</a>
             </div>
+            <?php if ($esIOS) { ?>
+                <p class="aviso-ios">En iPhone/iPad el documento puede no visualizarse dentro de esta página. Use «Abrir documento» para verlo.</p>
+            <?php } ?>
             <div class="contenedor-pdf">
                 <iframe src="<?php echo $urlArchivo; ?>" title="Documento PDF"></iframe>
             </div>

@@ -200,6 +200,11 @@ function validarFormulario() {
         return false;
     }
 
+    if (!/\.pdf$/i.test(archivo.files[0].name)) {
+        alert('Solo se permiten archivos en formato PDF.');
+        return false;
+    }
+
     if (fecha.value == '') {
         alert('Seleccione la fecha de publicación.');
         fecha.focus();

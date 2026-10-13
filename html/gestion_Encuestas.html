@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Encuestas</title>
+    <link rel="stylesheet" href="../css/gestion_Encuestas.css">
+</head>
+<body>
+    <header>
+        <img src="../img/logo_del_proyecto.jpeg" alt="Logo" class="header-logo">
+        <h1>Hospital de Clínicas</h1>
+        <div class="reloj" id="reloj"></div>
+        <button class="menu-btn" id="menu-btn" aria-label="Menú">
+            <span class="menu-linea"></span>
+            <span class="menu-linea"></span>
+            <span class="menu-linea"></span>
+        </button>
+    </header>
+
+    <div class="menu-panel" id="menu-panel">
+        <button class="menu-cerrar" id="menu-cerrar" aria-label="Cerrar">X</button>
+        <a href="carga_Documentos.html" class="menu-opcion">Cargar Documento</a>
+        <a href="documentos_Cargados.html" class="menu-opcion">Documentos Cargados</a>
+        <a href="gestion_Encuestas.html" class="menu-opcion">Gestión de Encuestas</a>
+        <a href="resultados_Encuestas.html" class="menu-opcion">Resultados de Encuestas</a>
+        <a href="trazabilidad.html" class="menu-opcion">Ordenar un Traslado</a>
+        <a href="panel_Traslados.html" class="menu-opcion">Panel de Traslados</a>
+        <a href="gestion_Rutas.html" class="menu-opcion">Gestión de Rutas</a>
+        <a href="historico_Traslados.html" class="menu-opcion">Histórico</a>
+        <a href="index.html" class="menu-opcion">Volver al inicio</a>
+    </div>
+
+    <main>
+        <div class="contenedores">
+            <div class="panel form-panel">
+                <h2>Crear Encuesta</h2>
+                <form id="form-encuesta" autocomplete="off">
+                    <div class="form-field">
+                        <label for="enc-titulo">Título de la encuesta:</label>
+                        <input type="text" id="enc-titulo" maxlength="150" placeholder="Ej: Encuesta de satisfacción" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="enc-descripcion">Descripción (opcional):</label>
+                        <input type="text" id="enc-descripcion" maxlength="255" placeholder="Breve descripción para el paciente">
+                    </div>
+
+                    <div class="preguntas-header">
+                        <span>Preguntas</span>
+                        <button type="button" id="btn-agregar-pregunta" class="btn-secundario">+ Agregar pregunta</button>
+                    </div>
+
+                    <div id="lista-preguntas"></div>
+
+                    <div class="form-field">
+                        <input type="submit" value="Crear Encuesta" id="btn-crear-encuesta">
+                    </div>
+                </form>
+            </div>
+
+            <div class="panel list-panel">
+                <h2>Encuestas Creadas</h2>
+                <p class="subtitulo">Active, desactive, elimine o consulte resultados.</p>
+                <p class="sin-resultados" id="aviso-encuestas">No hay encuestas registradas.</p>
+
+                <table class="enc-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Título</th>
+                            <th>Preguntas</th>
+                            <th>Respuestas</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-encuestas">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal-qr" id="modal-qr" style="display: none;">
+        <div class="modal-qr-caja">
+            <h3 class="modal-qr-titulo">Código QR de la encuesta</h3>
+            <p class="modal-qr-texto">Escanee para acceder a la encuesta desde el celular.</p>
+            <div class="modal-qr-codigo" id="modal-qr-codigo"></div>
+            <p class="modal-qr-url" id="modal-qr-url"></p>
+            <div class="modal-qr-acciones">
+                <a class="modal-qr-btn modal-qr-descargar" id="modal-qr-descargar" download="qr_encuesta.png">Descargar PNG</a>
+                <button type="button" class="modal-qr-btn modal-qr-cerrar" id="modal-qr-cerrar">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; Hospital de Clínicas</p>
+        <span class="footer-fecha" id="fechaPie"></span>
+    </footer>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/qrcode.min.js"></script>
+    <script src="../js/menu.js"></script>
+    <script src="../js/fecha_Y_hora.js"></script>
+    <script src="../js/utilidades.js"></script>
+    <script src="../js/gestion_Encuestas.js"></script>
+</body>
+</html>

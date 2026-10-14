@@ -4,7 +4,7 @@ var categoria = document.getElementById('categoria');
 var nomDoc = document.getElementById('nom_doc');
 var nomPac = document.getElementById('nom_pac');
 var cedula = document.getElementById('cedula');
-var fecha = document.getElementById('fecha');
+var fechaPublicacion = document.getElementById('fecha_publicacion');
 var boton = document.getElementById('carga_Documento');
 
 var contenedorPreview = document.getElementById('preview-contenedor');
@@ -205,9 +205,9 @@ function validarFormulario() {
         return false;
     }
 
-    if (fecha.value == '') {
+    if (fechaPublicacion.value == '') {
         alert('Seleccione la fecha de publicación.');
-        fecha.focus();
+        fechaPublicacion.focus();
         return false;
     }
 
@@ -247,7 +247,7 @@ function enviarDocumento() {
     datos.append('nom_doc', nomDoc.value.trim());
     datos.append('nom_pac', nomPac.value.trim());
     datos.append('cedula', cedula.value.trim());
-    datos.append('fecha', fecha.value);
+    datos.append('fecha_publicacion', fechaPublicacion.value);
 
     fetch('../php/cargaDocumentos.php', {
         method: 'POST',

@@ -28,17 +28,17 @@ $titulo = campoPost('titulo_del_documento');
 $nomDoc = campoPost('nom_doc');
 $nomPac = campoPost('nom_pac');
 $cedula = campoPost('cedula');
-$fecha = campoPost('fecha');
+$fechaPublicacion = campoPost('fecha_publicacion');
 
 if ($titulo == '') {
     responder(false, 'Seleccione el titulo del documento');
 }
 
-if ($fecha == '') {
+if ($fechaPublicacion == '') {
     responder(false, 'Seleccione la fecha de publicación');
 }
 
-$partesFecha = explode('-', $fecha);
+$partesFecha = explode('-', $fechaPublicacion);
 
 if (count($partesFecha) != 3
     || !ctype_digit($partesFecha[0])
@@ -122,7 +122,7 @@ $nomDocEscapado = $conexion->real_escape_string($nomDoc);
 $nomPacEscapado = $conexion->real_escape_string($nomPac);
 
 $sql = "INSERT INTO Documentos(nom_doc, nom_pac, cedula, titulo_del_documento, archivo, categoria_del_documento, fecha_publicacion)
-        VALUES ('$nomDocEscapado', '$nomPacEscapado', '$cedula', '$tituloEscapado', '$rutaBD', '$categoriaEscapada', '$fecha')";
+        VALUES ('$nomDocEscapado', '$nomPacEscapado', '$cedula', '$tituloEscapado', '$rutaBD', '$categoriaEscapada', '$fechaPublicacion')";
 
 if (!$conexion->query($sql)) {
     responder(false, 'Falló el registro: ' . $conexion->error);

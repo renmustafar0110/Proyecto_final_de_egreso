@@ -3,6 +3,7 @@ var campoPassword = document.getElementById('password');
 var formulario = document.querySelector('form');
 var togglePassword = document.getElementById('togglePassword');
 var destino = formulario.getAttribute('data-destino');
+var tipo = formulario.getAttribute('data-tipo') || 'funcionario';
 
 togglePassword.addEventListener('change', function () {
     campoPassword.type = togglePassword.checked ? 'text' : 'password';
@@ -23,6 +24,7 @@ formulario.addEventListener('submit', function (evento) {
     var datos = new FormData();
     datos.append('cedula', cedula);
     datos.append('password', password);
+    datos.append('tipo', tipo);
 
     fetch('../php/autenticar.php', {
         method: 'POST',

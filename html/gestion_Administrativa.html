@@ -5,21 +5,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión Administrativa</title>
     <link rel="stylesheet" href="../css/gestion_Administrativa.css">
+    <link rel="stylesheet" href="../css/menu_Header.css">
 </head>
 <body>
     <header>
         <img src="../img/logo_del_proyecto.jpeg" alt="Logo" class="header-logo">
         <h1>Hospital de Clínicas</h1>
         <div class="reloj" id="reloj"></div>
-        <button class="menu-btn" id="menu-btn" aria-label="Menú">
-            <span class="menu-linea"></span>
-            <span class="menu-linea"></span>
-            <span class="menu-linea"></span>
-        </button>
+        <div class="menu-botones">
+            <button class="menu-btn" data-menu="menu-documentos" aria-label="Menú de documentación" title="Documentación">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                    <line x1="10" y1="9" x2="8" y2="9"/>
+                </svg>
+            </button>
+            <button class="menu-btn" data-menu="menu-trazabilidad" aria-label="Menú de trazabilidad" title="Trazabilidad">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 8h9v8H2z"/>
+                    <path d="M11 11h4l3 3v2h-7z"/>
+                    <circle cx="6" cy="17.5" r="1.8"/>
+                    <circle cx="16" cy="17.5" r="1.8"/>
+                    <path d="M6.5 10v4M4.5 12h4"/>
+                </svg>
+            </button>
+            <button class="menu-btn" data-menu="menu-estadisticas" aria-label="Menú de estadísticas" title="Estadísticas">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10"/>
+                    <line x1="12" y1="20" x2="12" y2="4"/>
+                    <line x1="6" y1="20" x2="6" y2="14"/>
+                </svg>
+            </button>
+        </div>
     </header>
 
-    <div class="menu-panel" id="menu-panel">
-        <button class="menu-cerrar" id="menu-cerrar" aria-label="Cerrar">X</button>
+    <div class="menu-panel" id="menu-documentos">
+        <button class="menu-cerrar" aria-label="Cerrar">X</button>
+        <p class="menu-panel-titulo">Documentación</p>
+        <a href="carga_Documentos.html" class="menu-opcion">Cargar Documento</a>
+        <a href="documentos_Cargados.html" class="menu-opcion">Documentos Cargados</a>
+        <div class="menu-separador"></div>
+        <a href="index.html" class="menu-opcion">Volver al inicio</a>
+    </div>
+
+    <div class="menu-panel" id="menu-trazabilidad">
+        <button class="menu-cerrar" aria-label="Cerrar">X</button>
+        <p class="menu-panel-titulo">Trazabilidad</p>
+        <a href="trazabilidad.html" class="menu-opcion">Ordenar un Traslado</a>
+        <a href="panel_Traslados.html" class="menu-opcion">Panel de Traslados</a>
+        <a href="gestion_Rutas.html" class="menu-opcion">Gestión de Rutas</a>
+        <a href="historico_Traslados.html" class="menu-opcion">Histórico</a>
+        <a href="vistaPreviaT.html" class="menu-opcion">Vista Previa</a>
+        <div class="menu-separador"></div>
+        <a href="index.html" class="menu-opcion">Volver al inicio</a>
+    </div>
+
+    <div class="menu-panel" id="menu-estadisticas">
+        <button class="menu-cerrar" aria-label="Cerrar">X</button>
+        <p class="menu-panel-titulo">Estadísticas</p>
+        <a href="gestion_Encuestas.html" class="menu-opcion">Gestión de Encuestas</a>
+        <a href="resultados_Encuestas.html" class="menu-opcion">Resultados de Encuestas</a>
+        <div class="menu-separador"></div>
         <a href="index.html" class="menu-opcion">Volver al inicio</a>
     </div>
 

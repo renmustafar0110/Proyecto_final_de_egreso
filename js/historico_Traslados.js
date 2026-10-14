@@ -9,6 +9,9 @@ var avisoHistorico = document.getElementById('aviso-historico');
 var botonBuscar = document.getElementById('btn-buscar');
 var botonLimpiar = document.getElementById('btn-limpiar');
 var botonExportar = document.getElementById('btn-exportar');
+var modalHistorial = document.getElementById('modal-historial');
+var lineaTiempo = document.getElementById('historial-estados');
+var tituloHistorial = document.getElementById('historial-titulo');
 
 var listaHistorico = [];
 var TEXTO_SIN_RESULTADOS = 'No se encontraron traslados con ese criterio.';
@@ -39,7 +42,7 @@ function armarFila(traslado) {
     fila = fila + '<td>' + formatearFechaHora(traslado.hora_salida) + '</td>';
     fila = fila + '<td>' + formatearFechaHora(traslado.hora_llegada) + '</td>';
     fila = fila + '<td><span class="estado ' + claseEstado(traslado.estado) + '">' + escapar(traslado.estado) + '</span></td>';
-    fila = fila + '<td><a href="gestion_Traslados.html?id=' + encodeURIComponent(traslado.id_traslado) + '" class="btn-gestionar">Ver</a></td>';
+    fila = fila + '<td><button type="button" class="btn-detalle" data-id="' + escapar(traslado.id_traslado) + '">Ver</button></td>';
     fila = fila + '</tr>';
 
     return fila;
@@ -167,6 +170,55 @@ function exportarCSV() {
     URL.revokeObjectURL(enlace.href);
 }
 
+// US-10: detalle con línea de tiempo de cambios de estado
+function dibujarLineaTiempo(historial) {
+    lineaTiempo.innerHTML = '';
+
+    if (!Array.isArray(historial) || historial.length == 0) {
+        lineaTiempo.innerHTML = '<li class="historial-vacio">Sin cambios registrados.</li>';
+        return;
+    }
+
+    var html = '';
+
+    for (var i = 0; i < historial.length; i++) {
+        var cambio = historial[i];
+
+        html = html + '<li>' +
+            '<span class="historial-estado">' + escapar(cambio.estado) + '</span>' +
+            '<span class="historial-fecha">' + formatearFechaHora(cambio.fecha_cambio) + '</span>' +
+            '</li>';
+    }
+
+    lineaTiempo.innerHTML = html;
+}
+
+function abrirHistorial(id) {
+    tituloHistorial.textContent = 'Historial de estados del traslado #' + id;
+    lineaTiempo.innerHTML = '<li class="historial-vacio">Cargando...</li>';
+    modalHistorial.style.display = 'flex';
+
+    fetch('../php/trazabilidad.php?accion=detalle&id=' + encodeURIComponent(id))
+        .then(function (respuesta) {
+            return respuesta.json();
+        })
+        .then(function (resultado) {
+            if (resultado == null || resultado.ok != true) {
+                lineaTiempo.innerHTML = '<li class="historial-vacio">No se pudo cargar el historial.</li>';
+                return;
+            }
+
+            dibujarLineaTiempo(resultado.historial);
+        })
+        .catch(function () {
+            lineaTiempo.innerHTML = '<li class="historial-vacio">No se pudo conectar con el servidor.</li>';
+        });
+}
+
+function cerrarHistorial() {
+    modalHistorial.style.display = 'none';
+}
+
 botonBuscar.onclick = cargarHistorico;
 botonLimpiar.onclick = limpiarFiltros;
 botonExportar.onclick = exportarCSV;
@@ -190,6 +242,20 @@ campoConductor.addEventListener('keydown', function (evento) {
 campoPaciente.addEventListener('keydown', function (evento) {
     if (evento.key == 'Enter') {
         cargarHistorico();
+    }
+});
+
+document.getElementById('btn-cerrar-historial').onclick = cerrarHistorial;
+
+modalHistorial.onclick = function (evento) {
+    if (evento.target === modalHistorial) {
+        cerrarHistorial();
+    }
+};
+
+cuerpoTabla.addEventListener('click', function (evento) {
+    if (evento.target.classList.contains('btn-detalle')) {
+        abrirHistorial(evento.target.getAttribute('data-id'));
     }
 });
 

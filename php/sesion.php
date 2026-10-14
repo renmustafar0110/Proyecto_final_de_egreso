@@ -22,8 +22,20 @@ function requiereSesion($rolesPermitidos = null) {
         responderNoAutorizado(401, 'Debe iniciar sesión para realizar esta acción');
     }
 
-    if ($rolesPermitidos !== null && !in_array($usuario['rol'], $rolesPermitidos, true)) {
-        responderNoAutorizado(403, 'No tiene permisos para realizar esta acción');
+    if ($rolesPermitidos !== null) {
+        $roles = isset($usuario['roles']) ? $usuario['roles'] : array($usuario['rol']);
+        $permitido = false;
+
+        foreach ($roles as $rol) {
+            if (in_array($rol, $rolesPermitidos, true)) {
+                $permitido = true;
+                break;
+            }
+        }
+
+        if (!$permitido) {
+            responderNoAutorizado(403, 'No tiene permisos para realizar esta acción');
+        }
     }
 
     return $usuario;

@@ -1,7 +1,6 @@
 #!/bin/bash
 
 MYSQL="/opt/lampp/bin/mysql"
-DB_SOCKET="/opt/lampp/var/mysql/mysql.sock"
 DB_HOST="localhost"
 DB_NAME="hospital_clinicas"
 DB_USER="root"
@@ -12,7 +11,7 @@ opcion_mysql() {
 }
 
 consultar_documentos() {
-    opcion_mysql "SELECT id_documento, nom_doc, nom_pac, cedula, nombre, archivo FROM Documentos;"
+    opcion_mysql "SELECT id_documento, titulo_del_documento, nom_doc, nom_pac, cedula, categoria_del_documento, fecha_publicacion, archivo, estado FROM Documentos;"
 }
 
 consultar_pacientes() {

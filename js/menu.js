@@ -1,14 +1,34 @@
-var botonMenu = document.getElementById('menu-btn');
-var panelMenu = document.getElementById('menu-panel');
-var botonCerrar = document.getElementById('menu-cerrar');
+var botonesMenu = document.querySelectorAll('.menu-btn');
+var panelesMenu = document.querySelectorAll('.menu-panel');
+var botonesCerrar = document.querySelectorAll('.menu-cerrar');
 
-botonMenu.onclick = function () {
-    panelMenu.classList.toggle('abierto');
-};
+function cerrarPaneles() {
+    for (var i = 0; i < panelesMenu.length; i++) {
+        panelesMenu[i].classList.remove('abierto');
+    }
+    for (var j = 0; j < botonesMenu.length; j++) {
+        botonesMenu[j].classList.remove('activo');
+    }
+}
 
-botonCerrar.onclick = function () {
-    panelMenu.classList.remove('abierto');
-};
+for (var k = 0; k < botonesMenu.length; k++) {
+    botonesMenu[k].onclick = function () {
+        var boton = this;
+        var destino = document.getElementById(boton.getAttribute('data-menu'));
+        var estabaAbierto = destino.classList.contains('abierto');
+
+        cerrarPaneles();
+
+        if (!estabaAbierto) {
+            destino.classList.add('abierto');
+            boton.classList.add('activo');
+        }
+    };
+}
+
+for (var l = 0; l < botonesCerrar.length; l++) {
+    botonesCerrar[l].onclick = cerrarPaneles;
+}
 
 function cerrarSesion() {
     fetch('../php/cerrar_sesion.php', { method: 'POST' })
@@ -24,16 +44,18 @@ function agregarBotonSalir() {
         return;
     }
 
-    var enlace = document.createElement('a');
-    enlace.href = '#';
-    enlace.className = 'menu-opcion';
-    enlace.textContent = 'Cerrar sesión';
-    enlace.onclick = function (evento) {
-        evento.preventDefault();
-        cerrarSesion();
-    };
+    for (var i = 0; i < panelesMenu.length; i++) {
+        var enlace = document.createElement('a');
+        enlace.href = '#';
+        enlace.className = 'menu-opcion';
+        enlace.textContent = 'Cerrar sesión';
+        enlace.onclick = function (evento) {
+            evento.preventDefault();
+            cerrarSesion();
+        };
 
-    panelMenu.appendChild(enlace);
+        panelesMenu[i].appendChild(enlace);
+    }
 }
 
 agregarBotonSalir();

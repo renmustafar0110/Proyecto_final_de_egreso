@@ -130,5 +130,5 @@ if (!$conexion->query($sql)) {
 
 responder(true, 'Registro Exitoso', array(
     'archivo' => $rutaBD,
-    'id_documento' => $conexion->insert_id
+    'id_documento' => ultimoIdInsertado($conexion)
 ));

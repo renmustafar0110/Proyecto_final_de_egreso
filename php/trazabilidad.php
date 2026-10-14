@@ -468,7 +468,7 @@ if (!$conexion->query($sql)) {
     exit;
 }
 
-$idTraslado = $conexion->insert_id;
+$idTraslado = ultimoIdInsertado($conexion);
 
 // US-08: registrar el estado inicial en el historial
 $conexion->query("INSERT INTO Traslado_Estados (id_traslado, estado, fecha_cambio)

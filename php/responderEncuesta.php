@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // US-05: guardar respuestas de forma anónima
     $conexion->query("INSERT INTO Encuestas_Respuestas (id_encuesta, fecha_envio) VALUES ($id, NOW())");
-    $idRespuesta = $conexion->insert_id;
+    $idRespuesta = ultimoIdInsertado($conexion);
 
     foreach ($preguntas as $pregunta) {
         $idPregunta = intval($pregunta['id_pregunta']);

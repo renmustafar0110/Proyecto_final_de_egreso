@@ -99,14 +99,12 @@ function armarFila(encuesta) {
     var textoBoton = estadoActivo ? 'Desactivar' : 'Activar';
 
     var fila = '<tr>';
-    fila = fila + '<td>#' + escapar(encuesta.id_encuesta) + '</td>';
     fila = fila + '<td>' + escapar(encuesta.titulo) + '</td>';
     fila = fila + '<td>' + escapar(encuesta.total_preguntas) + '</td>';
     fila = fila + '<td>' + escapar(encuesta.total_respuestas) + '</td>';
     fila = fila + '<td><span class="' + claseEstado + '">' + textoEstado + '</span></td>';
     fila = fila + '<td class="acciones">';
     fila = fila + '<button type="button" class="btn-accion" data-accion="qr" data-id="' + encuesta.id_encuesta + '">Ver QR</button>';
-    fila = fila + '<a class="btn-accion" href="resultados_Encuestas.html?id=' + encodeURIComponent(encuesta.id_encuesta) + '">Resultados</a>';
     fila = fila + '<button type="button" class="btn-accion" data-accion="estado" data-id="' + encuesta.id_encuesta + '" data-estado="' + siguiente + '">' + textoBoton + '</button>';
     fila = fila + '<button type="button" class="btn-accion btn-borrar" data-accion="eliminar" data-id="' + encuesta.id_encuesta + '">Eliminar</button>';
     fila = fila + '</td>';
@@ -189,7 +187,7 @@ function renderizarLista() {
 // ---------------------------------------------------------------------
 // Acciones
 // ---------------------------------------------------------------------
-function enviar(datos, alTerminar) {
+function enviar(datos, alTerminar, silenciarAlerta) {
     fetch('../php/encuestas.php', {
         method: 'POST',
         body: datos
@@ -199,11 +197,11 @@ function enviar(datos, alTerminar) {
     })
     .then(function (resultado) {
         if (resultado != null && resultado.ok == true) {
-            if (resultado.mensaje) {
+            if (resultado.mensaje && silenciarAlerta != true) {
                 alert(resultado.mensaje);
             }
             if (alTerminar != null) {
-                alTerminar();
+                alTerminar(resultado);
             }
             return;
         }
@@ -333,13 +331,17 @@ formulario.addEventListener('submit', function (evento) {
     datos.append('descripcion', descripcion);
     datos.append('preguntas', JSON.stringify(preguntas));
 
-    enviar(datos, function () {
+    enviar(datos, function (resultado) {
         formulario.reset();
         listaPreguntas.innerHTML = '';
         contadorPreguntas = 0;
         crearPregunta();
         renderizarLista();
-    });
+
+        if (resultado != null && resultado.id_encuesta) {
+            mostrarQR(resultado.id_encuesta);
+        }
+    }, true);
 });
 
 crearPregunta();

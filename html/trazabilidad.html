@@ -78,9 +78,9 @@
             <form id="form-ordenar-traslado" autocomplete="off">
                 <div class="form-field">
                     <label for="input-numero">Nº de coche:</label>
-                    <input type="text" id="input-numero" name="numero_coche" list="lista-coches"
-                           placeholder="Ej: Coche 01" autocomplete="off" required>
-                    <datalist id="lista-coches"></datalist>
+                    <select id="input-numero" name="numero_coche" required>
+                        <option value="">Cargando coches...</option>
+                    </select>
                 </div>
 
                 <div class="form-field">
@@ -115,12 +115,36 @@
 
                 <div class="form-field">
                     <label for="input-origen">Origen:</label>
-                    <input type="text" id="input-origen" name="origen" placeholder="Ej: Hospital" required>
+                    <select id="input-origen" name="origen" required>
+                        <option value="">Seleccione un origen...</option>
+                        <option value="Hospital">Hospital</option>
+                    </select>
                 </div>
 
                 <div class="form-field">
                     <label for="input-destino">Destino:</label>
-                    <input type="text" id="input-destino" name="destino" placeholder="Ej: Clínica 2" required>
+                    <select id="input-destino" name="destino" required>
+                        <option value="">Seleccione un destino...</option>
+                        <option value="Artigas">Artigas</option>
+                        <option value="Canelones">Canelones</option>
+                        <option value="Cerro Largo">Cerro Largo</option>
+                        <option value="Colonia">Colonia</option>
+                        <option value="Durazno">Durazno</option>
+                        <option value="Flores">Flores</option>
+                        <option value="Florida">Florida</option>
+                        <option value="Lavalleja">Lavalleja</option>
+                        <option value="Maldonado">Maldonado</option>
+                        <option value="Montevideo">Montevideo</option>
+                        <option value="Paysandú">Paysandú</option>
+                        <option value="Río Negro">Río Negro</option>
+                        <option value="Rivera">Rivera</option>
+                        <option value="Rocha">Rocha</option>
+                        <option value="Salto">Salto</option>
+                        <option value="San José">San José</option>
+                        <option value="Soriano">Soriano</option>
+                        <option value="Tacuarembó">Tacuarembó</option>
+                        <option value="Treinta y Tres">Treinta y Tres</option>
+                    </select>
                 </div>
 
                 <div class="form-field">

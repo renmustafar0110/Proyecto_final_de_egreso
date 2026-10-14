@@ -29,7 +29,7 @@ function armarDetalleViaje(ambulancia) {
 
 function renderizarTabla() {
     var cuerpoTabla = document.getElementById('tabla-vehiculos');
-    var listaCoches = document.getElementById('lista-coches');
+    var selectCoche = document.getElementById('input-numero');
 
     if (cuerpoTabla == null) {
         return;
@@ -38,11 +38,14 @@ function renderizarTabla() {
     obtenerAmbulancias().then(function (ambulancias) {
         if (ambulancias.length == 0) {
             cuerpoTabla.innerHTML = '<tr><td colspan="3">No hay ambulancias cargadas.</td></tr>';
+            if (selectCoche) {
+                selectCoche.innerHTML = '<option value="">No hay coches disponibles</option>';
+            }
             return;
         }
 
         var filas = '';
-        var sugerencias = '';
+        var opcionesCoches = '';
 
         for (var i = 0; i < ambulancias.length; i++) {
             var ambulancia = ambulancias[i];
@@ -50,7 +53,7 @@ function renderizarTabla() {
             var accion = '';
 
             if (ambulancia.estado == 'Disponible') {
-                sugerencias = sugerencias + '<option value="Coche ' + ambulancia.numero_coche + '"></option>';
+                opcionesCoches = opcionesCoches + '<option value="' + escaparOpcion(ambulancia.numero_coche) + '">Coche ' + escaparOpcion(ambulancia.numero_coche) + '</option>';
             } else {
                 accion = '<a href="gestion_Traslados.html?id=' + encodeURIComponent(ambulancia.id_traslado) + '" class="btn-mandar">Gestionar</a>';
             }
@@ -69,8 +72,12 @@ function renderizarTabla() {
 
         cuerpoTabla.innerHTML = filas;
 
-        if (listaCoches) {
-            listaCoches.innerHTML = sugerencias;
+        if (selectCoche) {
+            if (opcionesCoches == '') {
+                selectCoche.innerHTML = '<option value="">No hay coches disponibles</option>';
+            } else {
+                selectCoche.innerHTML = '<option value="">Seleccione un coche...</option>' + opcionesCoches;
+            }
         }
     });
 }
@@ -108,29 +115,6 @@ if (formularioTraslado) {
             alert('No se pudo conectar con el servidor.');
         });
     });
-}
-
-function autocompletarHora(idCampo) {
-    var campo = document.getElementById(idCampo);
-
-    if (campo == null) {
-        return;
-    }
-
-    var ahora = new Date();
-
-    var anio = ahora.getFullYear();
-    var mes = ('0' + (ahora.getMonth() + 1)).slice(-2);
-    var dia = ('0' + ahora.getDate()).slice(-2);
-    var hora = ('0' + ahora.getHours()).slice(-2);
-    var minuto = ('0' + ahora.getMinutes()).slice(-2);
-
-    campo.value = anio + '-' + mes + '-' + dia + 'T' + hora + ':' + minuto;
-}
-
-function autocompletarHoras() {
-    autocompletarHora('input-hora-salida');
-    autocompletarHora('input-hora-llegada');
 }
 
 function escaparOpcion(valor) {
@@ -199,5 +183,4 @@ function cargarPersonal() {
 }
 
 renderizarTabla();
-autocompletarHoras();
 cargarPersonal();

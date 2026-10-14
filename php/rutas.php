@@ -122,7 +122,7 @@ if ($accion == 'crear' || $accion == 'editar') {
                 VALUES ('$domicilioEscapado', $valorKm, $valorTraslado, '$estadoTraficoEscapado')";
 
         if ($conexion->query($sql)) {
-            echo json_encode(array('ok' => true, 'mensaje' => 'Ruta registrada', 'id_ruta' => $conexion->insert_id));
+            echo json_encode(array('ok' => true, 'mensaje' => 'Ruta registrada', 'id_ruta' => ultimoIdInsertado($conexion)));
         } else {
             echo json_encode(array('ok' => false, 'mensaje' => 'Falló el registro: ' . $conexion->error));
         }

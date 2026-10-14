@@ -240,7 +240,7 @@ if ($accion == 'crear') {
         responder(false, array('mensaje' => 'Falló el registro: ' . $conexion->error));
     }
 
-    $idEncuesta = $conexion->insert_id;
+    $idEncuesta = ultimoIdInsertado($conexion);
     $orden = 0;
 
     foreach ($preguntas as $pregunta) {

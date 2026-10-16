@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscador de Documentos</title>
+    <link rel="stylesheet" href="../css/buscador_Documentos.css">
+    <link rel="stylesheet" href="../css/menu_Header.css">
+</head>
+<body>
+    <header>
+        <img src="../img/logo_del_proyecto.jpeg" alt="Logo" class="header-logo">
+        <h1>Hospital de Clínicas</h1>
+        <div class="reloj" id="reloj"></div>
+        <div class="menu-botones">
+            <button id="btn-cerrar-sesion" class="btn-salir" aria-label="Cerrar sesión">Cerrar sesión</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="panel page-panel">
+            <h2>Buscador de Documentos</h2>
+            <p class="subtitulo" id="datos-paciente"></p>
+
+            <div class="filtros">
+                <div class="filtro">
+                    <label for="filtro-cedula">Cédula:</label>
+                    <input type="text" id="filtro-cedula" placeholder="Cédula del paciente">
+                </div>
+
+                <div class="filtro">
+                    <label for="filtro-categoria">Categoría:</label>
+                    <select id="filtro-categoria">
+                        <option value="">Todas las categorías</option>
+                        <option value="informacion_general">Información general</option>
+                        <option value="indicaciones">Indicaciones médicas</option>
+                        <option value="estudios">Estudios imagenológicos</option>
+                        <option value="enfermeria">Enfermería</option>
+                        <option value="encuestas">Encuestas</option>
+                    </select>
+                </div>
+
+                <div class="filtro">
+                    <label for="filtro-titulo">Título:</label>
+                    <input type="text" id="filtro-titulo" placeholder="Buscar por título">
+                </div>
+
+                <div class="filtro">
+                    <button type="button" id="btn-buscar">Buscar</button>
+                </div>
+
+                <div class="filtro">
+                    <button type="button" id="btn-limpiar">Limpiar filtros</button>
+                </div>
+            </div>
+
+            <p class="sin-resultados" id="aviso-sin-resultados" style="display: none;">No se encontraron documentos con ese criterio.</p>
+
+            <table class="documentos-table">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Categoría</th>
+                        <th>Fecha publicación</th>
+                        <th>Paciente</th>
+                        <th>Cédula</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-documentos">
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; Hospital de Clínicas</p>
+        <span class="footer-fecha" id="fechaPie"></span>
+    </footer>
+
+    <script src="../js/fecha_Y_hora.js"></script>
+    <script src="../js/buscador_Documentos.js"></script>
+</body>
+</html>

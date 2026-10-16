@@ -14,12 +14,9 @@ var urlPreview = null;
 
 var tamanoMaximo = 10 * 1024 * 1024; // 10 MB
 
-function construirUrlDocumento(archivo) {
-    var partes = String(archivo).split('/');
-    var nombreArchivo = partes[partes.length - 1];
-
+function construirUrlQR(idQr) {
     var base = new URL('../php/verDocumento.php', window.location.href);
-    base.searchParams.set('archivo', nombreArchivo);
+    base.searchParams.set('qr', idQr);
     return base.href;
 }
 
@@ -86,10 +83,14 @@ function generarQR(url) {
 
     if (lienzo) {
         var nombreQr = 'qr_documento.png';
-        var archivoQr = new URL(url).searchParams.get('archivo');
+        var parametros = new URL(url).searchParams;
+        var archivoQr = parametros.get('archivo');
+        var idQr = parametros.get('qr');
 
         if (archivoQr) {
             nombreQr = 'qr_' + archivoQr.replace(/\.[^.]+$/, '') + '.png';
+        } else if (idQr) {
+            nombreQr = 'qr_documento_' + idQr + '.png';
         }
 
         descarga.href = lienzo.toDataURL('image/png');
@@ -259,11 +260,11 @@ function enviarDocumento() {
     .then(function (texto) {
         var respuesta = parsearRespuesta(texto);
 
-        if (respuesta && respuesta.ok && respuesta.archivo) {
+        if (respuesta && respuesta.ok && respuesta.id_qr) {
             boton.form.reset();
             limpiarPreview();
             contenedorPreview.style.display = 'none';
-            mostrarQRExitoso(respuesta.mensaje || 'Registro Exitoso', construirUrlDocumento(respuesta.archivo));
+            mostrarQRExitoso(respuesta.mensaje || 'Registro Exitoso', construirUrlQR(respuesta.id_qr));
             return;
         }
 

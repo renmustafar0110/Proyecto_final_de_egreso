@@ -121,8 +121,41 @@ $categoriaEscapada = $conexion->real_escape_string($categoria);
 $nomDocEscapado = $conexion->real_escape_string($nomDoc);
 $nomPacEscapado = $conexion->real_escape_string($nomPac);
 
-$sql = "INSERT INTO Documentos(nom_doc, nom_pac, cedula, titulo_del_documento, archivo, categoria_del_documento, fecha_publicacion)
-        VALUES ('$nomDocEscapado', '$nomPacEscapado', '$cedula', '$tituloEscapado', '$rutaBD', '$categoriaEscapada', '$fechaPublicacion')";
+// US-01: cada documento tiene su propio QR vinculado al paciente.
+// La tabla QR referencia a Pacientes, así que el paciente debe existir.
+$cedulaEscapada = $conexion->real_escape_string($cedula);
+
+$partesNombre = explode(' ', $nomPac, 2);
+$nombrePaciente = $conexion->real_escape_string(trim($partesNombre[0]));
+$apellidoPaciente = '';
+if (count($partesNombre) > 1) {
+    $apellidoPaciente = $conexion->real_escape_string(trim($partesNombre[1]));
+}
+
+$sqlPaciente = "INSERT INTO Pacientes (cedula, nombre, apellido)
+                VALUES ('$cedulaEscapada', '$nombrePaciente', '$apellidoPaciente')
+                ON DUPLICATE KEY UPDATE cedula = cedula";
+
+if (!$conexion->query($sqlPaciente)) {
+    responder(false, 'No se pudo registrar el paciente: ' . $conexion->error);
+}
+
+// Se crea el registro QR propio del documento y se obtiene su id.
+$sqlQr = "INSERT INTO QR (url, cedula) VALUES (NULL, '$cedulaEscapada')";
+
+if (!$conexion->query($sqlQr)) {
+    responder(false, 'No se pudo generar el QR: ' . $conexion->error);
+}
+
+$idQr = ultimoIdInsertado($conexion);
+
+$urlQr = 'verDocumento.php?qr=' . $idQr;
+$urlQrEscapada = $conexion->real_escape_string($urlQr);
+
+$conexion->query("UPDATE QR SET url = '$urlQrEscapada' WHERE id_qr = $idQr");
+
+$sql = "INSERT INTO Documentos(nom_doc, nom_pac, cedula, id_qr, titulo_del_documento, archivo, categoria_del_documento, fecha_publicacion)
+        VALUES ('$nomDocEscapado', '$nomPacEscapado', '$cedula', $idQr, '$tituloEscapado', '$rutaBD', '$categoriaEscapada', '$fechaPublicacion')";
 
 if (!$conexion->query($sql)) {
     responder(false, 'Falló el registro: ' . $conexion->error);
@@ -130,5 +163,7 @@ if (!$conexion->query($sql)) {
 
 responder(true, 'Registro Exitoso', array(
     'archivo' => $rutaBD,
-    'id_documento' => ultimoIdInsertado($conexion)
+    'id_documento' => ultimoIdInsertado($conexion),
+    'id_qr' => $idQr,
+    'url_qr' => $urlQr
 ));

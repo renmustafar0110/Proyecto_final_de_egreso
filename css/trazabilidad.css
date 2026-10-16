@@ -87,7 +87,7 @@ footer {
 
 .left-panel {
     width: 100%;
-    max-width: 420px;
+    max-width: 800px;
 }
 
 .form-field {
@@ -135,82 +135,5 @@ footer {
 }
 
 #btn-ordenar-traslado:hover {
-    background-color: #2a4d7a;
-}
-
-.veh-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-}
-
-.veh-table th,
-.veh-table td {
-    border: 1px solid #b8c8dc;
-    padding: 6px 8px;
-    text-align: left;
-}
-
-.veh-table th {
-    background-color: #e8f0fa;
-    color: #1e3a5f;
-}
-
-.veh-table .estado {
-    font-weight: bold;
-}
-
-.veh-table .disponible {
-    color: #2e7d32;
-}
-
-.veh-table .reservado {
-    color: #e65100;
-}
-
-.veh-table .pendiente {
-    color: #e65100;
-}
-
-.veh-table .en_curso {
-    color: #1565c0;
-}
-
-.veh-table .en_ruta {
-    color: #6a1b9a;
-}
-
-.veh-table .finalizado {
-    color: #2e7d32;
-}
-
-.veh-table .detalle-reserva {
-    display: block;
-    margin-top: 4px;
-    font-size: 11px;
-    font-weight: normal;
-    color: #6b7f99;
-    line-height: 1.4;
-}
-
-.right-panel {
-    width: 100%;
-    max-width: 720px;
-}
-
-.btn-mandar {
-    display: inline-block;
-    background-color: #1e3a5f;
-    color: #ffffff;
-    text-decoration: none;
-    border: none;
-    border-radius: 3px;
-    padding: 4px 10px;
-    font-size: 12px;
-    font-family: inherit;
-    cursor: pointer;
-}
-
-.btn-mandar:hover {
     background-color: #2a4d7a;
 }

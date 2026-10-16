@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Pacientes</title>
+    <link rel="stylesheet" href="../css/login_Funcionario.css">
+</head>
+<body>
+    <header>
+        <img src="../img/logo_del_proyecto.jpeg" alt="Logo" class="header-logo">
+        <h1>Hospital de Clínicas</h1>
+        <div class="reloj" id="reloj"></div>
+    </header>
+
+    <main>
+        <div class="panel form-panel">
+            <h2>Inicio de Sesión - Pacientes</h2>
+            <form id="form-login" autocomplete="off">
+                <div class="form-field">
+                    <label for="cedula">Cédula:</label>
+                    <input type="text" id="cedula" name="cedula" inputmode="numeric" required>
+                </div>
+
+                <div class="form-field">
+                    <input type="submit" value="Ingresar" id="btn-login">
+                </div>
+            </form>
+            <p class="back-link"><a href="index.html">Volver al inicio</a></p>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; Hospital de Clínicas</p>
+        <span class="footer-fecha" id="fechaPie"></span>
+    </footer>
+
+    <script src="../js/fecha_Y_hora.js"></script>
+    <script src="../js/login_paciente.js"></script>
+</body>
+</html>

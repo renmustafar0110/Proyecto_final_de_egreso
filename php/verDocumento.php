@@ -110,14 +110,24 @@ if (isset($_GET['archivo'])) {
     $archivo = basename(trim($_GET['archivo']));
 }
 
-if ($archivo == '') {
+$idQr = 0;
+if (isset($_GET['qr'])) {
+    $idQr = intval($_GET['qr']);
+}
+
+if ($archivo == '' && $idQr <= 0) {
     responderNoDisponible();
 }
 
-$rutaBD = $conexion->real_escape_string('Documento/' . $archivo);
+if ($idQr > 0) {
+    $sql = "SELECT titulo_del_documento, categoria_del_documento, fecha_publicacion, estado, archivo
+            FROM Documentos WHERE id_qr = $idQr";
+} else {
+    $rutaBD = $conexion->real_escape_string('Documento/' . $archivo);
+    $sql = "SELECT titulo_del_documento, categoria_del_documento, fecha_publicacion, estado, archivo
+            FROM Documentos WHERE archivo = '$rutaBD'";
+}
 
-$sql = "SELECT titulo_del_documento, categoria_del_documento, fecha_publicacion, estado
-        FROM Documentos WHERE archivo = '$rutaBD'";
 $resultado = $conexion->query($sql);
 
 if (!$resultado || $resultado->num_rows == 0) {
@@ -130,6 +140,7 @@ if (intval($documento['estado']) != 1) {
     responderNoDisponible();
 }
 
+$archivo = basename($documento['archivo']);
 $rutaCompleta = __DIR__ . '/Documento/' . $archivo;
 
 if (!is_file($rutaCompleta)) {

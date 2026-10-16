@@ -15,9 +15,25 @@ function armarFila(traslado) {
         conductor = traslado.conductor_nombre + ' ' + traslado.conductor_apellido;
     }
 
+    var acompanante = 'Sin acompañante';
+
+    if (traslado.acompanante_nombre != null) {
+        acompanante = traslado.acompanante_nombre + ' ' + traslado.acompanante_apellido;
+    }
+
     var coche = '—';
     if (traslado.numero_coche != null) {
         coche = traslado.numero_coche;
+    }
+
+    var origen = '—';
+    if (traslado.origen != null) {
+        origen = traslado.origen;
+    }
+
+    var destino = '—';
+    if (traslado.destino != null) {
+        destino = traslado.destino;
     }
 
     var elemento = etiquetaElemento(traslado.elemento_tipo) + ': ' + (traslado.elemento_descripcion || '—');
@@ -29,12 +45,14 @@ function armarFila(traslado) {
     }
 
     var fila = '<tr class="' + clase + '">';
-    fila = fila + '<td>#' + escapar(traslado.id_traslado) + '</td>';
     fila = fila + '<td>' + escapar(coche) + '</td>';
     fila = fila + '<td>' + escapar(conductor) + '</td>';
+    fila = fila + '<td>' + escapar(acompanante) + '</td>';
     fila = fila + '<td>' + escapar(elemento) + '</td>';
-    fila = fila + '<td>' + escapar(traslado.destino) + '</td>';
+    fila = fila + '<td>' + escapar(origen) + '</td>';
+    fila = fila + '<td>' + escapar(destino) + '</td>';
     fila = fila + '<td>' + formatearFechaHora(traslado.hora_salida) + '</td>';
+    fila = fila + '<td>' + formatearFechaHora(traslado.hora_llegada) + '</td>';
     fila = fila + '<td><span class="estado ' + claseEstado(traslado.estado) + '">' + escapar(traslado.estado) + '</span></td>';
     fila = fila + '<td><a href="gestion_Traslados.html?id=' + encodeURIComponent(traslado.id_traslado) + '" class="btn-gestionar">Gestionar</a></td>';
     fila = fila + '</tr>';

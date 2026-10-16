@@ -1,83 +1,25 @@
-function armarDetalleViaje(ambulancia) {
-    var origen = '—';
-    var destino = '—';
-
-    if (ambulancia.origen) {
-        origen = ambulancia.origen;
-    }
-
-    if (ambulancia.destino) {
-        destino = ambulancia.destino;
-    }
-
-    var textoSalida = 'Salida: --';
-    var textoLlegada = 'Llegada: --';
-
-    if (ambulancia.hora_salida) {
-        textoSalida = 'Salida: ' + ambulancia.hora_salida;
-    }
-
-    if (ambulancia.hora_llegada) {
-        textoLlegada = 'Llegada: ' + ambulancia.hora_llegada;
-    }
-
-    return '<span class="detalle-reserva">' +
-        origen + ' → ' + destino + '<br>' +
-        textoSalida + ' · ' + textoLlegada +
-        '</span>';
-}
-
-function renderizarTabla() {
-    var cuerpoTabla = document.getElementById('tabla-vehiculos');
+function cargarCochesDisponibles() {
     var selectCoche = document.getElementById('input-numero');
 
-    if (cuerpoTabla == null) {
+    if (selectCoche == null) {
         return;
     }
 
     obtenerAmbulancias().then(function (ambulancias) {
-        if (ambulancias.length == 0) {
-            cuerpoTabla.innerHTML = '<tr><td colspan="3">No hay ambulancias cargadas.</td></tr>';
-            if (selectCoche) {
-                selectCoche.innerHTML = '<option value="">No hay coches disponibles</option>';
-            }
-            return;
-        }
-
-        var filas = '';
         var opcionesCoches = '';
 
         for (var i = 0; i < ambulancias.length; i++) {
             var ambulancia = ambulancias[i];
-            var claseEstado = obtenerClaseDeEstado(ambulancia.estado);
-            var accion = '';
 
             if (ambulancia.estado == 'Disponible') {
                 opcionesCoches = opcionesCoches + '<option value="' + escaparOpcion(ambulancia.numero_coche) + '">Coche ' + escaparOpcion(ambulancia.numero_coche) + '</option>';
-            } else {
-                accion = '<a href="gestion_Traslados.html?id=' + encodeURIComponent(ambulancia.id_traslado) + '" class="btn-mandar">Gestionar</a>';
             }
-
-            var detalleViaje = '';
-            if (ambulancia.id_traslado) {
-                detalleViaje = armarDetalleViaje(ambulancia);
-            }
-
-            filas = filas + '<tr>' +
-                '<td>' + ambulancia.numero_coche + detalleViaje + '</td>' +
-                '<td><span class="estado ' + claseEstado + '">' + ambulancia.estado + '</span></td>' +
-                '<td>' + accion + '</td>' +
-                '</tr>';
         }
 
-        cuerpoTabla.innerHTML = filas;
-
-        if (selectCoche) {
-            if (opcionesCoches == '') {
-                selectCoche.innerHTML = '<option value="">No hay coches disponibles</option>';
-            } else {
-                selectCoche.innerHTML = '<option value="">Seleccione un coche...</option>' + opcionesCoches;
-            }
+        if (opcionesCoches == '') {
+            selectCoche.innerHTML = '<option value="">No hay coches disponibles</option>';
+        } else {
+            selectCoche.innerHTML = '<option value="">Seleccione un coche...</option>' + opcionesCoches;
         }
     });
 }
@@ -102,7 +44,7 @@ if (formularioTraslado) {
             if (resultado.ok == true) {
                 alert('Traslado #' + resultado.id_traslado + ' ordenado correctamente.');
                 formularioTraslado.reset();
-                renderizarTabla();
+                cargarCochesDisponibles();
             } else {
                 var mensajeError = resultado.error;
                 if (mensajeError == null) {
@@ -182,5 +124,5 @@ function cargarPersonal() {
         });
 }
 
-renderizarTabla();
+cargarCochesDisponibles();
 cargarPersonal();

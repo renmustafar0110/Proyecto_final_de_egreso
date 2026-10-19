@@ -5,9 +5,9 @@ header('Content-Type: application/json; charset=utf-8');
 require_once 'conexion.php';
 require_once 'sesion_paciente.php';
 
-verificarSesionPaciente();
+$paciente = verificarSesionPaciente();
 
-$cedula = isset($_GET['cedula']) ? trim($_GET['cedula']) : '';
+$cedula = isset($paciente['cedula']) ? trim($paciente['cedula']) : '';
 $categoria = isset($_GET['categoria']) ? trim($_GET['categoria']) : '';
 $titulo = isset($_GET['titulo']) ? trim($_GET['titulo']) : '';
 

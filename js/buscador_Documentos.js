@@ -2,11 +2,9 @@ document.addEventListener('DOMContentLoaded', function () {
     var tabla = document.getElementById('tabla-documentos');
     var aviso = document.getElementById('aviso-sin-resultados');
     var datosPaciente = document.getElementById('datos-paciente');
-    var campoCedula = document.getElementById('filtro-cedula');
     var campoCategoria = document.getElementById('filtro-categoria');
     var campoTitulo = document.getElementById('filtro-titulo');
     var btnBuscar = document.getElementById('btn-buscar');
-    var btnLimpiar = document.getElementById('btn-limpiar');
     var btnCerrarSesion = document.getElementById('btn-cerrar-sesion');
 
     function etiquetaCategoria(categoria) {
@@ -79,9 +77,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         if (nombreCompleto === '') nombreCompleto = p.cedula;
                         datosPaciente.textContent = 'Paciente: ' + nombreCompleto + ' (' + p.cedula + ')';
                     }
-                    if (campoCedula && !campoCedula.value) {
-                        campoCedula.value = p.cedula;
-                    }
                     buscarDocumentos();
                 } else {
                     window.location.href = 'login_Paciente.html';
@@ -94,9 +89,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function buscarDocumentos() {
         var params = new URLSearchParams();
-        if (campoCedula && campoCedula.value.trim()) {
-            params.set('cedula', campoCedula.value.trim());
-        }
         if (campoCategoria && campoCategoria.value) {
             params.set('categoria', campoCategoria.value);
         }
@@ -136,12 +128,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     btnBuscar.addEventListener('click', buscarDocumentos);
-    btnLimpiar.addEventListener('click', function () {
-        if (campoCedula) campoCedula.value = '';
-        if (campoCategoria) campoCategoria.value = '';
-        if (campoTitulo) campoTitulo.value = '';
-        buscarDocumentos();
-    });
 
     if (btnCerrarSesion) {
         btnCerrarSesion.addEventListener('click', function () {

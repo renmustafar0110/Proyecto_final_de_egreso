@@ -103,8 +103,7 @@ footer {
 }
 
 .form-field input,
-.form-field select,
-.form-field textarea {
+.form-field select {
     width: 100%;
     padding: 8px 10px;
     border: 1px solid #b8c8dc;
@@ -116,8 +115,7 @@ footer {
 }
 
 .form-field input:focus,
-.form-field select:focus,
-.form-field textarea:focus {
+.form-field select:focus {
     outline: none;
     border-color: #1e3a5f;
 }

@@ -268,7 +268,8 @@ El administrativo actualiza manualmente el estado de cada operación durante tod
 
 *Criterios de aceptación:*
 - Todos los campos obligatorios (conductor, paciente/elemento, origen, destino, hora salida)
-- Se puede seleccionar conductor y acompañante desde un listado precargado
+- Se puede seleccionar conductor y copiloto desde un listado precargado
+- Se puede registrar un acompañante (nombre, apellido, cédula y teléfono) o dejarlo vacío
 - Se genera un ID único de traslado
 - El registro de un traslado completo toma menos de 2 minutos
 
@@ -314,11 +315,11 @@ El administrativo actualiza manualmente el estado de cada operación durante tod
 | Campo | Detalle |
 |-------|---------|
 | **Actor** | Funcionario administrativo |
-| **Descripción** | El administrativo registra un nuevo traslado con los datos del conductor, paciente/elemento, acompañante, origen, destino y horas |
+| **Descripción** | El administrativo registra un nuevo traslado con los datos del conductor, copiloto, paciente/elemento, acompañante, origen, destino y horas |
 | **Precondición** | El usuario ha iniciado sesión |
 | **Postcondición** | Se crea un traslado con ID único y estado "Pendiente" |
-| **Flujo principal** | 1. El usuario accede al módulo de ambulancias. 2. Selecciona "Nuevo traslado". 3. Completa los campos: conductor, acompañante, paciente o elemento, origen, destino, hora de salida, hora estimada de llegada. 4. Confirma el registro. 5. El sistema genera un ID único y asigna estado "Pendiente". 6. El sistema confirma la operación. |
-| **Flujo alternativo** | 3a. El elemento trasladado puede ser un paciente biológico, equipamiento médico u otros insumos (texto libre más tipo). |
+| **Flujo principal** | 1. El usuario accede al módulo de ambulancias. 2. Selecciona "Nuevo traslado". 3. Completa los campos: conductor, copiloto (opcional, funcionario), acompañante (opcional, datos libres), paciente o elemento, origen, destino, hora de salida, hora estimada de llegada. 4. Confirma el registro. 5. El sistema genera un ID único y asigna estado "Pendiente". 6. El sistema confirma la operación. |
+| **Flujo alternativo** | 3a. El elemento trasladado puede ser un paciente biológico, equipamiento médico u otros insumos (texto libre más tipo). 3b. El copiloto no puede ser la misma persona que el conductor (se compara por cédula). |
 
 ---
 
@@ -366,6 +367,8 @@ flowchart LR
     genera1{{genera}}
     tiene2{{tiene}}
     lleva1{{lleva}}
+    lleva2{{lleva}}
+    pilota1{{pilota}}
     tiene4{{tiene}}
     carga2{{carga}}
 
@@ -381,6 +384,7 @@ flowchart LR
     FC_D[FUNCIONARIOS_CARGA_DOCUMENTOS]
     AMBULANCIAS[AMBULANCIAS]
     ACOMPANANTES[ACOMPAÑANTES]
+    COPILOTOS[COPILOTOS]
     EQUIPOS[EQUIPOS]
 
     %% ATRIBUTOS - PACIENTES
@@ -455,11 +459,20 @@ flowchart LR
     a_idt((id_traslado FK))
 
     %% ATRIBUTOS - ACOMPAÑANTES
-    ac_ced((cedula_acom PK))
+    ac_id((id_acompanante PK))
+    ac_ced((cedula_acom))
     ac_nom((nombre))
     ac_ape((apellido))
-    ac_idt((id_traslado FK))
+    ac_idt((id_traslado FK UNIQUE))
     ac_tel((telefono))
+
+    %% ATRIBUTOS - COPILOTOS
+    cp_id((id_copiloto PK))
+    cp_idf((id_funcionario FK))
+    cp_nom((nombre_copiloto))
+    cp_ape((apellido_copiloto))
+    cp_ced((cedula))
+    cp_idt((id_traslado FK UNIQUE))
 
     %% ATRIBUTOS - EQUIPOS
     eq_id((id_equipo PK))
@@ -478,7 +491,8 @@ flowchart LR
     FUNCIONARIOS --- f_id & f_nombre & f_apellido & f_cargo & f_ced & f_idmb
     FC_D --- fcd_idf & fcd_idd & fcd_fcarga
     AMBULANCIAS --- a_mat & a_num & a_idt
-    ACOMPANANTES --- ac_ced & ac_nom & ac_ape & ac_idt & ac_tel
+    ACOMPANANTES --- ac_id & ac_ced & ac_nom & ac_ape & ac_idt & ac_tel
+    COPILOTOS --- cp_id & cp_idf & cp_nom & cp_ape & cp_ced & cp_idt
     EQUIPOS --- eq_id & eq_func & eq_tipo & eq_idt
 
     %% CONEXIONES ENTIDAD - RELACION - ENTIDAD
@@ -507,7 +521,13 @@ flowchart LR
     tiene2 -- N --- AMBULANCIAS
 
     TRASLADOS -- 1 --- lleva1
-    lleva1 -- N --- ACOMPANANTES
+    lleva1 -- 1 --- ACOMPANANTES
+
+    TRASLADOS -- 1 --- lleva2
+    lleva2 -- 1 --- COPILOTOS
+
+    FUNCIONARIOS -- 1 --- pilota1
+    pilota1 -- N --- COPILOTOS
 
     TRASLADOS -- 1 --- tiene4
     tiene4 -- N --- EQUIPOS
@@ -516,9 +536,9 @@ flowchart LR
     carga2 -- N --- M_BIOLOGICAS
 
     %% APLICAR ESTILOS
-    class PACIENTES,TRASLADOS,QR,DOCUMENTOS,ENCUESTAS,RESPUESTAS,M_BIOLOGICAS,FUNCIONARIOS,FC_D,AMBULANCIAS,ACOMPANANTES,EQUIPOS entidad
-    class p_ced,p_nombre,p_apellido,p_fnac,p_tel,p_email,p_dir,t_id,t_hsal,t_hlleg,t_orig,t_dest,t_km,t_est,q_id,q_url,q_ced,d_id,d_nom,d_nombre,d_arch,d_nompac,d_ced,d_idqr,e_prov,e_preg,e_ced,e_titulo,r_id,r_graf,r_porc,r_prov,r_coment,mb_id,mb_tipo,mb_cuid,mb_rec,mb_idt,mb_frec,f_id,f_nombre,f_apellido,f_cargo,f_ced,f_idmb,fcd_idf,fcd_idd,fcd_fcarga,a_mat,a_num,a_idt,ac_ced,ac_nom,ac_ape,ac_idt,ac_tel,eq_id,eq_func,eq_tipo,eq_idt atributo
-    class tiene1,carga_doc,cuida1,contiene1,escanea1,realiza1,genera1,tiene2,lleva1,tiene4,carga2 relacion
+    class PACIENTES,TRASLADOS,QR,DOCUMENTOS,ENCUESTAS,RESPUESTAS,M_BIOLOGICAS,FUNCIONARIOS,FC_D,AMBULANCIAS,ACOMPANANTES,COPILOTOS,EQUIPOS entidad
+    class p_ced,p_nombre,p_apellido,p_fnac,p_tel,p_email,p_dir,t_id,t_hsal,t_hlleg,t_orig,t_dest,t_km,t_est,q_id,q_url,q_ced,d_id,d_nom,d_nombre,d_arch,d_nompac,d_ced,d_idqr,e_prov,e_preg,e_ced,e_titulo,r_id,r_graf,r_porc,r_prov,r_coment,mb_id,mb_tipo,mb_cuid,mb_rec,mb_idt,mb_frec,f_id,f_nombre,f_apellido,f_cargo,f_ced,f_idmb,fcd_idf,fcd_idd,fcd_fcarga,a_mat,a_num,a_idt,ac_id,ac_ced,ac_nom,ac_ape,ac_idt,ac_tel,cp_id,cp_idf,cp_nom,cp_ape,cp_ced,cp_idt,eq_id,eq_func,eq_tipo,eq_idt atributo
+    class tiene1,carga_doc,cuida1,contiene1,escanea1,realiza1,genera1,tiene2,lleva1,lleva2,pilota1,tiene4,carga2 relacion
 ```
 
 ### 6.2. Descripción de Entidades
@@ -535,7 +555,8 @@ flowchart LR
 | **Funcionarios** | id_funcionario (PK), nombre, apellido, cargo, cedula (FK), id_m_biologica (FK) | Personal administrativo del hospital que opera los sistemas |
 | **Funcionarios_carga_Documentos** | id_funcionario (FK), id_documento (FK), fecha_carga | Tabla intermedia N:N: registra qué funcionario cargó qué documento y cuándo |
 | **Ambulancias** | matricula (PK), numero_coche, id_traslado (FK) | Vehículos de transporte del hospital |
-| **Acompañantes** | cedula_acom (PK), nombre, apellido, id_traslado (FK), telefono | Copilotos o acompañantes de los traslados |
+| **Acompañantes** | id_acompanante (PK), cedula_acom, nombre, apellido, id_traslado (FK UNIQUE), telefono | Acompañantes registrados manualmente en un traslado (máx. 1 por traslado) |
+| **Copilotos** | id_copiloto (PK), id_funcionario (FK), nombre_copiloto, apellido_copiloto, cedula, id_traslado (FK UNIQUE) | Copilotos de los traslados, elegidos entre los funcionarios del hospital (máx. 1 por traslado) |
 | **Equipos** | id_equipo (PK), funcion, tipo, id_traslado (FK) | Equipamiento médico u otros insumos transportados |
 
 ### 6.3. Relaciones
@@ -550,7 +571,9 @@ flowchart LR
 | realiza | Pacientes - Encuestas | 1:N | Encuestas.cedula | Un paciente puede realizar varias encuestas |
 | genera | Encuestas - Respuestas | 1:N | Respuestas.proveniencia | Una encuesta genera múltiples respuestas |
 | tiene | Traslados - Ambulancias | 1:N | Ambulancias.id_traslado | Un traslado tiene una ambulancia asignada |
-| lleva | Traslados - Acompañantes | 1:N | Acompanantes.id_traslado | Un traslado puede llevar varios acompañantes |
+| lleva | Traslados - Acompañantes | 1:1 | Acompanantes.id_traslado (UNIQUE) | Un traslado puede llevar un acompañante registrado con datos libres |
+| lleva | Traslados - Copilotos | 1:1 | Copilotos.id_traslado (UNIQUE) | Un traslado puede llevar un copiloto elegido entre los funcionarios |
+| pilota | Funcionarios - Copilotos | 1:N | Copilotos.id_funcionario | Un funcionario puede actuar como copiloto en varios traslados |
 | tiene | Traslados - Equipos | 1:N | Equipos.id_traslado | Un traslado puede incluir varios equipos |
 | carga | Traslados - M. Biológicas | 1:N | M_Biologicas.id_traslado | Un traslado puede cargar varias muestras biológicas |
 

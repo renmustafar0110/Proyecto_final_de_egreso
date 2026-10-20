@@ -12,7 +12,7 @@ function cargarCochesDisponibles() {
             var ambulancia = ambulancias[i];
 
             if (ambulancia.estado == 'Disponible') {
-                opcionesCoches = opcionesCoches + '<option value="' + escaparOpcion(ambulancia.numero_coche) + '">Coche ' + escaparOpcion(ambulancia.numero_coche) + '</option>';
+                opcionesCoches = opcionesCoches + '<option value="' + escapar(ambulancia.numero_coche) + '">Coche ' + escapar(ambulancia.numero_coche) + '</option>';
             }
         }
 
@@ -59,18 +59,6 @@ if (formularioTraslado) {
     });
 }
 
-function escaparOpcion(valor) {
-    if (valor == null) {
-        return '';
-    }
-
-    return String(valor)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-}
-
 function armarOpciones(lista, idSelect, campoId, textoInicial, textoVacio) {
     var select = document.getElementById(idSelect);
 
@@ -88,9 +76,9 @@ function armarOpciones(lista, idSelect, campoId, textoInicial, textoVacio) {
     for (var i = 0; i < lista.length; i++) {
         var persona = lista[i];
 
-        html = html + '<option value="' + persona[campoId] + '">' +
-            escaparOpcion(persona.nombre) + ' ' + escaparOpcion(persona.apellido) +
-            ' (' + escaparOpcion(persona.cedula) + ')</option>';
+        html = html + '<option value="' + escapar(persona[campoId]) + '">' +
+            escapar(persona.nombre) + ' ' + escapar(persona.apellido) +
+            ' (' + escapar(persona.cedula) + ')</option>';
     }
 
     select.innerHTML = html;
@@ -110,17 +98,17 @@ function cargarPersonal() {
                 'Seleccione un conductor...', 'No se pudieron cargar los conductores');
         });
 
-    fetch('../php/trazabilidad.php?accion=acompanantes')
+    fetch('../php/trazabilidad.php?accion=funcionarios')
         .then(function (respuesta) {
             return respuesta.json();
         })
         .then(function (lista) {
-            armarOpciones(lista, 'input-acompanante', 'id_acompanante',
-                'Sin acompañante', 'Sin acompañante');
+            armarOpciones(lista, 'input-copiloto', 'id_funcionario',
+                'Sin copiloto', 'Sin copiloto');
         })
         .catch(function () {
-            armarOpciones([], 'input-acompanante', 'id_acompanante',
-                'Sin acompañante', 'Sin acompañante');
+            armarOpciones([], 'input-copiloto', 'id_funcionario',
+                'Sin copiloto', 'Sin copiloto');
         });
 }
 

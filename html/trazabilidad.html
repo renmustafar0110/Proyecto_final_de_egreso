@@ -86,9 +86,33 @@
                 </div>
 
                 <div class="form-field">
-                    <label for="input-acompanante">Acompañante (opcional):</label>
-                    <select id="input-acompanante" name="id_acompanante">
-                        <option value="">Sin acompañante</option>
+                    <label for="input-acompanante-nombre">Acompañante - Nombre:</label>
+                    <input type="text" id="input-acompanante-nombre" name="acompanante_nombre"
+                           placeholder="Nombre del acompañante">
+                </div>
+
+                <div class="form-field">
+                    <label for="input-acompanante-apellido">Acompañante - Apellido:</label>
+                    <input type="text" id="input-acompanante-apellido" name="acompanante_apellido"
+                           placeholder="Apellido del acompañante">
+                </div>
+
+                <div class="form-field">
+                    <label for="input-acompanante-cedula">Acompañante - Cédula:</label>
+                    <input type="text" id="input-acompanante-cedula" name="acompanante_cedula"
+                           placeholder="Cédula del acompañante">
+                </div>
+
+                <div class="form-field">
+                    <label for="input-acompanante-telefono">Acompañante - Teléfono:</label>
+                    <input type="text" id="input-acompanante-telefono" name="acompanante_telefono"
+                           placeholder="Teléfono del acompañante">
+                </div>
+
+                <div class="form-field">
+                    <label for="input-copiloto">Copiloto:</label>
+                    <select id="input-copiloto" name="copiloto_id_funcionario">
+                        <option value="">Cargando funcionarios...</option>
                     </select>
                 </div>
 
@@ -184,6 +208,7 @@
 
     <script src="../js/auth.js"></script>
     <script src="../js/menu.js"></script>
+    <script src="../js/utilidades.js"></script>
     <script src="../js/ambulancias.js"></script>
     <script src="../js/trazabilidad.js"></script>
     <script src="../js/fecha_Y_hora.js"></script>

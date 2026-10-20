@@ -21,6 +21,12 @@ function armarFila(traslado) {
         acompanante = traslado.acompanante_nombre + ' ' + traslado.acompanante_apellido;
     }
 
+    var copiloto = 'Sin copiloto';
+
+    if (traslado.copiloto_nombre != null) {
+        copiloto = traslado.copiloto_nombre + ' ' + traslado.copiloto_apellido;
+    }
+
     var coche = '—';
     if (traslado.numero_coche != null) {
         coche = traslado.numero_coche;
@@ -48,6 +54,7 @@ function armarFila(traslado) {
     fila = fila + '<td>' + escapar(coche) + '</td>';
     fila = fila + '<td>' + escapar(conductor) + '</td>';
     fila = fila + '<td>' + escapar(acompanante) + '</td>';
+    fila = fila + '<td>' + escapar(copiloto) + '</td>';
     fila = fila + '<td>' + escapar(elemento) + '</td>';
     fila = fila + '<td>' + escapar(origen) + '</td>';
     fila = fila + '<td>' + escapar(destino) + '</td>';

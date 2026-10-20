@@ -34,20 +34,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         exit;
     }
 
-    // US-07: listado precargado de acompañantes
-    if ($accion == 'acompanantes') {
-        $acompanantes = array();
-        $resultado = $conexion->query("SELECT id_acompanante, cedula, nombre, apellido, telefono
-                                       FROM Acompanantes_Catalogo
+    // Listado de funcionarios para elegir copiloto
+    if ($accion == 'funcionarios') {
+        $funcionarios = array();
+        $resultado = $conexion->query("SELECT id_funcionario, cedula, nombre, apellido
+                                       FROM Funcionarios
                                        ORDER BY apellido, nombre");
 
         if ($resultado) {
             while ($fila = $resultado->fetch_assoc()) {
-                $acompanantes[] = $fila;
+                $funcionarios[] = $fila;
             }
         }
 
-        echo json_encode($acompanantes);
+        echo json_encode($funcionarios);
         exit;
     }
 
@@ -69,10 +69,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
                        t.elemento_tipo, t.elemento_descripcion,
                        c.nombre AS conductor_nombre, c.apellido AS conductor_apellido,
                        ac.nombre AS acompanante_nombre, ac.apellido AS acompanante_apellido,
+                       cp.nombre_copiloto AS copiloto_nombre, cp.apellido_copiloto AS copiloto_apellido,
                        a.numero_coche
                 FROM Traslados t
                 LEFT JOIN Conductores c ON c.id_conductor = t.id_conductor
-                LEFT JOIN Acompanantes_Catalogo ac ON ac.id_acompanante = t.id_acompanante
+                LEFT JOIN Acompanantes ac ON ac.id_traslado = t.id_traslado
+                LEFT JOIN Copilotos cp ON cp.id_traslado = t.id_traslado
                 LEFT JOIN Ambulancias a ON a.id_traslado = t.id_traslado
                 WHERE 1 = 1";
 
@@ -287,9 +289,29 @@ if (isset($_POST['id_conductor'])) {
     $idConductor = intval($_POST['id_conductor']);
 }
 
-$idAcompanante = 0;
-if (isset($_POST['id_acompanante'])) {
-    $idAcompanante = intval($_POST['id_acompanante']);
+$acompananteNombre = '';
+if (isset($_POST['acompanante_nombre'])) {
+    $acompananteNombre = trim($_POST['acompanante_nombre']);
+}
+
+$acompananteApellido = '';
+if (isset($_POST['acompanante_apellido'])) {
+    $acompananteApellido = trim($_POST['acompanante_apellido']);
+}
+
+$acompananteCedula = '';
+if (isset($_POST['acompanante_cedula'])) {
+    $acompananteCedula = trim($_POST['acompanante_cedula']);
+}
+
+$acompananteTelefono = '';
+if (isset($_POST['acompanante_telefono'])) {
+    $acompananteTelefono = trim($_POST['acompanante_telefono']);
+}
+
+$idFuncionarioCopiloto = 0;
+if (isset($_POST['copiloto_id_funcionario'])) {
+    $idFuncionarioCopiloto = intval($_POST['copiloto_id_funcionario']);
 }
 
 $tiposValidos = array('paciente_biologico', 'equipamiento_medico', 'otros_insumos', 'otro');
@@ -315,6 +337,35 @@ if ($numero == '' || $origen == '' || $destino == '' || $horaSalida == '') {
 if ($idConductor <= 0) {
     echo json_encode(array('ok' => false, 'error' => 'Seleccione un conductor'));
     exit;
+}
+
+// Validación del copiloto (debe ser un funcionario y no la misma persona que el conductor)
+$datosCopiloto = null;
+$cedulaConductor = '';
+
+$resultadoConductor = $conexion->query("SELECT cedula FROM Conductores WHERE id_conductor = $idConductor");
+
+if ($resultadoConductor && $resultadoConductor->num_rows > 0) {
+    $filaConductor = $resultadoConductor->fetch_assoc();
+    $cedulaConductor = $filaConductor['cedula'];
+}
+
+if ($idFuncionarioCopiloto > 0) {
+    $resultadoCopiloto = $conexion->query("SELECT nombre, apellido, cedula
+                                           FROM Funcionarios
+                                           WHERE id_funcionario = $idFuncionarioCopiloto");
+
+    if (!$resultadoCopiloto || $resultadoCopiloto->num_rows == 0) {
+        echo json_encode(array('ok' => false, 'error' => 'El funcionario seleccionado como copiloto no existe'));
+        exit;
+    }
+
+    $datosCopiloto = $resultadoCopiloto->fetch_assoc();
+
+    if ($cedulaConductor != '' && $datosCopiloto['cedula'] == $cedulaConductor) {
+        echo json_encode(array('ok' => false, 'error' => 'El copiloto no puede ser la misma persona que el conductor'));
+        exit;
+    }
 }
 
 if ($elementoDescripcion == '') {
@@ -365,16 +416,10 @@ if ($horaLlegadaEscapada == '') {
     $valorLlegada = "'$horaLlegadaEscapada'";
 }
 
-if ($idAcompanante > 0) {
-    $valorAcompanante = $idAcompanante;
-} else {
-    $valorAcompanante = 'NULL';
-}
-
 $sql = "INSERT INTO Traslados (hora_salida, hora_llegada, origen, destino, estado,
-                              id_conductor, id_acompanante, elemento_tipo, elemento_descripcion)
+                              id_conductor, elemento_tipo, elemento_descripcion)
         VALUES ('$horaSalidaEscapada', $valorLlegada, '$origenEscapado', '$destinoEscapado', 'Pendiente',
-                $idConductor, $valorAcompanante, '$elementoTipoEscapado', '$elementoDescripcionEscapada')";
+                $idConductor, '$elementoTipoEscapado', '$elementoDescripcionEscapada')";
 
 if (!$conexion->query($sql)) {
     echo json_encode(array('ok' => false, 'error' => $conexion->error));
@@ -386,6 +431,33 @@ $idTraslado = ultimoIdInsertado($conexion);
 // US-08: registrar el estado inicial en el historial
 $conexion->query("INSERT INTO Traslado_Estados (id_traslado, estado, fecha_cambio)
                   VALUES ($idTraslado, 'Pendiente', NOW())");
+
+// Registrar acompañante si se completó algún campo
+if ($acompananteNombre != '' || $acompananteApellido != '' || $acompananteCedula != '' || $acompananteTelefono != '') {
+    $nombreAcom = $conexion->real_escape_string($acompananteNombre);
+    $apellidoAcom = $conexion->real_escape_string($acompananteApellido);
+    $cedulaAcom = $conexion->real_escape_string($acompananteCedula);
+    $telefonoAcom = $conexion->real_escape_string($acompananteTelefono);
+
+    if (!$conexion->query("INSERT INTO Acompanantes (nombre, apellido, cedula_acom, telefono, id_traslado)
+                           VALUES ('$nombreAcom', '$apellidoAcom', '$cedulaAcom', '$telefonoAcom', $idTraslado)")) {
+        echo json_encode(array('ok' => false, 'error' => $conexion->error));
+        exit;
+    }
+}
+
+// Registrar copiloto si se eligió un funcionario
+if ($datosCopiloto !== null) {
+    $nombreCop = $conexion->real_escape_string($datosCopiloto['nombre']);
+    $apellidoCop = $conexion->real_escape_string($datosCopiloto['apellido']);
+    $cedulaCop = $conexion->real_escape_string($datosCopiloto['cedula']);
+
+    if (!$conexion->query("INSERT INTO Copilotos (id_funcionario, nombre_copiloto, apellido_copiloto, cedula, id_traslado)
+                           VALUES ($idFuncionarioCopiloto, '$nombreCop', '$apellidoCop', '$cedulaCop', $idTraslado)")) {
+        echo json_encode(array('ok' => false, 'error' => $conexion->error));
+        exit;
+    }
+}
 
 $matriculaEscapada = $conexion->real_escape_string($ambulancia['matricula']);
 

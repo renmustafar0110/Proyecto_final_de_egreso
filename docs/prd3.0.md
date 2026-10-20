@@ -256,9 +256,8 @@ Sistema para la gestión y seguimiento del transporte realizado mediante ambulan
 - **Copiloto o acompañante**
 - **Punto de origen** y **destino**
 - **Hora de salida**, **hora estimada de llegada** y **hora efectiva de llegada**
-- **Rutas** dentro del circuito nacional
 
-El administrativo actualiza manualmente el estado de cada operación durante todo su ciclo (Pendiente, En curso, En ruta, Llegada a destino, Retorno, Finalizado) y cuenta con un panel de control con las ambulancias en circulación, traslados en curso e históricos con búsqueda y filtros (fecha, conductor, paciente, estado).
+El administrativo actualiza manualmente el estado de cada operación durante todo su ciclo (Pendiente, En curso, En ruta, Llegada a destino, Retorno, Finalizado) y cuenta con un panel de control con las ambulancias en circulación y los traslados en curso.
 
 ### 5.2. Historias de Usuario
 
@@ -297,19 +296,6 @@ El administrativo actualiza manualmente el estado de cada operación durante tod
 - Los traslados activos aparecen destacados
 - Permite filtrar por estado y fecha
 - El panel refleja el estado de cada traslado en tiempo real (o cuasi-real)
-
----
-
-#### US-10: Histórico de traslados
-> **Como** administrativo  
-> **Quiero** consultar traslados finalizados  
-> **Para** generar reportes o auditorías
-
-*Criterios de aceptación:*
-- Búsqueda por fecha, conductor, paciente, ID de traslado
-- Vista de detalle con línea de tiempo de cambios de estado
-- Exportación a CSV o PDF
-- Los datos persisten correctamente en el servidor
 
 ---
 
@@ -359,28 +345,6 @@ El administrativo actualiza manualmente el estado de cada operación durante tod
 
 ---
 
-**CU-11: Consultar histórico de traslados**
-| Campo | Detalle |
-|-------|---------|
-| **Actor** | Funcionario administrativo |
-| **Descripción** | El administrativo busca traslados finalizados para auditoría o reportes |
-| **Precondición** | Existen traslados finalizados en el sistema |
-| **Postcondición** | El usuario obtiene los resultados de la búsqueda |
-| **Flujo principal** | 1. El usuario accede al histórico. 2. Ingresa filtros de búsqueda (fecha, conductor, paciente, ID). 3. El sistema muestra los resultados. 4. El usuario selecciona un traslado para ver su línea de tiempo. 5. El usuario puede exportar los datos a CSV o PDF. |
-
----
-
-**CU-12: Gestionar rutas del circuito nacional**
-| Campo | Detalle |
-|-------|---------|
-| **Actor** | Funcionario administrativo |
-| **Descripción** | El administrativo gestiona las rutas disponibles dentro del circuito nacional para asignarlas a los traslados |
-| **Precondición** | El usuario ha iniciado sesión |
-| **Postcondición** | La ruta se registra y queda disponible para asociar a traslados |
-| **Flujo principal** | 1. El usuario accede al módulo de rutas. 2. Define o selecciona una ruta dentro del circuito nacional. 3. Asocia la ruta a un traslado existente o la guarda como disponible. 4. El sistema confirma la operación. |
-
----
-
 ## 6. Modelo de Datos
 
 ### 6.1. Diagrama Entidad-Relación
@@ -402,7 +366,6 @@ flowchart LR
     genera1{{genera}}
     tiene2{{tiene}}
     lleva1{{lleva}}
-    tiene3{{tiene}}
     tiene4{{tiene}}
     carga2{{carga}}
 
@@ -418,7 +381,6 @@ flowchart LR
     FC_D[FUNCIONARIOS_CARGA_DOCUMENTOS]
     AMBULANCIAS[AMBULANCIAS]
     ACOMPANANTES[ACOMPAÑANTES]
-    RUTAS[RUTAS]
     EQUIPOS[EQUIPOS]
 
     %% ATRIBUTOS - PACIENTES
@@ -499,13 +461,6 @@ flowchart LR
     ac_idt((id_traslado FK))
     ac_tel((telefono))
 
-    %% ATRIBUTOS - RUTAS
-    ru_id((id_ruta PK))
-    ru_dom((domicilio))
-    ru_km((km))
-    ru_idt((id_traslado FK))
-    ru_est((estado_trafico))
-
     %% ATRIBUTOS - EQUIPOS
     eq_id((id_equipo PK))
     eq_func((funcion))
@@ -524,7 +479,6 @@ flowchart LR
     FC_D --- fcd_idf & fcd_idd & fcd_fcarga
     AMBULANCIAS --- a_mat & a_num & a_idt
     ACOMPANANTES --- ac_ced & ac_nom & ac_ape & ac_idt & ac_tel
-    RUTAS --- ru_id & ru_dom & ru_km & ru_idt & ru_est
     EQUIPOS --- eq_id & eq_func & eq_tipo & eq_idt
 
     %% CONEXIONES ENTIDAD - RELACION - ENTIDAD
@@ -555,9 +509,6 @@ flowchart LR
     TRASLADOS -- 1 --- lleva1
     lleva1 -- N --- ACOMPANANTES
 
-    TRASLADOS -- 1 --- tiene3
-    tiene3 -- N --- RUTAS
-
     TRASLADOS -- 1 --- tiene4
     tiene4 -- N --- EQUIPOS
 
@@ -565,9 +516,9 @@ flowchart LR
     carga2 -- N --- M_BIOLOGICAS
 
     %% APLICAR ESTILOS
-    class PACIENTES,TRASLADOS,QR,DOCUMENTOS,ENCUESTAS,RESPUESTAS,M_BIOLOGICAS,FUNCIONARIOS,FC_D,AMBULANCIAS,ACOMPANANTES,RUTAS,EQUIPOS entidad
-    class p_ced,p_nombre,p_apellido,p_fnac,p_tel,p_email,p_dir,t_id,t_hsal,t_hlleg,t_orig,t_dest,t_km,t_est,q_id,q_url,q_ced,d_id,d_nom,d_nombre,d_arch,d_nompac,d_ced,d_idqr,e_prov,e_preg,e_ced,e_titulo,r_id,r_graf,r_porc,r_prov,r_coment,mb_id,mb_tipo,mb_cuid,mb_rec,mb_idt,mb_frec,f_id,f_nombre,f_apellido,f_cargo,f_ced,f_idmb,fcd_idf,fcd_idd,fcd_fcarga,a_mat,a_num,a_idt,ac_ced,ac_nom,ac_ape,ac_idt,ac_tel,ru_id,ru_dom,ru_km,ru_idt,ru_est,eq_id,eq_func,eq_tipo,eq_idt atributo
-    class tiene1,carga_doc,cuida1,contiene1,escanea1,realiza1,genera1,tiene2,lleva1,tiene3,tiene4,carga2 relacion
+    class PACIENTES,TRASLADOS,QR,DOCUMENTOS,ENCUESTAS,RESPUESTAS,M_BIOLOGICAS,FUNCIONARIOS,FC_D,AMBULANCIAS,ACOMPANANTES,EQUIPOS entidad
+    class p_ced,p_nombre,p_apellido,p_fnac,p_tel,p_email,p_dir,t_id,t_hsal,t_hlleg,t_orig,t_dest,t_km,t_est,q_id,q_url,q_ced,d_id,d_nom,d_nombre,d_arch,d_nompac,d_ced,d_idqr,e_prov,e_preg,e_ced,e_titulo,r_id,r_graf,r_porc,r_prov,r_coment,mb_id,mb_tipo,mb_cuid,mb_rec,mb_idt,mb_frec,f_id,f_nombre,f_apellido,f_cargo,f_ced,f_idmb,fcd_idf,fcd_idd,fcd_fcarga,a_mat,a_num,a_idt,ac_ced,ac_nom,ac_ape,ac_idt,ac_tel,eq_id,eq_func,eq_tipo,eq_idt atributo
+    class tiene1,carga_doc,cuida1,contiene1,escanea1,realiza1,genera1,tiene2,lleva1,tiene4,carga2 relacion
 ```
 
 ### 6.2. Descripción de Entidades
@@ -585,7 +536,6 @@ flowchart LR
 | **Funcionarios_carga_Documentos** | id_funcionario (FK), id_documento (FK), fecha_carga | Tabla intermedia N:N: registra qué funcionario cargó qué documento y cuándo |
 | **Ambulancias** | matricula (PK), numero_coche, id_traslado (FK) | Vehículos de transporte del hospital |
 | **Acompañantes** | cedula_acom (PK), nombre, apellido, id_traslado (FK), telefono | Copilotos o acompañantes de los traslados |
-| **Rutas** | id_ruta (PK), domicilio, km, id_traslado (FK), estado_trafico | Rutas del circuito nacional gestionadas para los traslados |
 | **Equipos** | id_equipo (PK), funcion, tipo, id_traslado (FK) | Equipamiento médico u otros insumos transportados |
 
 ### 6.3. Relaciones
@@ -601,7 +551,6 @@ flowchart LR
 | genera | Encuestas - Respuestas | 1:N | Respuestas.proveniencia | Una encuesta genera múltiples respuestas |
 | tiene | Traslados - Ambulancias | 1:N | Ambulancias.id_traslado | Un traslado tiene una ambulancia asignada |
 | lleva | Traslados - Acompañantes | 1:N | Acompanantes.id_traslado | Un traslado puede llevar varios acompañantes |
-| tiene | Traslados - Rutas | 1:N | Rutas.id_traslado | Un traslado tiene una o varias rutas |
 | tiene | Traslados - Equipos | 1:N | Equipos.id_traslado | Un traslado puede incluir varios equipos |
 | carga | Traslados - M. Biológicas | 1:N | M_Biologicas.id_traslado | Un traslado puede cargar varias muestras biológicas |
 
@@ -638,7 +587,7 @@ flowchart LR
 |-----------|-----------|
 | **Must have** | US-01, US-03, US-07, US-08, US-09 |
 | **Should have** | US-02, US-04, US-05, US-11 |
-| **Could have** | US-06, US-10 |
+| **Could have** | US-06 |
 | **Won't have (ahora)** | App nativa móvil, tracking GPS, notificaciones push |
 
 ---
@@ -652,7 +601,7 @@ flowchart LR
 | Sprint 3 | US-05, US-06 | Respuesta y análisis de encuestas |
 | Sprint 4 | US-07, US-08 | Registro y estados de traslados |
 | Sprint 5 | US-09, US-11 | Panel de control + elementos no biológicos |
-| Sprint 6 | US-10 | Histórico, reportes, integración final |
+| Sprint 6 | — | Integración final |
 
 ---
 

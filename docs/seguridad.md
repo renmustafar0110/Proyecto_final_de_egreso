@@ -14,7 +14,7 @@ Basado en el Documento de Requisitos de Producto (PRD 3.0 / PRD 2.0).
 - Las sesiones se manejan mediante token (JWT) emitido por el sistema central.
 - Se definen roles con privilegios mínimos:
   - `admin_documentos`: gestiona documentos y encuestas.
-  - `admin_ambulancias`: gestiona traslados, rutas y estados.
+  - `admin_ambulancias`: gestiona traslados y estados.
   - `super_admin`: control total del sistema, administración de usuarios y auditoría.
 - Los pacientes **no requieren autenticación** para acceder a documentos vía QR, pero sí solo lectura y sin listado.
 

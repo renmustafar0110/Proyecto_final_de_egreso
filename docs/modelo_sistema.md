@@ -18,13 +18,12 @@ El modelo esencial representa la funcionalidad pura del sistema, independienteme
 | Generar QR | Producir un código QR único por cada documento cargado |
 | Escanear QR | Permitir al paciente acceder al documento mediante escaneo |
 | Registrar traslados | Crear y gestionar traslados en ambulancia |
-| Monitorear rutas | Registrar origen, destino, tiempos y kilometraje |
 | Gestionar encuestas | Crear encuestas y registrar respuestas de satisfacción |
 | Autenticar usuarios | Validar credenciales de funcionarios y pacientes |
 
 ### Entidades Esenciales
 
-Pacientes, Funcionarios, Documentos, QR, Encuestas, Respuestas, Traslados, Ambulancias, Acompanantes, Rutas, Equipos, M_Biologicas.
+Pacientes, Funcionarios, Documentos, QR, Encuestas, Respuestas, Traslados, Ambulancias, Acompanantes, Equipos, M_Biologicas.
 
 ---
 
@@ -61,7 +60,7 @@ Define el contexto del sistema, sus límites y las interacciones con el entorno 
 |---|---|---|
 | Funcionario | Personal administrativo del hospital | Gestiona documentos, ve traslados, crea encuestas |
 | Paciente | Usuario final de los servicios | Escanea QR, visualiza documentos, responde encuestas |
-| Transportista | Conductor/operador de ambulancia | Registra traslados, rutas y estados |
+| Transportista | Conductor/operador de ambulancia | Registra traslados y estados |
 | Administrador DTI | Personal técnico del hospital | Mantiene el sistema en servidores del piso 6 |
 
 ### Limites del Sistema
@@ -235,14 +234,13 @@ Describe como responde el sistema ante los eventos, expresado mediante diagramas
 +------------------+
 
 +------------------+          +-------------------+
-|   Rutas          |          |   Equipos         |
-+------------------+          +-------------------+
-| - id_ruta        |          | - id_equipo       |
-| - id_traslado:FK |          | - id_traslado:FK  |
-| - domicilio      |          | - funcion         |
-| - km             |          | - tipo            |
-| - estado_trafico |          +-------------------+
-+------------------+
+|   Equipos        |
++-------------------+
+| - id_equipo      |
+| - id_traslado:FK |
+| - funcion        |
+| - tipo           |
++-------------------+
 
 +------------------+
 |   M_Biologicas   |
@@ -288,7 +286,6 @@ Paciente         Sistema            BD
 Transportista ---> [Sistema] ---> [BD: Traslados]
      |                                  |
      |---> [Asignar Ambulancia] <--------|
-     |---> [Registrar Ruta] <------------|
      |---> [Cargar M_Biologica] <--------|
      |---> [Finalizar Traslado] <--------|
 ```

@@ -1,5 +1,4 @@
 var idTraslado = 0;
-var trasladoActual = null;
 
 var avisoDetalle = document.getElementById('aviso-detalle');
 var contenido = document.getElementById('contenido-traslado');
@@ -40,8 +39,6 @@ function cargarDetalle() {
                 mostrarAviso(mensaje);
                 return;
             }
-
-            trasladoActual = resultado.traslado;
 
             avisoDetalle.style.display = 'none';
             contenido.style.display = 'block';

@@ -7,6 +7,10 @@ var selectEstado = document.getElementById('nuevo-estado');
 var campoNuevoEstado = document.getElementById('campo-nuevo-estado');
 var botonActualizar = document.getElementById('btn-actualizar-estado');
 var avisoFinalizado = document.getElementById('aviso-finalizado');
+var accionesTraslado = document.getElementById('acciones-traslado');
+var avisoBloqueo = document.getElementById('aviso-bloqueo');
+var botonEditarTraslado = document.getElementById('btn-editar-traslado');
+var botonEliminarTraslado = document.getElementById('btn-eliminar-traslado');
 
 function obtenerIdDeLaUrl() {
     var parametros = new URLSearchParams(window.location.search);
@@ -76,6 +80,13 @@ function dibujarDetalle(traslado) {
     document.getElementById('detalle-estado').textContent = traslado.estado;
 
     document.getElementById('titulo-traslado').textContent = 'Traslado #' + traslado.id_traslado;
+
+    // Editar / eliminar solo están disponibles mientras siga en estado "Pendiente"
+    var editable = traslado.estado == 'Pendiente';
+
+    accionesTraslado.style.display = editable ? 'flex' : 'none';
+    avisoBloqueo.style.display = editable ? 'none' : 'block';
+    botonEditarTraslado.setAttribute('href', 'trazabilidad.html?editar=' + traslado.id_traslado);
 }
 
 function dibujarHistorial(historial) {
@@ -159,6 +170,40 @@ formulario.addEventListener('submit', function (evento) {
             alert('No se pudo conectar con el servidor.');
         });
 });
+
+botonEliminarTraslado.onclick = function () {
+    if (confirm('¿Eliminar el traslado #' + idTraslado + '?\nEsta acción no se puede deshacer.') == false) {
+        return;
+    }
+
+    var datos = new FormData();
+    datos.append('accion', 'eliminar');
+    datos.append('id_traslado', idTraslado);
+
+    fetch('../php/trazabilidad.php', {
+        method: 'POST',
+        body: datos
+    })
+        .then(function (respuesta) {
+            return respuesta.json();
+        })
+        .then(function (resultado) {
+            if (resultado != null && resultado.ok == true) {
+                alert('El traslado #' + idTraslado + ' fue eliminado.');
+                window.location.href = 'panel_Traslados.html';
+                return;
+            }
+
+            var mensaje = 'No se pudo eliminar el traslado.';
+            if (resultado != null && resultado.error != null) {
+                mensaje = resultado.error;
+            }
+            alert('Error: ' + mensaje);
+        })
+        .catch(function () {
+            alert('No se pudo conectar con el servidor.');
+        });
+};
 
 idTraslado = obtenerIdDeLaUrl();
 

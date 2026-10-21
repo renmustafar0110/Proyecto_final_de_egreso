@@ -1,5 +1,6 @@
 var listaEncuestas = [];
 var contadorPreguntas = 0;
+var idEncuestaEnEdicion = 0;
 
 var listaPreguntas = document.getElementById('lista-preguntas');
 var botonAgregar = document.getElementById('btn-agregar-pregunta');
@@ -16,7 +17,7 @@ function urlEncuesta(id) {
 // ---------------------------------------------------------------------
 // Constructor de preguntas
 // ---------------------------------------------------------------------
-function crearPregunta() {
+function crearPregunta(datos) {
     contadorPreguntas++;
 
     var bloque = document.createElement('div');
@@ -51,6 +52,23 @@ function crearPregunta() {
     var tipo = bloque.querySelector('.pregunta-tipo');
     var campoOpciones = bloque.querySelector('.campo-opciones');
 
+    // Carga de una pregunta existente (modo edición)
+    if (datos != null) {
+        bloque.querySelector('.pregunta-texto').value = datos.texto != null ? datos.texto : '';
+
+        if (datos.tipo != null) {
+            tipo.value = datos.tipo;
+        }
+
+        if (Array.isArray(datos.opciones) && datos.opciones.length > 0) {
+            bloque.querySelector('.pregunta-opciones').value = datos.opciones.join('\n');
+        }
+
+        if (datos.id_pregunta != null) {
+            bloque.setAttribute('data-id-pregunta', datos.id_pregunta);
+        }
+    }
+
     tipo.addEventListener('change', function () {
         campoOpciones.style.display = (tipo.value == 'multiple') ? 'block' : 'none';
     });
@@ -59,7 +77,7 @@ function crearPregunta() {
         listaPreguntas.removeChild(bloque);
     };
 
-    campoOpciones.style.display = 'block';
+    campoOpciones.style.display = (tipo.value == 'multiple') ? 'block' : 'none';
 }
 
 function recogerPreguntas() {
@@ -82,7 +100,14 @@ function recogerPreguntas() {
             }
         }
 
-        preguntas.push({ texto: texto, tipo: tipo, opciones: opciones });
+        var pregunta = { texto: texto, tipo: tipo, opciones: opciones };
+        var idPregunta = bloque.getAttribute('data-id-pregunta');
+
+        if (idPregunta != null) {
+            pregunta.id_pregunta = parseInt(idPregunta, 10);
+        }
+
+        preguntas.push(pregunta);
     }
 
     return preguntas;
@@ -106,6 +131,7 @@ function armarFila(encuesta) {
     fila = fila + '<td class="acciones">';
     fila = fila + '<button type="button" class="btn-accion" data-accion="qr" data-id="' + encuesta.id_encuesta + '">Ver QR</button>';
     fila = fila + '<button type="button" class="btn-accion" data-accion="estado" data-id="' + encuesta.id_encuesta + '" data-estado="' + siguiente + '">' + textoBoton + '</button>';
+    fila = fila + '<button type="button" class="btn-accion" data-accion="editar" data-id="' + encuesta.id_encuesta + '">Editar</button>';
     fila = fila + '<button type="button" class="btn-accion btn-borrar" data-accion="eliminar" data-id="' + encuesta.id_encuesta + '">Eliminar</button>';
     fila = fila + '</td>';
     fila = fila + '</tr>';
@@ -131,6 +157,10 @@ function manejarBoton() {
 
     if (accion == 'estado') {
         cambiarEstado(id, this.getAttribute('data-estado'));
+    }
+
+    if (accion == 'editar') {
+        editarEncuesta(id);
     }
 
     if (accion == 'eliminar') {
@@ -247,6 +277,64 @@ function eliminarEncuesta(id) {
 }
 
 // ---------------------------------------------------------------------
+// Edición
+// ---------------------------------------------------------------------
+function editarEncuesta(id) {
+    fetch('../php/encuestas.php?accion=detalle&id=' + encodeURIComponent(id))
+        .then(function (respuesta) {
+            return respuesta.json();
+        })
+        .then(function (resultado) {
+            if (resultado == null || resultado.ok != true) {
+                alert(resultado != null && resultado.mensaje ? resultado.mensaje : 'No se pudo cargar la encuesta.');
+                return;
+            }
+
+            cargarFormularioEdicion(resultado.encuesta);
+        })
+        .catch(function () {
+            alert('No se pudo conectar con el servidor.');
+        });
+}
+
+function cargarFormularioEdicion(encuesta) {
+    idEncuestaEnEdicion = encuesta.id_encuesta;
+
+    document.getElementById('enc-titulo').value = encuesta.titulo != null ? encuesta.titulo : '';
+    document.getElementById('enc-descripcion').value = encuesta.descripcion != null ? encuesta.descripcion : '';
+
+    listaPreguntas.innerHTML = '';
+
+    var preguntas = Array.isArray(encuesta.preguntas) ? encuesta.preguntas : [];
+
+    if (preguntas.length == 0) {
+        crearPregunta();
+    }
+
+    for (var i = 0; i < preguntas.length; i++) {
+        crearPregunta(preguntas[i]);
+    }
+
+    document.getElementById('titulo-formulario').textContent = 'Editar Encuesta #' + encuesta.id_encuesta;
+    document.getElementById('btn-crear-encuesta').value = 'Guardar Cambios';
+    document.getElementById('btn-cancelar-edicion').style.display = '';
+    formulario.scrollIntoView({ block: 'start' });
+}
+
+function volverAModoCrear() {
+    idEncuestaEnEdicion = 0;
+
+    formulario.reset();
+    listaPreguntas.innerHTML = '';
+    contadorPreguntas = 0;
+    crearPregunta();
+
+    document.getElementById('titulo-formulario').textContent = 'Crear Encuesta';
+    document.getElementById('btn-crear-encuesta').value = 'Crear Encuesta';
+    document.getElementById('btn-cancelar-edicion').style.display = 'none';
+}
+
+// ---------------------------------------------------------------------
 // QR
 // ---------------------------------------------------------------------
 function mostrarQR(id) {
@@ -295,7 +383,9 @@ document.getElementById('modal-qr').onclick = function (evento) {
 // ---------------------------------------------------------------------
 // Eventos
 // ---------------------------------------------------------------------
-botonAgregar.onclick = crearPregunta;
+botonAgregar.onclick = function () {
+    crearPregunta();
+};
 
 formulario.addEventListener('submit', function (evento) {
     evento.preventDefault();
@@ -326,23 +416,29 @@ formulario.addEventListener('submit', function (evento) {
     }
 
     var datos = new FormData();
-    datos.append('accion', 'crear');
+    var esEdicion = idEncuestaEnEdicion > 0;
+
+    datos.append('accion', esEdicion ? 'editar' : 'crear');
+
+    if (esEdicion) {
+        datos.append('id_encuesta', idEncuestaEnEdicion);
+    }
+
     datos.append('titulo', titulo);
     datos.append('descripcion', descripcion);
     datos.append('preguntas', JSON.stringify(preguntas));
 
     enviar(datos, function (resultado) {
-        formulario.reset();
-        listaPreguntas.innerHTML = '';
-        contadorPreguntas = 0;
-        crearPregunta();
+        volverAModoCrear();
         renderizarLista();
 
-        if (resultado != null && resultado.id_encuesta) {
+        if (esEdicion == false && resultado != null && resultado.id_encuesta) {
             mostrarQR(resultado.id_encuesta);
         }
-    }, true);
+    }, esEdicion == false);
 });
+
+document.getElementById('btn-cancelar-edicion').onclick = volverAModoCrear;
 
 crearPregunta();
 renderizarLista();

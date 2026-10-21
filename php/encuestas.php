@@ -177,61 +177,10 @@ if (isset($_POST['accion'])) {
 // US-04: crear encuesta con preguntas personalizables
 if ($accion == 'crear') {
 
-    $titulo = '';
-    if (isset($_POST['titulo'])) {
-        $titulo = trim($_POST['titulo']);
-    }
+    $datos = leerEncuestaValidada($tiposValidos);
 
-    $descripcion = '';
-    if (isset($_POST['descripcion'])) {
-        $descripcion = trim($_POST['descripcion']);
-    }
-
-    if ($titulo == '') {
-        responder(false, array('mensaje' => 'Ingrese el título de la encuesta'));
-    }
-
-    $preguntas = array();
-    if (isset($_POST['preguntas'])) {
-        $decodificado = json_decode($_POST['preguntas'], true);
-        if (is_array($decodificado)) {
-            $preguntas = $decodificado;
-        }
-    }
-
-    if (count($preguntas) == 0) {
-        responder(false, array('mensaje' => 'Agregue al menos una pregunta'));
-    }
-
-    foreach ($preguntas as $pregunta) {
-        $texto = isset($pregunta['texto']) ? trim($pregunta['texto']) : '';
-        $tipo = isset($pregunta['tipo']) ? $pregunta['tipo'] : '';
-
-        if ($texto == '') {
-            responder(false, array('mensaje' => 'Todas las preguntas deben tener un enunciado'));
-        }
-
-        if (!in_array($tipo, $tiposValidos, true)) {
-            responder(false, array('mensaje' => 'Tipo de pregunta no válido'));
-        }
-
-        if ($tipo == 'multiple') {
-            $opciones = isset($pregunta['opciones']) && is_array($pregunta['opciones']) ? $pregunta['opciones'] : array();
-            $limpias = array();
-            foreach ($opciones as $opcion) {
-                $opcion = trim($opcion);
-                if ($opcion != '') {
-                    $limpias[] = $opcion;
-                }
-            }
-            if (count($limpias) < 2) {
-                responder(false, array('mensaje' => 'Las preguntas de opción múltiple necesitan al menos 2 opciones'));
-            }
-        }
-    }
-
-    $tituloEscapado = $conexion->real_escape_string($titulo);
-    $descripcionEscapada = $conexion->real_escape_string($descripcion);
+    $tituloEscapado = $conexion->real_escape_string($datos['titulo']);
+    $descripcionEscapada = $conexion->real_escape_string($datos['descripcion']);
 
     $sql = "INSERT INTO Encuestas_Formularios (titulo, descripcion, estado, fecha_creacion)
             VALUES ('$tituloEscapado', '$descripcionEscapada', 1, NOW())";
@@ -243,24 +192,10 @@ if ($accion == 'crear') {
     $idEncuesta = ultimoIdInsertado($conexion);
     $orden = 0;
 
-    foreach ($preguntas as $pregunta) {
+    foreach ($datos['preguntas'] as $pregunta) {
         $texto = $conexion->real_escape_string(trim($pregunta['texto']));
-        $tipo = $pregunta['tipo'];
-        $opcionesJson = 'NULL';
-
-        if ($tipo == 'multiple') {
-            $limpias = array();
-            foreach ($pregunta['opciones'] as $opcion) {
-                $opcion = trim($opcion);
-                if ($opcion != '') {
-                    $limpias[] = $opcion;
-                }
-            }
-            $json = $conexion->real_escape_string(json_encode($limpias, JSON_UNESCAPED_UNICODE));
-            $opcionesJson = "'$json'";
-        }
-
-        $entidadTipo = $conexion->real_escape_string($tipo);
+        $entidadTipo = $conexion->real_escape_string($pregunta['tipo']);
+        $opcionesJson = opcionesDePregunta($conexion, $pregunta);
 
         $sqlPregunta = "INSERT INTO Encuestas_Preguntas (id_encuesta, texto, tipo, opciones, orden)
                         VALUES ($idEncuesta, '$texto', '$entidadTipo', $opcionesJson, $orden)";
@@ -273,6 +208,110 @@ if ($accion == 'crear') {
     }
 
     responder(true, array('mensaje' => 'Encuesta creada', 'id_encuesta' => $idEncuesta));
+}
+
+// US-04: editar una encuesta existente (título, descripción y preguntas).
+// Las preguntas que conservan su id se actualizan, las nuevas se agregan
+// y las que desaparecen del formulario se eliminan junto a sus respuestas.
+if ($accion == 'editar') {
+
+    $id = 0;
+    if (isset($_POST['id_encuesta'])) {
+        $id = intval($_POST['id_encuesta']);
+    }
+
+    if ($id <= 0) {
+        responder(false, array('mensaje' => 'Encuesta no válida'));
+    }
+
+    $encuestaExistente = obtenerEncuesta($conexion, $id);
+
+    if ($encuestaExistente === null) {
+        responder(false, array('mensaje' => 'La encuesta no existe'));
+    }
+
+    $datos = leerEncuestaValidada($tiposValidos);
+
+    $tituloEscapado = $conexion->real_escape_string($datos['titulo']);
+    $descripcionEscapada = $conexion->real_escape_string($datos['descripcion']);
+
+    $conexion->begin_transaction();
+
+    if (!$conexion->query("UPDATE Encuestas_Formularios
+                           SET titulo = '$tituloEscapado', descripcion = '$descripcionEscapada'
+                           WHERE id_encuesta = $id")) {
+        responder(false, array('mensaje' => 'Falló la actualización: ' . $conexion->error));
+    }
+
+    $existentes = array();
+    $resultadoExistente = $conexion->query("SELECT id_pregunta FROM Encuestas_Preguntas
+                                            WHERE id_encuesta = $id");
+
+    if ($resultadoExistente) {
+        while ($fila = $resultadoExistente->fetch_assoc()) {
+            $existentes[] = intval($fila['id_pregunta']);
+        }
+    }
+
+    $conservadas = array();
+    $orden = 0;
+
+    foreach ($datos['preguntas'] as $pregunta) {
+        $texto = $conexion->real_escape_string(trim($pregunta['texto']));
+        $entidadTipo = $conexion->real_escape_string($pregunta['tipo']);
+        $opcionesJson = opcionesDePregunta($conexion, $pregunta);
+
+        $idPregunta = 0;
+        if (isset($pregunta['id_pregunta'])) {
+            $idPregunta = intval($pregunta['id_pregunta']);
+        }
+
+        if ($idPregunta > 0 && in_array($idPregunta, $existentes, true)) {
+            $sqlPregunta = "UPDATE Encuestas_Preguntas
+                            SET texto = '$texto', tipo = '$entidadTipo', opciones = $opcionesJson, orden = $orden
+                            WHERE id_pregunta = $idPregunta AND id_encuesta = $id";
+
+            if (!$conexion->query($sqlPregunta)) {
+                responder(false, array('mensaje' => 'Falló la actualización de una pregunta: ' . $conexion->error));
+            }
+
+            $conservadas[] = $idPregunta;
+        } else {
+            $sqlPregunta = "INSERT INTO Encuestas_Preguntas (id_encuesta, texto, tipo, opciones, orden)
+                            VALUES ($id, '$texto', '$entidadTipo', $opcionesJson, $orden)";
+
+            if (!$conexion->query($sqlPregunta)) {
+                responder(false, array('mensaje' => 'Falló el registro de una pregunta: ' . $conexion->error));
+            }
+        }
+
+        $orden++;
+    }
+
+    $eliminadas = array();
+
+    foreach ($existentes as $idExistente) {
+        if (in_array($idExistente, $conservadas, true) == false) {
+            $eliminadas[] = $idExistente;
+        }
+    }
+
+    if (count($eliminadas) > 0) {
+        $listaEliminadas = implode(', ', $eliminadas);
+
+        // Primero se quitan las respuestas que dependen de esas preguntas
+        $conexion->query("DELETE FROM Encuestas_Respuesta_Detalle
+                          WHERE id_pregunta IN ($listaEliminadas)");
+
+        if (!$conexion->query("DELETE FROM Encuestas_Preguntas
+                               WHERE id_pregunta IN ($listaEliminadas) AND id_encuesta = $id")) {
+            responder(false, array('mensaje' => 'Falló la eliminación de una pregunta: ' . $conexion->error));
+        }
+    }
+
+    $conexion->commit();
+
+    responder(true, array('mensaje' => 'Encuesta actualizada', 'id_encuesta' => $id));
 }
 
 // US-04: activar / desactivar encuesta (el QR deja de funcionar al desactivar)
@@ -326,6 +365,86 @@ responder(false, array('mensaje' => 'Acción no reconocida'));
 // ---------------------------------------------------------------------
 // Funciones auxiliares
 // ---------------------------------------------------------------------
+
+// Lee y valida los datos enviados por el formulario de encuesta.
+// Si algo falta o no es válido responde el error y detiene la ejecución.
+function leerEncuestaValidada($tiposValidos) {
+    $titulo = '';
+    if (isset($_POST['titulo'])) {
+        $titulo = trim($_POST['titulo']);
+    }
+
+    $descripcion = '';
+    if (isset($_POST['descripcion'])) {
+        $descripcion = trim($_POST['descripcion']);
+    }
+
+    if ($titulo == '') {
+        responder(false, array('mensaje' => 'Ingrese el título de la encuesta'));
+    }
+
+    $preguntas = array();
+    if (isset($_POST['preguntas'])) {
+        $decodificado = json_decode($_POST['preguntas'], true);
+        if (is_array($decodificado)) {
+            $preguntas = $decodificado;
+        }
+    }
+
+    if (count($preguntas) == 0) {
+        responder(false, array('mensaje' => 'Agregue al menos una pregunta'));
+    }
+
+    foreach ($preguntas as $pregunta) {
+        $texto = isset($pregunta['texto']) ? trim($pregunta['texto']) : '';
+        $tipo = isset($pregunta['tipo']) ? $pregunta['tipo'] : '';
+
+        if ($texto == '') {
+            responder(false, array('mensaje' => 'Todas las preguntas deben tener un enunciado'));
+        }
+
+        if (!in_array($tipo, $tiposValidos, true)) {
+            responder(false, array('mensaje' => 'Tipo de pregunta no válido'));
+        }
+
+        if ($tipo == 'multiple') {
+            $opciones = isset($pregunta['opciones']) && is_array($pregunta['opciones']) ? $pregunta['opciones'] : array();
+            $limpias = array();
+            foreach ($opciones as $opcion) {
+                $opcion = trim($opcion);
+                if ($opcion != '') {
+                    $limpias[] = $opcion;
+                }
+            }
+            if (count($limpias) < 2) {
+                responder(false, array('mensaje' => 'Las preguntas de opción múltiple necesitan al menos 2 opciones'));
+            }
+        }
+    }
+
+    return array('titulo' => $titulo, 'descripcion' => $descripcion, 'preguntas' => $preguntas);
+}
+
+// Devuelve la lista de opciones en JSON listo para la consulta,
+// o NULL cuando la pregunta no es de opción múltiple.
+function opcionesDePregunta($conexion, $pregunta) {
+    if ($pregunta['tipo'] != 'multiple') {
+        return 'NULL';
+    }
+
+    $limpias = array();
+    foreach ($pregunta['opciones'] as $opcion) {
+        $opcion = trim($opcion);
+        if ($opcion != '') {
+            $limpias[] = $opcion;
+        }
+    }
+
+    $json = $conexion->real_escape_string(json_encode($limpias, JSON_UNESCAPED_UNICODE));
+
+    return "'" . $json . "'";
+}
+
 function obtenerEncuesta($conexion, $id) {
     $resultado = $conexion->query("SELECT id_encuesta, titulo, descripcion, estado, fecha_creacion
                                    FROM Encuestas_Formularios WHERE id_encuesta = $id");

@@ -141,6 +141,12 @@ footer {
     background-color: #2a4d7a;
 }
 
+.botones-formulario #btn-cancelar-edicion {
+    width: 100%;
+    margin-top: 8px;
+    padding: 9px;
+}
+
 .preguntas-header {
     display: flex;
     align-items: center;

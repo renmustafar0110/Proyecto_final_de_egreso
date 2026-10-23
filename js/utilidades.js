@@ -45,7 +45,11 @@ function formatearFechaHora(valor) {
 
 function etiquetaElemento(tipo) {
     if (tipo == 'equipamiento_medico') {
-        return 'Equipamiento';
+        return 'Equipamiento médico';
+    }
+
+    if (tipo == 'muestra_biologica') {
+        return 'Muestra biológica';
     }
 
     if (tipo == 'otros_insumos') {
@@ -56,7 +60,11 @@ function etiquetaElemento(tipo) {
         return 'Otro';
     }
 
-    return 'Paciente';
+    if (tipo == 'paciente_biologico') {
+        return 'Paciente biológico';
+    }
+
+    return tipo || 'Elemento';
 }
 
 function claseEstado(estado) {

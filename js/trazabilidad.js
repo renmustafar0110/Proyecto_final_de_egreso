@@ -109,6 +109,65 @@ function armarOpciones(lista, idSelect, campoId, textoInicial, textoVacio) {
     select.innerHTML = html;
 }
 
+function configurarCamposElemento() {
+    var tipoSelect = document.getElementById('input-elemento-tipo');
+    var label1 = document.getElementById('label-elemento-dato1');
+    var input1 = document.getElementById('input-elemento-dato1');
+    var label2 = document.getElementById('label-elemento-dato2');
+    var input2 = document.getElementById('input-elemento-dato2');
+    var label3 = document.getElementById('label-elemento-dato3');
+    var input3 = document.getElementById('input-elemento-dato3');
+
+    if (!tipoSelect || !label1 || !input1 || !label2 || !input2 || !label3 || !input3) {
+        return;
+    }
+
+    function actualizar() {
+        var tipo = tipoSelect.value;
+
+        if (tipo == 'paciente_biologico') {
+            label1.textContent = 'Nombre y apellido:';
+            input1.placeholder = 'Ej: Juan Pérez';
+            input1.required = true;
+
+            label2.textContent = 'Cédula:';
+            input2.placeholder = 'Ej: 12345678';
+            input2.required = true;
+
+            label3.textContent = 'Diagnóstico / observaciones:';
+            input3.placeholder = 'Ej: Politraumatismo';
+            input3.required = false;
+        } else if (tipo == 'equipamiento_medico') {
+            label1.textContent = 'Nombre del equipo:';
+            input1.placeholder = 'Ej: Respirador';
+            input1.required = true;
+
+            label2.textContent = 'N° de serie:';
+            input2.placeholder = 'Ej: RM-12345';
+            input2.required = true;
+
+            label3.textContent = 'Observaciones:';
+            input3.placeholder = 'Ej: Para traslado con soporte';
+            input3.required = false;
+        } else if (tipo == 'muestra_biologica') {
+            label1.textContent = 'Tipo de muestra:';
+            input1.placeholder = 'Ej: Sangre';
+            input1.required = true;
+
+            label2.textContent = 'Código / identificación:';
+            input2.placeholder = 'Ej: M-2025-00123';
+            input2.required = true;
+
+            label3.textContent = 'Conservación / observaciones:';
+            input3.placeholder = 'Ej: Refrigerado a 4 °C';
+            input3.required = false;
+        }
+    }
+
+    tipoSelect.addEventListener('change', actualizar);
+    actualizar();
+}
+
 function cargarPersonal() {
     var conductores = fetch('../php/trazabilidad.php?accion=conductores')
         .then(function (respuesta) {
@@ -130,10 +189,14 @@ function cargarPersonal() {
         .then(function (lista) {
             armarOpciones(lista, 'input-copiloto', 'id_funcionario',
                 'Sin copiloto', 'Sin copiloto');
+            armarOpciones(lista, 'input-acompanante', 'id_funcionario',
+                'Sin acompañante', 'Sin acompañante');
         })
         .catch(function () {
             armarOpciones([], 'input-copiloto', 'id_funcionario',
                 'Sin copiloto', 'Sin copiloto');
+            armarOpciones([], 'input-acompanante', 'id_funcionario',
+                'Sin acompañante', 'Sin acompañante');
         });
 
     return Promise.all([conductores, funcionarios]);
@@ -194,20 +257,20 @@ function aplicarDatosAlFormulario(traslado) {
         traslado.id_conductor != null ? String(traslado.id_conductor) : '';
     document.getElementById('input-copiloto').value =
         traslado.copiloto_id_funcionario != null ? String(traslado.copiloto_id_funcionario) : '';
-
-    document.getElementById('input-acompanante-nombre').value =
-        traslado.acompanante_nombre != null ? traslado.acompanante_nombre : '';
-    document.getElementById('input-acompanante-apellido').value =
-        traslado.acompanante_apellido != null ? traslado.acompanante_apellido : '';
-    document.getElementById('input-acompanante-cedula').value =
-        traslado.acompanante_cedula != null ? traslado.acompanante_cedula : '';
-    document.getElementById('input-acompanante-telefono').value =
-        traslado.acompanante_telefono != null ? traslado.acompanante_telefono : '';
+    document.getElementById('input-acompanante').value =
+        traslado.acompanante_id_funcionario != null ? String(traslado.acompanante_id_funcionario) : '';
 
     document.getElementById('input-elemento-tipo').value =
         traslado.elemento_tipo != null ? traslado.elemento_tipo : 'paciente_biologico';
-    document.getElementById('input-elemento-descripcion').value =
-        traslado.elemento_descripcion != null ? traslado.elemento_descripcion : '';
+    if (typeof configurarCamposElemento === 'function') {
+        configurarCamposElemento();
+    }
+    document.getElementById('input-elemento-dato1').value =
+        traslado.elemento_dato1 != null ? traslado.elemento_dato1 : '';
+    document.getElementById('input-elemento-dato2').value =
+        traslado.elemento_dato2 != null ? traslado.elemento_dato2 : '';
+    document.getElementById('input-elemento-dato3').value =
+        traslado.elemento_dato3 != null ? traslado.elemento_dato3 : '';
 
     document.getElementById('input-origen').value =
         traslado.origen != null ? traslado.origen : '';
@@ -239,6 +302,10 @@ function aplicarDatosAlFormulario(traslado) {
 
         selectCoche.value = valorCoche;
     }
+}
+
+if (typeof configurarCamposElemento === 'function') {
+    configurarCamposElemento();
 }
 
 if (idTrasladoAEditar > 0) {

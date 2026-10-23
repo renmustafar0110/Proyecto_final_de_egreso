@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         exit;
     }
 
-    // Listado de funcionarios para elegir copiloto
+    // Listado de funcionarios para elegir acompañante o copiloto
     if ($accion == 'funcionarios') {
         $funcionarios = array();
         $resultado = $conexion->query("SELECT id_funcionario, cedula, nombre, apellido
@@ -67,8 +67,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         $sql = "SELECT t.id_traslado, t.origen, t.destino,
                        t.hora_salida, t.hora_llegada, t.estado,
                        t.elemento_tipo, t.elemento_descripcion,
+                       t.elemento_dato1, t.elemento_dato2, t.elemento_dato3,
                        c.nombre AS conductor_nombre, c.apellido AS conductor_apellido,
                        ac.nombre AS acompanante_nombre, ac.apellido AS acompanante_apellido,
+                       cp.id_funcionario AS copiloto_id_funcionario,
                        cp.nombre_copiloto AS copiloto_nombre, cp.apellido_copiloto AS copiloto_apellido,
                        a.numero_coche
                 FROM Traslados t
@@ -119,11 +121,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         }
 
         $sql = "SELECT t.id_traslado, t.origen, t.destino, t.hora_salida, t.hora_llegada, t.estado,
-                       t.elemento_tipo, t.elemento_descripcion, t.id_conductor,
+                       t.elemento_tipo, t.elemento_descripcion, t.elemento_dato1, t.elemento_dato2, t.elemento_dato3,
+                       t.id_conductor,
                        c.nombre AS conductor_nombre, c.apellido AS conductor_apellido,
                        a.numero_coche,
+                       ac.id_funcionario AS acompanante_id_funcionario,
                        ac.nombre AS acompanante_nombre, ac.apellido AS acompanante_apellido,
-                       ac.cedula AS acompanante_cedula, ac.telefono AS acompanante_telefono,
+                       ac.cedula_acom AS acompanante_cedula, ac.telefono AS acompanante_telefono,
                        cp.id_funcionario AS copiloto_id_funcionario
                 FROM Traslados t
                 LEFT JOIN Conductores c ON c.id_conductor = t.id_conductor
@@ -298,6 +302,9 @@ if ($accionPost == 'editar') {
     $horaSalidaEscapada = $conexion->real_escape_string($datos['hora_salida']);
     $elementoTipoEscapado = $conexion->real_escape_string($datos['elemento_tipo']);
     $elementoDescripcionEscapada = $conexion->real_escape_string($datos['elemento_descripcion']);
+    $elementoDato1Escapado = $conexion->real_escape_string($datos['elemento_dato1']);
+    $elementoDato2Escapado = $conexion->real_escape_string($datos['elemento_dato2']);
+    $elementoDato3Escapado = $conexion->real_escape_string($datos['elemento_dato3']);
 
     if ($datos['hora_llegada'] == '') {
         $valorLlegada = 'NULL';
@@ -310,7 +317,10 @@ if ($accionPost == 'editar') {
                 origen = '$origenEscapado', destino = '$destinoEscapado',
                 id_conductor = {$datos['id_conductor']},
                 elemento_tipo = '$elementoTipoEscapado',
-                elemento_descripcion = '$elementoDescripcionEscapada'
+                elemento_descripcion = '$elementoDescripcionEscapada',
+                elemento_dato1 = '$elementoDato1Escapado',
+                elemento_dato2 = '$elementoDato2Escapado',
+                elemento_dato3 = '$elementoDato3Escapado'
             WHERE id_traslado = $id";
 
     if (!$conexion->query($sql)) {
@@ -322,13 +332,13 @@ if ($accionPost == 'editar') {
     $conexion->query("DELETE FROM Acompanantes WHERE id_traslado = $id");
 
     if ($datos['acompanante'] !== null) {
+        $idFuncAcom = intval($datos['acompanante']['id_funcionario']);
         $nombreAcom = $conexion->real_escape_string($datos['acompanante']['nombre']);
         $apellidoAcom = $conexion->real_escape_string($datos['acompanante']['apellido']);
         $cedulaAcom = $conexion->real_escape_string($datos['acompanante']['cedula']);
-        $telefonoAcom = $conexion->real_escape_string($datos['acompanante']['telefono']);
 
-        if (!$conexion->query("INSERT INTO Acompanantes (nombre, apellido, cedula_acom, telefono, id_traslado)
-                               VALUES ('$nombreAcom', '$apellidoAcom', '$cedulaAcom', '$telefonoAcom', $id)")) {
+        if (!$conexion->query("INSERT INTO Acompanantes (id_funcionario, nombre, apellido, cedula_acom, id_traslado)
+                               VALUES ($idFuncAcom, '$nombreAcom', '$apellidoAcom', '$cedulaAcom', $id)")) {
             echo json_encode(array('ok' => false, 'error' => $conexion->error));
             exit;
         }
@@ -412,6 +422,9 @@ $destinoEscapado = $conexion->real_escape_string($datos['destino']);
 $horaSalidaEscapada = $conexion->real_escape_string($datos['hora_salida']);
 $elementoTipoEscapado = $conexion->real_escape_string($datos['elemento_tipo']);
 $elementoDescripcionEscapada = $conexion->real_escape_string($datos['elemento_descripcion']);
+$elementoDato1Escapado = $conexion->real_escape_string($datos['elemento_dato1']);
+$elementoDato2Escapado = $conexion->real_escape_string($datos['elemento_dato2']);
+$elementoDato3Escapado = $conexion->real_escape_string($datos['elemento_dato3']);
 
 if ($datos['hora_llegada'] == '') {
     $valorLlegada = 'NULL';
@@ -420,9 +433,11 @@ if ($datos['hora_llegada'] == '') {
 }
 
 $sql = "INSERT INTO Traslados (hora_salida, hora_llegada, origen, destino, estado,
-                              id_conductor, elemento_tipo, elemento_descripcion)
+                              id_conductor, elemento_tipo, elemento_descripcion,
+                              elemento_dato1, elemento_dato2, elemento_dato3)
         VALUES ('$horaSalidaEscapada', $valorLlegada, '$origenEscapado', '$destinoEscapado', 'Pendiente',
-                {$datos['id_conductor']}, '$elementoTipoEscapado', '$elementoDescripcionEscapada')";
+                {$datos['id_conductor']}, '$elementoTipoEscapado', '$elementoDescripcionEscapada',
+                '$elementoDato1Escapado', '$elementoDato2Escapado', '$elementoDato3Escapado')";
 
 if (!$conexion->query($sql)) {
     echo json_encode(array('ok' => false, 'error' => $conexion->error));
@@ -435,15 +450,15 @@ $idTraslado = ultimoIdInsertado($conexion);
 $conexion->query("INSERT INTO Traslado_Estados (id_traslado, estado, fecha_cambio)
                   VALUES ($idTraslado, 'Pendiente', NOW())");
 
-// Registrar acompañante si se completó algún campo
+// Registrar acompañante si se eligió un funcionario
 if ($datos['acompanante'] !== null) {
+    $idFuncAcom = intval($datos['acompanante']['id_funcionario']);
     $nombreAcom = $conexion->real_escape_string($datos['acompanante']['nombre']);
     $apellidoAcom = $conexion->real_escape_string($datos['acompanante']['apellido']);
     $cedulaAcom = $conexion->real_escape_string($datos['acompanante']['cedula']);
-    $telefonoAcom = $conexion->real_escape_string($datos['acompanante']['telefono']);
 
-    if (!$conexion->query("INSERT INTO Acompanantes (nombre, apellido, cedula_acom, telefono, id_traslado)
-                           VALUES ('$nombreAcom', '$apellidoAcom', '$cedulaAcom', '$telefonoAcom', $idTraslado)")) {
+    if (!$conexion->query("INSERT INTO Acompanantes (id_funcionario, nombre, apellido, cedula_acom, id_traslado)
+                           VALUES ($idFuncAcom, '$nombreAcom', '$apellidoAcom', '$cedulaAcom', $idTraslado)")) {
         echo json_encode(array('ok' => false, 'error' => $conexion->error));
         exit;
     }
@@ -514,24 +529,9 @@ function leerDatosTraslado($conexion, $idTrasladoReferencia) {
         $idConductor = intval($_POST['id_conductor']);
     }
 
-    $acompananteNombre = '';
-    if (isset($_POST['acompanante_nombre'])) {
-        $acompananteNombre = trim($_POST['acompanante_nombre']);
-    }
-
-    $acompananteApellido = '';
-    if (isset($_POST['acompanante_apellido'])) {
-        $acompananteApellido = trim($_POST['acompanante_apellido']);
-    }
-
-    $acompananteCedula = '';
-    if (isset($_POST['acompanante_cedula'])) {
-        $acompananteCedula = trim($_POST['acompanante_cedula']);
-    }
-
-    $acompananteTelefono = '';
-    if (isset($_POST['acompanante_telefono'])) {
-        $acompananteTelefono = trim($_POST['acompanante_telefono']);
+    $idFuncionarioAcompanante = 0;
+    if (isset($_POST['acompanante_id_funcionario'])) {
+        $idFuncionarioAcompanante = intval($_POST['acompanante_id_funcionario']);
     }
 
     $idFuncionarioCopiloto = 0;
@@ -539,17 +539,40 @@ function leerDatosTraslado($conexion, $idTrasladoReferencia) {
         $idFuncionarioCopiloto = intval($_POST['copiloto_id_funcionario']);
     }
 
-    $tiposValidos = array('paciente_biologico', 'equipamiento_medico', 'otros_insumos', 'otro');
+    $tiposValidos = array('paciente_biologico', 'equipamiento_medico', 'muestra_biologica');
 
     $elementoTipo = 'paciente_biologico';
     if (isset($_POST['elemento_tipo']) && in_array($_POST['elemento_tipo'], $tiposValidos, true)) {
         $elementoTipo = $_POST['elemento_tipo'];
     }
 
-    $elementoDescripcion = '';
-    if (isset($_POST['elemento_descripcion'])) {
-        $elementoDescripcion = trim($_POST['elemento_descripcion']);
+    $elementoDato1 = '';
+    if (isset($_POST['elemento_dato1'])) {
+        $elementoDato1 = trim($_POST['elemento_dato1']);
     }
+
+    $elementoDato2 = '';
+    if (isset($_POST['elemento_dato2'])) {
+        $elementoDato2 = trim($_POST['elemento_dato2']);
+    }
+
+    $elementoDato3 = '';
+    if (isset($_POST['elemento_dato3'])) {
+        $elementoDato3 = trim($_POST['elemento_dato3']);
+    }
+
+    $elementoDescripcion = '';
+    $partesDescripcion = array();
+    if ($elementoDato1 !== '') {
+        $partesDescripcion[] = $elementoDato1;
+    }
+    if ($elementoDato2 !== '') {
+        $partesDescripcion[] = $elementoDato2;
+    }
+    if ($elementoDato3 !== '') {
+        $partesDescripcion[] = $elementoDato3;
+    }
+    $elementoDescripcion = implode(' | ', $partesDescripcion);
 
     $numero = str_ireplace('coche', '', $numero);
     $numero = trim($numero);
@@ -564,8 +587,9 @@ function leerDatosTraslado($conexion, $idTrasladoReferencia) {
         exit;
     }
 
-    // Validación del copiloto (debe ser un funcionario y no la misma persona que el conductor)
+    // Validación del copiloto y acompañante (deben ser funcionarios y no la misma persona que el conductor)
     $datosCopiloto = null;
+    $datosAcompanante = null;
     $cedulaConductor = '';
 
     $resultadoConductor = $conexion->query("SELECT cedula FROM Conductores WHERE id_conductor = $idConductor");
@@ -573,6 +597,31 @@ function leerDatosTraslado($conexion, $idTrasladoReferencia) {
     if ($resultadoConductor && $resultadoConductor->num_rows > 0) {
         $filaConductor = $resultadoConductor->fetch_assoc();
         $cedulaConductor = $filaConductor['cedula'];
+    }
+
+    if ($idFuncionarioAcompanante > 0) {
+        $resultadoAcompanante = $conexion->query("SELECT nombre, apellido, cedula
+                                                   FROM Funcionarios
+                                                   WHERE id_funcionario = $idFuncionarioAcompanante");
+
+        if (!$resultadoAcompanante || $resultadoAcompanante->num_rows == 0) {
+            echo json_encode(array('ok' => false, 'error' => 'El funcionario seleccionado como acompañante no existe'));
+            exit;
+        }
+
+        $filaAcompanante = $resultadoAcompanante->fetch_assoc();
+
+        if ($cedulaConductor != '' && $filaAcompanante['cedula'] == $cedulaConductor) {
+            echo json_encode(array('ok' => false, 'error' => 'El acompañante no puede ser la misma persona que el conductor'));
+            exit;
+        }
+
+        $datosAcompanante = array(
+            'id_funcionario' => $idFuncionarioAcompanante,
+            'nombre' => $filaAcompanante['nombre'],
+            'apellido' => $filaAcompanante['apellido'],
+            'cedula' => $filaAcompanante['cedula']
+        );
     }
 
     if ($idFuncionarioCopiloto > 0) {
@@ -600,9 +649,18 @@ function leerDatosTraslado($conexion, $idTrasladoReferencia) {
         );
     }
 
-    if ($elementoDescripcion == '') {
-        echo json_encode(array('ok' => false, 'error' => 'Ingrese el paciente o elemento a trasladar'));
+    if ($datosAcompanante !== null && $datosCopiloto !== null && $datosAcompanante['id_funcionario'] == $datosCopiloto['id_funcionario']) {
+        echo json_encode(array('ok' => false, 'error' => 'El acompañante y el copiloto no pueden ser la misma persona'));
         exit;
+    }
+
+    if ($elementoDato1 == '' || $elementoDato2 == '') {
+        echo json_encode(array('ok' => false, 'error' => 'Complete los datos del elemento a trasladar'));
+        exit;
+    }
+    $elementoDescripcion = trim($elementoDescripcion);
+    if ($elementoDescripcion == '') {
+        $elementoDescripcion = $elementoDato1 . ($elementoDato2 !== '' ? ' ' . $elementoDato2 : '');
     }
 
     $numeroEscapado = $conexion->real_escape_string($numero);
@@ -643,17 +701,6 @@ function leerDatosTraslado($conexion, $idTrasladoReferencia) {
         exit;
     }
 
-    $acompananteDatos = null;
-
-    if ($acompananteNombre != '' || $acompananteApellido != '' || $acompananteCedula != '' || $acompananteTelefono != '') {
-        $acompananteDatos = array(
-            'nombre' => $acompananteNombre,
-            'apellido' => $acompananteApellido,
-            'cedula' => $acompananteCedula,
-            'telefono' => $acompananteTelefono
-        );
-    }
-
     return array(
         'numero' => $numero,
         'matricula' => $ambulancia['matricula'],
@@ -664,7 +711,10 @@ function leerDatosTraslado($conexion, $idTrasladoReferencia) {
         'id_conductor' => $idConductor,
         'elemento_tipo' => $elementoTipo,
         'elemento_descripcion' => $elementoDescripcion,
-        'acompanante' => $acompananteDatos,
+        'elemento_dato1' => $elementoDato1,
+        'elemento_dato2' => $elementoDato2,
+        'elemento_dato3' => $elementoDato3,
+        'acompanante' => $datosAcompanante,
         'copiloto' => $datosCopiloto
     );
 }

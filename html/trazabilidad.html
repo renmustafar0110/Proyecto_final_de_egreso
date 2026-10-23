@@ -86,33 +86,16 @@
                 </div>
 
                 <div class="form-field">
-                    <label for="input-acompanante-nombre">Acompañante - Nombre:</label>
-                    <input type="text" id="input-acompanante-nombre" name="acompanante_nombre"
-                           placeholder="Nombre del acompañante">
-                </div>
-
-                <div class="form-field">
-                    <label for="input-acompanante-apellido">Acompañante - Apellido:</label>
-                    <input type="text" id="input-acompanante-apellido" name="acompanante_apellido"
-                           placeholder="Apellido del acompañante">
-                </div>
-
-                <div class="form-field">
-                    <label for="input-acompanante-cedula">Acompañante - Cédula:</label>
-                    <input type="text" id="input-acompanante-cedula" name="acompanante_cedula"
-                           placeholder="Cédula del acompañante">
-                </div>
-
-                <div class="form-field">
-                    <label for="input-acompanante-telefono">Acompañante - Teléfono:</label>
-                    <input type="text" id="input-acompanante-telefono" name="acompanante_telefono"
-                           placeholder="Teléfono del acompañante">
+                    <label for="input-acompanante">Acompañante del paciente:</label>
+                    <select id="input-acompanante" name="acompanante_id_funcionario">
+                        <option value="">Sin acompañante</option>
+                    </select>
                 </div>
 
                 <div class="form-field">
                     <label for="input-copiloto">Copiloto:</label>
                     <select id="input-copiloto" name="copiloto_id_funcionario">
-                        <option value="">Cargando funcionarios...</option>
+                        <option value="">Sin copiloto</option>
                     </select>
                 </div>
 
@@ -121,15 +104,26 @@
                     <select id="input-elemento-tipo" name="elemento_tipo" required>
                         <option value="paciente_biologico" selected>Paciente biológico</option>
                         <option value="equipamiento_medico">Equipamiento médico</option>
-                        <option value="otros_insumos">Otros insumos</option>
-                        <option value="otro">Otro</option>
+                        <option value="muestra_biologica">Muestra biológica</option>
                     </select>
                 </div>
 
                 <div class="form-field">
-                    <label for="input-elemento-descripcion">Paciente o elemento a trasladar:</label>
-                    <input type="text" id="input-elemento-descripcion" name="elemento_descripcion"
-                           placeholder="Ej: Juan Pérez / respirador portátil" required>
+                    <label for="input-elemento-dato1" id="label-elemento-dato1">Nombre y apellido:</label>
+                    <input type="text" id="input-elemento-dato1" name="elemento_dato1"
+                           placeholder="Ej: Juan Pérez" required>
+                </div>
+
+                <div class="form-field">
+                    <label for="input-elemento-dato2" id="label-elemento-dato2">Cédula:</label>
+                    <input type="text" id="input-elemento-dato2" name="elemento_dato2"
+                           placeholder="Ej: 12345678" required>
+                </div>
+
+                <div class="form-field">
+                    <label for="input-elemento-dato3" id="label-elemento-dato3">Diagnóstico / observaciones:</label>
+                    <input type="text" id="input-elemento-dato3" name="elemento_dato3"
+                           placeholder="Ej: politraumatismo">
                 </div>
 
                 <div class="form-field">

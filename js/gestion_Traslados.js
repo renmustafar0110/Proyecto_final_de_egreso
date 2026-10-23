@@ -68,7 +68,20 @@ function dibujarDetalle(traslado) {
         coche = traslado.numero_coche;
     }
 
-    var elemento = etiquetaElemento(traslado.elemento_tipo) + ': ' + (traslado.elemento_descripcion || '—');
+    var elementoTexto = traslado.elemento_dato1 || traslado.elemento_dato2;
+    if (traslado.elemento_dato1 && traslado.elemento_dato2) {
+        elementoTexto = traslado.elemento_dato1 + ' / ' + traslado.elemento_dato2;
+    } else if (traslado.elemento_dato1) {
+        elementoTexto = traslado.elemento_dato1;
+    } else if (traslado.elemento_dato2) {
+        elementoTexto = traslado.elemento_dato2;
+    } else {
+        elementoTexto = traslado.elemento_descripcion || '—';
+    }
+    if (traslado.elemento_dato3) {
+        elementoTexto = elementoTexto + ' — ' + traslado.elemento_dato3;
+    }
+    var elemento = etiquetaElemento(traslado.elemento_tipo) + ': ' + elementoTexto;
 
     document.getElementById('detalle-id').textContent = '#' + traslado.id_traslado;
     document.getElementById('detalle-coche').textContent = coche;

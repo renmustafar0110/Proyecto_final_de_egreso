@@ -52,51 +52,8 @@ function formatearFecha($fecha) {
     return $fecha;
 }
 
-function obtenerExtension($nombre) {
-    $partes = explode('.', $nombre);
-
-    if (count($partes) > 1) {
-        return strtolower($partes[count($partes) - 1]);
-    }
-
-    return '';
-}
-
-function esImagen($extension) {
-    $imagenes = array('jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp');
-    return in_array($extension, $imagenes, true);
-}
-
-function tipoDeArchivo($extension) {
-    $tipos = array(
-        'pdf' => 'application/pdf',
-        'txt' => 'text/plain',
-        'html' => 'text/html',
-        'htm' => 'text/html',
-        'jpg' => 'image/jpeg',
-        'jpeg' => 'image/jpeg',
-        'png' => 'image/png',
-        'gif' => 'image/gif',
-        'webp' => 'image/webp',
-        'bmp' => 'image/bmp',
-        'doc' => 'application/msword',
-        'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'xls' => 'application/vnd.ms-excel',
-        'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    );
-
-    if (isset($tipos[$extension])) {
-        return $tipos[$extension];
-    }
-
-    return 'application/octet-stream';
-}
-
 function servirArchivo($rutaCompleta, $nombre) {
-    $extension = obtenerExtension($nombre);
-    $tipo = tipoDeArchivo($extension);
-
-    header('Content-Type: ' . $tipo);
+    header('Content-Type: application/pdf');
     header('Content-Disposition: inline; filename="' . $nombre . '"');
     header('Content-Length: ' . filesize($rutaCompleta));
 
@@ -151,7 +108,6 @@ if (isset($_GET['raw'])) {
     servirArchivo($rutaCompleta, $archivo);
 }
 
-$extension = obtenerExtension($archivo);
 $titulo = htmlspecialchars($documento['titulo_del_documento'], ENT_QUOTES, 'UTF-8');
 $categoria = etiquetaCategoria($documento['categoria_del_documento']);
 $fecha = formatearFecha($documento['fecha_publicacion']);
@@ -184,28 +140,16 @@ header('Content-Type: text/html; charset=utf-8');
         <h1 class="titulo-documento"><?php echo $titulo; ?></h1>
         <p class="meta-documento">Publicado el <?php echo $fecha; ?></p>
 
-        <?php if ($extension == 'pdf') { ?>
-            <div class="acciones">
-                <a class="btn-abrir" href="<?php echo $urlArchivo; ?>" target="_blank" rel="noopener">Abrir documento</a>
-                <a class="btn-descargar" href="<?php echo $urlArchivo; ?>" download>Descargar</a>
-            </div>
-            <?php if ($esIOS) { ?>
-                <p class="aviso-ios">En iPhone/iPad el documento puede no visualizarse dentro de esta página. Use «Abrir documento» para verlo.</p>
-            <?php } ?>
-            <div class="contenedor-pdf">
-                <iframe src="<?php echo $urlArchivo; ?>" title="Documento PDF"></iframe>
-            </div>
-        <?php } else if (esImagen($extension)) { ?>
-            <div class="acciones">
-                <a class="btn-descargar" href="<?php echo $urlArchivo; ?>" download>Descargar imagen</a>
-            </div>
-            <img class="documento-imagen" src="<?php echo $urlArchivo; ?>" alt="<?php echo $titulo; ?>">
-        <?php } else { ?>
-            <div class="tarjeta-archivo">
-                <p>Este formato no se puede previsualizar en el navegador. Abrí o descargá el documento para verlo.</p>
-                <a class="btn-abrir" href="<?php echo $urlArchivo; ?>" download>Abrir / Descargar</a>
-            </div>
+        <div class="acciones">
+            <a class="btn-abrir" href="<?php echo $urlArchivo; ?>" target="_blank" rel="noopener">Abrir documento</a>
+            <a class="btn-descargar" href="<?php echo $urlArchivo; ?>" download>Descargar</a>
+        </div>
+        <?php if ($esIOS) { ?>
+            <p class="aviso-ios">En iPhone/iPad el documento puede no visualizarse dentro de esta página. Use «Abrir documento» para verlo.</p>
         <?php } ?>
+        <div class="contenedor-pdf">
+            <iframe src="<?php echo $urlArchivo; ?>" title="Documento PDF"></iframe>
+        </div>
     </main>
 
     <footer class="visor-footer">

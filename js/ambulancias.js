@@ -1,7 +1,6 @@
 function obtenerClaseDeEstado(estado) {
     var clases = {
         'Disponible': 'disponible',
-        'Reservado': 'reservado',
         'Pendiente': 'pendiente',
         'En curso': 'en_curso',
         'En ruta': 'en_ruta',

@@ -21,21 +21,6 @@ function obtenerDocumentos() {
         });
 }
 
-function escapar(valor) {
-    if (valor == null) {
-        return '';
-    }
-
-    var texto = String(valor);
-    texto = texto.replace(/&/g, '&amp;');
-    texto = texto.replace(/</g, '&lt;');
-    texto = texto.replace(/>/g, '&gt;');
-    texto = texto.replace(/"/g, '&quot;');
-    texto = texto.replace(/'/g, '&#39;');
-
-    return texto;
-}
-
 function formatearFecha(valor) {
     if (valor == null || valor == '') {
         return '—';

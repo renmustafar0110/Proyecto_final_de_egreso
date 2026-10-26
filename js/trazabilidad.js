@@ -102,8 +102,7 @@ function armarOpciones(lista, idSelect, campoId, textoInicial, textoVacio) {
         var persona = lista[i];
 
         html = html + '<option value="' + escapar(persona[campoId]) + '">' +
-            escapar(persona.nombre) + ' ' + escapar(persona.apellido) +
-            ' (' + escapar(persona.cedula) + ')</option>';
+            escapar(persona.nombre) + ' ' + escapar(persona.apellido) + '</option>';
     }
 
     select.innerHTML = html;
@@ -168,38 +167,31 @@ function configurarCamposElemento() {
     actualizar();
 }
 
+function cargarOpciones(accion, idSelect, campoId, textoInicial, textoVacio, textoError) {
+    return fetch('../php/trazabilidad.php?accion=' + accion)
+        .then(function (respuesta) {
+            return respuesta.json();
+        })
+        .then(function (lista) {
+            armarOpciones(lista, idSelect, campoId, textoInicial, textoVacio);
+        })
+        .catch(function () {
+            armarOpciones([], idSelect, campoId, textoInicial, textoError);
+        });
+}
+
 function cargarPersonal() {
-    var conductores = fetch('../php/trazabilidad.php?accion=conductores')
-        .then(function (respuesta) {
-            return respuesta.json();
-        })
-        .then(function (lista) {
-            armarOpciones(lista, 'input-conductor', 'id_conductor',
-                'Seleccione un conductor...', 'No hay conductores cargados');
-        })
-        .catch(function () {
-            armarOpciones([], 'input-conductor', 'id_conductor',
-                'Seleccione un conductor...', 'No se pudieron cargar los conductores');
-        });
-
-    var funcionarios = fetch('../php/trazabilidad.php?accion=funcionarios')
-        .then(function (respuesta) {
-            return respuesta.json();
-        })
-        .then(function (lista) {
-            armarOpciones(lista, 'input-copiloto', 'id_funcionario',
-                'Sin copiloto', 'Sin copiloto');
-            armarOpciones(lista, 'input-acompanante', 'id_funcionario',
-                'Sin acompañante', 'Sin acompañante');
-        })
-        .catch(function () {
-            armarOpciones([], 'input-copiloto', 'id_funcionario',
-                'Sin copiloto', 'Sin copiloto');
-            armarOpciones([], 'input-acompanante', 'id_funcionario',
-                'Sin acompañante', 'Sin acompañante');
-        });
-
-    return Promise.all([conductores, funcionarios]);
+    return Promise.all([
+        cargarOpciones('conductores', 'input-conductor', 'id_conductor',
+            'Seleccione un conductor...', 'No hay conductores cargados',
+            'No se pudieron cargar los conductores'),
+        cargarOpciones('acompanantes', 'input-acompanante', 'id',
+            'Sin acompañante', 'Sin acompañantes cargados',
+            'No se pudieron cargar los acompañantes'),
+        cargarOpciones('copilotos', 'input-copiloto', 'id',
+            'Sin copiloto', 'Sin copilotos cargados',
+            'No se pudieron cargar los copilotos')
+    ]);
 }
 
 // ---------------------------------------------------------------------
@@ -256,15 +248,13 @@ function aplicarDatosAlFormulario(traslado) {
     document.getElementById('input-conductor').value =
         traslado.id_conductor != null ? String(traslado.id_conductor) : '';
     document.getElementById('input-copiloto').value =
-        traslado.copiloto_id_funcionario != null ? String(traslado.copiloto_id_funcionario) : '';
+        traslado.copiloto_id != null ? String(traslado.copiloto_id) : '';
     document.getElementById('input-acompanante').value =
-        traslado.acompanante_id_funcionario != null ? String(traslado.acompanante_id_funcionario) : '';
+        traslado.acompanante_id != null ? String(traslado.acompanante_id) : '';
 
     document.getElementById('input-elemento-tipo').value =
         traslado.elemento_tipo != null ? traslado.elemento_tipo : 'paciente_biologico';
-    if (typeof configurarCamposElemento === 'function') {
-        configurarCamposElemento();
-    }
+    configurarCamposElemento();
     document.getElementById('input-elemento-dato1').value =
         traslado.elemento_dato1 != null ? traslado.elemento_dato1 : '';
     document.getElementById('input-elemento-dato2').value =
@@ -304,9 +294,7 @@ function aplicarDatosAlFormulario(traslado) {
     }
 }
 
-if (typeof configurarCamposElemento === 'function') {
-    configurarCamposElemento();
-}
+configurarCamposElemento();
 
 if (idTrasladoAEditar > 0) {
     Promise.all([cargarCochesDisponibles(), cargarPersonal()])

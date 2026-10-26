@@ -1,4 +1,4 @@
-// Funciones compartidas entre las paginas de trazabilidad
+// Funciones compartidas entre las paginas
 
 function escapar(valor) {
     if (valor == null) {
@@ -52,19 +52,31 @@ function etiquetaElemento(tipo) {
         return 'Muestra biológica';
     }
 
-    if (tipo == 'otros_insumos') {
-        return 'Insumo';
-    }
-
-    if (tipo == 'otro') {
-        return 'Otro';
-    }
-
     if (tipo == 'paciente_biologico') {
         return 'Paciente biológico';
     }
 
     return tipo || 'Elemento';
+}
+
+function textoElemento(traslado) {
+    var partes = [];
+
+    if (traslado.elemento_dato1) {
+        partes.push(traslado.elemento_dato1);
+    }
+
+    if (traslado.elemento_dato2) {
+        partes.push(traslado.elemento_dato2);
+    }
+
+    var texto = partes.length > 0 ? partes.join(' / ') : (traslado.elemento_descripcion || '—');
+
+    if (traslado.elemento_dato3) {
+        texto = texto + ' — ' + traslado.elemento_dato3;
+    }
+
+    return etiquetaElemento(traslado.elemento_tipo) + ': ' + texto;
 }
 
 function claseEstado(estado) {

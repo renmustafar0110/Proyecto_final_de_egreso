@@ -120,30 +120,6 @@ body {
     display: block;
 }
 
-.documento-imagen {
-    display: block;
-    width: 100%;
-    max-width: 100%;
-    height: auto;
-    border: 1px solid #d0dbe8;
-    border-radius: 8px;
-    background-color: #ffffff;
-}
-
-.tarjeta-archivo {
-    background-color: #ffffff;
-    border: 1px solid #d0dbe8;
-    border-radius: 8px;
-    padding: 28px 20px;
-    text-align: center;
-}
-
-.tarjeta-archivo p {
-    font-size: 14px;
-    color: #5a7a9a;
-    margin-bottom: 16px;
-}
-
 .visor-footer {
     background-color: #ffffff;
     border-top: 1px solid #d0dbe8;

@@ -86,13 +86,7 @@ function escaparTexto(valor) {
         return '—';
     }
 
-    var texto = String(valor);
-    texto = texto.replace(/&/g, '&amp;');
-    texto = texto.replace(/</g, '&lt;');
-    texto = texto.replace(/>/g, '&gt;');
-    texto = texto.replace(/"/g, '&quot;');
-
-    return texto;
+    return escapar(valor);
 }
 
 function crearIconoHospital() {

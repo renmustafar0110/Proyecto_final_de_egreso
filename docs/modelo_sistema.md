@@ -23,7 +23,7 @@ El modelo esencial representa la funcionalidad pura del sistema, independienteme
 
 ### Entidades Esenciales
 
-Pacientes, Funcionarios, Documentos, QR, Encuestas, Respuestas, Traslados, Ambulancias, Acompanantes, Copilotos, Equipos, M_Biologicas.
+Pacientes, Funcionarios, Documentos, QR, Encuestas, Respuestas, Traslados, Ambulancias, Acompanantes, Copilotos, Equipos.
 
 ---
 
@@ -160,8 +160,8 @@ Describe como responde el sistema ante los eventos, expresado mediante diagramas
 | - apellido       |          | - nombre          |
 | - fecha_nac      |          | - apellido        |
 | - telefono       |          | - cargo           |
-| - email          |          | - id_m_biologica  |
-| - direccion      |          +-------------------+
+| - email          |          +-------------------+
+| - direccion      |
 +------------------+
         | 1
         |
@@ -255,17 +255,6 @@ Describe como responde el sistema ante los eventos, expresado mediante diagramas
 | - funcion        |
 | - tipo           |
 +-------------------+
-
-+------------------+
-|   M_Biologicas   |
-+------------------+
-| - id_m_biologica |
-| - id_traslado:FK |
-| - tipo           |
-| - tipo_cuidado   |
-| - receptor       |
-| - fecha_recepcio |
-+------------------+
 ```
 
 ### Diagrama de Secuencia - Carga de Documento

@@ -360,7 +360,6 @@ flowchart LR
     %% RELACIONES
     tiene1{{tiene}}
     carga_doc{{carga}}
-    cuida1{{cuida}}
     contiene1{{contiene}}
     escanea1{{escanea}}
     realiza1{{realiza}}
@@ -370,7 +369,6 @@ flowchart LR
     lleva2{{lleva}}
     pilota1{{pilota}}
     tiene4{{tiene}}
-    carga2{{carga}}
 
     %% ENTIDADES
     PACIENTES[PACIENTES]
@@ -379,7 +377,6 @@ flowchart LR
     DOCUMENTOS[DOCUMENTOS]
     ENCUESTAS[ENCUESTAS]
     RESPUESTAS[RESPUESTAS]
-    M_BIOLOGICAS[M. BIOLOGICAS]
     FUNCIONARIOS[FUNCIONARIOS]
     FC_D[FUNCIONARIOS_CARGA_DOCUMENTOS]
     AMBULANCIAS[AMBULANCIAS]
@@ -432,21 +429,12 @@ flowchart LR
     r_prov((proveniencia FK))
     r_coment((comentario))
 
-    %% ATRIBUTOS - M. BIOLOGICAS
-    mb_id((id_m_biologica PK))
-    mb_tipo((tipo))
-    mb_cuid((tipo_cuidado))
-    mb_rec((receptor))
-    mb_idt((id_traslado FK))
-    mb_frec((fecha_recepcion))
-
     %% ATRIBUTOS - FUNCIONARIOS
     f_id((id_funcionario PK))
     f_nombre((nombre))
     f_apellido((apellido))
     f_cargo((cargo))
     f_ced((cedula FK))
-    f_idmb((id_m_biologica FK))
 
     %% ATRIBUTOS - FUNCIONARIOS_CARGA_DOCUMENTOS
     fcd_idf((id_funcionario FK))
@@ -487,8 +475,7 @@ flowchart LR
     DOCUMENTOS --- d_id & d_nom & d_nombre & d_arch & d_nompac & d_ced & d_idqr
     ENCUESTAS --- e_prov & e_preg & e_ced & e_titulo
     RESPUESTAS --- r_id & r_graf & r_porc & r_prov & r_coment
-    M_BIOLOGICAS --- mb_id & mb_tipo & mb_cuid & mb_rec & mb_idt & mb_frec
-    FUNCIONARIOS --- f_id & f_nombre & f_apellido & f_cargo & f_ced & f_idmb
+    FUNCIONARIOS --- f_id & f_nombre & f_apellido & f_cargo & f_ced
     FC_D --- fcd_idf & fcd_idd & fcd_fcarga
     AMBULANCIAS --- a_mat & a_num & a_idt
     ACOMPANANTES --- ac_id & ac_ced & ac_nom & ac_ape & ac_idt & ac_tel
@@ -501,9 +488,6 @@ flowchart LR
 
     FUNCIONARIOS -- N --- carga_doc
     carga_doc -- N --- DOCUMENTOS
-
-    M_BIOLOGICAS -- 1 --- cuida1
-    cuida1 -- N --- FUNCIONARIOS
 
     QR -- 1 --- contiene1
     contiene1 -- N --- DOCUMENTOS
@@ -532,13 +516,10 @@ flowchart LR
     TRASLADOS -- 1 --- tiene4
     tiene4 -- N --- EQUIPOS
 
-    TRASLADOS -- 1 --- carga2
-    carga2 -- N --- M_BIOLOGICAS
-
     %% APLICAR ESTILOS
-    class PACIENTES,TRASLADOS,QR,DOCUMENTOS,ENCUESTAS,RESPUESTAS,M_BIOLOGICAS,FUNCIONARIOS,FC_D,AMBULANCIAS,ACOMPANANTES,COPILOTOS,EQUIPOS entidad
-    class p_ced,p_nombre,p_apellido,p_fnac,p_tel,p_email,p_dir,t_id,t_hsal,t_hlleg,t_orig,t_dest,t_km,t_est,q_id,q_url,q_ced,d_id,d_nom,d_nombre,d_arch,d_nompac,d_ced,d_idqr,e_prov,e_preg,e_ced,e_titulo,r_id,r_graf,r_porc,r_prov,r_coment,mb_id,mb_tipo,mb_cuid,mb_rec,mb_idt,mb_frec,f_id,f_nombre,f_apellido,f_cargo,f_ced,f_idmb,fcd_idf,fcd_idd,fcd_fcarga,a_mat,a_num,a_idt,ac_id,ac_ced,ac_nom,ac_ape,ac_idt,ac_tel,cp_id,cp_idf,cp_nom,cp_ape,cp_ced,cp_idt,eq_id,eq_func,eq_tipo,eq_idt atributo
-    class tiene1,carga_doc,cuida1,contiene1,escanea1,realiza1,genera1,tiene2,lleva1,lleva2,pilota1,tiene4,carga2 relacion
+    class PACIENTES,TRASLADOS,QR,DOCUMENTOS,ENCUESTAS,RESPUESTAS,FUNCIONARIOS,FC_D,AMBULANCIAS,ACOMPANANTES,COPILOTOS,EQUIPOS entidad
+    class p_ced,p_nombre,p_apellido,p_fnac,p_tel,p_email,p_dir,t_id,t_hsal,t_hlleg,t_orig,t_dest,t_km,t_est,q_id,q_url,q_ced,d_id,d_nom,d_nombre,d_arch,d_nompac,d_ced,d_idqr,e_prov,e_preg,e_ced,e_titulo,r_id,r_graf,r_porc,r_prov,r_coment,f_id,f_nombre,f_apellido,f_cargo,f_ced,fcd_idf,fcd_idd,fcd_fcarga,a_mat,a_num,a_idt,ac_id,ac_ced,ac_nom,ac_ape,ac_idt,ac_tel,cp_id,cp_idf,cp_nom,cp_ape,cp_ced,cp_idt,eq_id,eq_func,eq_tipo,eq_idt atributo
+    class tiene1,carga_doc,contiene1,escanea1,realiza1,genera1,tiene2,lleva1,lleva2,pilota1,tiene4 relacion
 ```
 
 ### 6.2. Descripción de Entidades
@@ -551,8 +532,7 @@ flowchart LR
 | **Documentos** | id_documento (PK), nom_doc, nombre, archivo, nom_pac, cedula, id_qr (FK) | Documentos informativos cargados por los funcionarios, vinculados a un QR |
 | **Encuestas** | proveniencia (PK), preguntas, cedula (FK), titulo | Formularios de satisfacción creados por administrativos |
 | **Respuestas** | id_respuesta (PK), grafico, porcentaje, proveniencia (FK), comentario | Respuestas recolectadas de las encuestas |
-| **M. Biológicas** | id_m_biologica (PK), tipo, tipo_cuidado, receptor, id_traslado (FK), fecha_recepcion | Muestras biológicas transportadas en los traslados |
-| **Funcionarios** | id_funcionario (PK), nombre, apellido, cargo, cedula (FK), id_m_biologica (FK) | Personal administrativo del hospital que opera los sistemas |
+| **Funcionarios** | id_funcionario (PK), nombre, apellido, cargo, cedula (FK) | Personal administrativo del hospital que opera los sistemas |
 | **Funcionarios_carga_Documentos** | id_funcionario (FK), id_documento (FK), fecha_carga | Tabla intermedia N:N: registra qué funcionario cargó qué documento y cuándo |
 | **Ambulancias** | matricula (PK), numero_coche, id_traslado (FK) | Vehículos de transporte del hospital |
 | **Acompañantes** | id_acompanante (PK), cedula_acom, nombre, apellido, id_traslado (FK UNIQUE), telefono | Acompañantes registrados manualmente en un traslado (máx. 1 por traslado) |
@@ -565,7 +545,6 @@ flowchart LR
 |----------|-----------|--------------|-------|-------------|
 | tiene | Pacientes - Funcionarios | 1:N | Funcionarios.cedula | Un paciente puede estar asociado a varios funcionarios |
 | carga | Funcionarios - Documentos | N:N | Tabla intermedia Funcionarios_carga_Documentos | Un funcionario carga varios documentos y un documento puede ser cargado por varios funcionarios |
-| cuida | M. Biológicas - Funcionarios | 1:N | Funcionarios.id_m_biologica | Una muestra biológica es cuidada por varios funcionarios |
 | contiene | QR - Documentos | 1:N | Documentos.id_qr | Un QR puede estar asociado a varios documentos |
 | escanea | Pacientes - QR | 1:N | QR.cedula | Un paciente puede escanear varios QRs |
 | realiza | Pacientes - Encuestas | 1:N | Encuestas.cedula | Un paciente puede realizar varias encuestas |
@@ -575,7 +554,6 @@ flowchart LR
 | lleva | Traslados - Copilotos | 1:1 | Copilotos.id_traslado (UNIQUE) | Un traslado puede llevar un copiloto elegido entre los funcionarios |
 | pilota | Funcionarios - Copilotos | 1:N | Copilotos.id_funcionario | Un funcionario puede actuar como copiloto en varios traslados |
 | tiene | Traslados - Equipos | 1:N | Equipos.id_traslado | Un traslado puede incluir varios equipos |
-| carga | Traslados - M. Biológicas | 1:N | M_Biologicas.id_traslado | Un traslado puede cargar varias muestras biológicas |
 
 ---
 

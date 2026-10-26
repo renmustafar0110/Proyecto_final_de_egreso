@@ -129,10 +129,6 @@ footer {
     background-color: #2e7d32;
 }
 
-.marcador-ambulancia.reservado {
-    background-color: #e65100;
-}
-
 .marcador-ambulancia.en_curso {
     background-color: #1565c0;
 }
@@ -178,10 +174,6 @@ footer {
 
 .popup-estado.disponible {
     color: #2e7d32;
-}
-
-.popup-estado.reservado {
-    color: #e65100;
 }
 
 .popup-estado.en_curso {

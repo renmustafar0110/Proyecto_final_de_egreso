@@ -108,22 +108,37 @@
                     </select>
                 </div>
 
-                <div class="form-field">
+                <div class="form-field" id="campo-elemento-dato1">
                     <label for="input-elemento-dato1" id="label-elemento-dato1">Nombre y apellido:</label>
                     <input type="text" id="input-elemento-dato1" name="elemento_dato1"
                            placeholder="Ej: Juan Pérez" required>
                 </div>
 
-                <div class="form-field">
+                <div class="form-field" id="campo-elemento-dato2">
                     <label for="input-elemento-dato2" id="label-elemento-dato2">Cédula:</label>
                     <input type="text" id="input-elemento-dato2" name="elemento_dato2"
                            placeholder="Ej: 12345678" required>
                 </div>
 
-                <div class="form-field">
+                <div class="form-field" id="campo-elemento-dato3">
                     <label for="input-elemento-dato3" id="label-elemento-dato3">Diagnóstico / observaciones:</label>
                     <input type="text" id="input-elemento-dato3" name="elemento_dato3"
                            placeholder="Ej: politraumatismo">
+                </div>
+
+                <div class="form-field" id="campo-tipo-equipamiento" style="display: none;">
+                    <label for="input-tipo-equipamiento">Nivel del equipamiento:</label>
+                    <select id="input-tipo-equipamiento" name="tipo_equipamiento">
+                        <option value="">Seleccione SVB o SVA...</option>
+                        <option value="SVB">SVB (básica)</option>
+                        <option value="SVA">SVA (avanzada)</option>
+                    </select>
+                </div>
+
+                <div class="form-field" id="campo-lista-equipos" style="display: none;">
+                    <label>Equipamiento que lleva:</label>
+                    <ul class="lista-equipos" id="lista-equipos"></ul>
+                    <div id="equipos-ocultos"></div>
                 </div>
 
                 <div class="form-field">
@@ -201,8 +216,8 @@
         <span class="footer-fecha" id="fechaPie"></span>
     </footer>
 
-    <script src="../js/auth.js"></script>
-    <script src="../js/menu.js"></script>
+    <script src="../js/auth.js?v=3"></script>
+    <script src="../js/menu.js?v=3"></script>
     <script src="../js/utilidades.js"></script>
     <script src="../js/ambulancias.js"></script>
     <script src="../js/trazabilidad.js"></script>

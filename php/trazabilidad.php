@@ -168,6 +168,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
         $traslado = $resultado->fetch_assoc();
 
+        // Nivel del equipamiento médico cargado en el traslado (si tiene)
+        $traslado['tipo_equipamiento'] = null;
+
+        $resultadoEquipos = $conexion->query("SELECT tipo_equipamiento
+                                              FROM Equipos
+                                              WHERE id_traslado = $id
+                                              LIMIT 1");
+
+        if ($resultadoEquipos && $resultadoEquipos->num_rows > 0) {
+            $filaEquipo = $resultadoEquipos->fetch_assoc();
+            $traslado['tipo_equipamiento'] = $filaEquipo['tipo_equipamiento'];
+        }
+
         $historial = array();
         $resultadoHistorial = $conexion->query("SELECT estado, fecha_cambio
                                                 FROM Traslado_Estados
@@ -358,6 +371,10 @@ if ($accionPost == 'editar') {
     guardarAcompanante($conexion, $datos, $id);
     guardarCopiloto($conexion, $datos, $id);
 
+    // El equipamiento también se reemplaza por completo
+    $conexion->query("DELETE FROM Equipos WHERE id_traslado = $id");
+    guardarEquipos($conexion, $datos, $id);
+
     // La ambulancia anterior queda libre y se asigna la indicada
     $conexion->query("UPDATE Ambulancias SET id_traslado = NULL WHERE id_traslado = $id");
 
@@ -403,6 +420,7 @@ if ($accionPost == 'eliminar') {
     $conexion->query("UPDATE Ambulancias SET id_traslado = NULL WHERE id_traslado = $id");
     $conexion->query("DELETE FROM Acompanantes WHERE id_traslado = $id");
     $conexion->query("DELETE FROM Copilotos WHERE id_traslado = $id");
+    $conexion->query("DELETE FROM Equipos WHERE id_traslado = $id");
     $conexion->query("DELETE FROM Traslado_Estados WHERE id_traslado = $id");
 
     if (!$conexion->query("DELETE FROM Traslados WHERE id_traslado = $id")) {
@@ -453,6 +471,9 @@ $conexion->query("INSERT INTO Traslado_Estados (id_traslado, estado, fecha_cambi
 // Registrar acompañante y copiloto si se eligieron
 guardarAcompanante($conexion, $datos, $idTraslado);
 guardarCopiloto($conexion, $datos, $idTraslado);
+
+// Registrar el equipamiento médico según el nivel elegido (SVB o SVA)
+guardarEquipos($conexion, $datos, $idTraslado);
 
 $matriculaEscapada = $conexion->real_escape_string($datos['matricula']);
 
@@ -524,6 +545,58 @@ function guardarCopiloto($conexion, $datos, $idTraslado) {
     }
 }
 
+// Catálogo de equipamiento por nivel. Los ítems de cada nivel son obligatorios.
+function catalogoEquipos() {
+
+    $svb = array(
+        array('codigo' => 'oxigenoterapia', 'nombre' => 'Oxigenoterapia'),
+        array('codigo' => 'dea', 'nombre' => 'DEA (desfibrilador externo automático)'),
+        array('codigo' => 'inmovilizacion', 'nombre' => 'Material de inmovilización'),
+        array('codigo' => 'botiquin_epp', 'nombre' => 'Botiquín / EPP')
+    );
+
+    $sva = array_merge($svb, array(
+        array('codigo' => 'monitor_desfibrilador', 'nombre' => 'Monitor-desfibrilador / marcapasos'),
+        array('codigo' => 'respirador', 'nombre' => 'Respirador portátil'),
+        array('codigo' => 'laringoscopio', 'nombre' => 'Laringoscopio / tubos endotraqueales'),
+        array('codigo' => 'bombas_infusion', 'nombre' => 'Bombas de infusión / accesos'),
+        array('codigo' => 'farmacos_aclspals', 'nombre' => 'Fármacos ACLS / PALS')
+    ));
+
+    return array('SVB' => $svb, 'SVA' => $sva);
+}
+
+// Guarda una fila por cada ítem del nivel elegido en la tabla Equipos.
+function guardarEquipos($conexion, $datos, $idTraslado) {
+
+    if ($datos['tipo_equipamiento'] == '' || count($datos['equipos']) == 0) {
+        return;
+    }
+
+    $sentencia = $conexion->prepare("INSERT INTO Equipos (tipo_equipamiento, tipo_equipo, id_traslado)
+                                     VALUES (?, ?, ?)");
+
+    if (!$sentencia) {
+        echo json_encode(array('ok' => false, 'error' => $conexion->error));
+        exit;
+    }
+
+    $nivel = $datos['tipo_equipamiento'];
+
+    for ($i = 0; $i < count($datos['equipos']); $i++) {
+
+        $codigo = $datos['equipos'][$i];
+        $sentencia->bind_param('ssi', $nivel, $codigo, $idTraslado);
+
+        if (!$sentencia->execute()) {
+            echo json_encode(array('ok' => false, 'error' => $sentencia->error));
+            exit;
+        }
+    }
+
+    $sentencia->close();
+}
+
 // Lee y valida los datos del formulario de traslado (US-07).
 // $idTrasladoReferencia es el traslado que se está editando (0 al crear):
 // así la ambulancia que ya tiene asignada no se considera ocupada.
@@ -551,17 +624,49 @@ function leerDatosTraslado($conexion, $idTrasladoReferencia) {
     $elementoDato2 = campoPost('elemento_dato2');
     $elementoDato3 = campoPost('elemento_dato3');
 
+    // El nivel del equipamiento solo aplica al traslado de equipamiento médico
+    $tipoEquipamiento = strtoupper(campoPost('tipo_equipamiento'));
+    $equipos = array();
+
+    if ($elementoTipo == 'equipamiento_medico') {
+
+        $catalogo = catalogoEquipos();
+
+        if (!isset($catalogo[$tipoEquipamiento])) {
+            echo json_encode(array('ok' => false, 'error' => 'Seleccione el nivel del equipamiento (SVB o SVA)'));
+            exit;
+        }
+
+        // Todos los ítems del nivel son obligatorios
+        for ($i = 0; $i < count($catalogo[$tipoEquipamiento]); $i++) {
+            $equipos[] = $catalogo[$tipoEquipamiento][$i]['codigo'];
+        }
+
+        // El equipamiento no lleva nombre, N° de serie ni observaciones
+        $elementoDato1 = '';
+        $elementoDato2 = '';
+        $elementoDato3 = '';
+
+    } else {
+        $tipoEquipamiento = '';
+    }
+
     $partesDescripcion = array();
-    if ($elementoDato1 !== '') {
-        $partesDescripcion[] = $elementoDato1;
+
+    if ($elementoTipo == 'equipamiento_medico') {
+        $elementoDescripcion = 'Equipamiento médico ' . $tipoEquipamiento;
+    } else {
+        if ($elementoDato1 !== '') {
+            $partesDescripcion[] = $elementoDato1;
+        }
+        if ($elementoDato2 !== '') {
+            $partesDescripcion[] = $elementoDato2;
+        }
+        if ($elementoDato3 !== '') {
+            $partesDescripcion[] = $elementoDato3;
+        }
+        $elementoDescripcion = implode(' | ', $partesDescripcion);
     }
-    if ($elementoDato2 !== '') {
-        $partesDescripcion[] = $elementoDato2;
-    }
-    if ($elementoDato3 !== '') {
-        $partesDescripcion[] = $elementoDato3;
-    }
-    $elementoDescripcion = implode(' | ', $partesDescripcion);
 
     $numero = str_ireplace('coche', '', $numero);
     $numero = trim($numero);
@@ -645,7 +750,7 @@ function leerDatosTraslado($conexion, $idTrasladoReferencia) {
         exit;
     }
 
-    if ($elementoDato1 == '' || $elementoDato2 == '') {
+    if ($elementoTipo != 'equipamiento_medico' && ($elementoDato1 == '' || $elementoDato2 == '')) {
         echo json_encode(array('ok' => false, 'error' => 'Complete los datos del elemento a trasladar'));
         exit;
     }
@@ -701,6 +806,8 @@ function leerDatosTraslado($conexion, $idTrasladoReferencia) {
         'elemento_dato1' => $elementoDato1,
         'elemento_dato2' => $elementoDato2,
         'elemento_dato3' => $elementoDato3,
+        'tipo_equipamiento' => $tipoEquipamiento,
+        'equipos' => $equipos,
         'acompanante' => $datosAcompanante,
         'copiloto' => $datosCopiloto
     );

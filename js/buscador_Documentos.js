@@ -6,6 +6,16 @@ document.addEventListener('DOMContentLoaded', function () {
     var campoTitulo = document.getElementById('filtro-titulo');
     var btnBuscar = document.getElementById('btn-buscar');
     var btnCerrarSesion = document.getElementById('btn-cerrar-sesion');
+    var btnEncuestasPendientes = document.getElementById('btn-encuestas-pendientes');
+    var modalEncuestas = document.getElementById('modal-encuestas');
+    var btnCerrarEncuestas = document.getElementById('btn-cerrar-encuestas');
+    var listaEncuestasPaciente = document.getElementById('lista-encuestas-paciente');
+    var encuestasMensaje = document.getElementById('encuestas-mensaje');
+    var modalVerQr = document.getElementById('modal-ver-qr');
+    var btnCerrarVerQr = document.getElementById('btn-cerrar-ver-qr');
+    var qrVerTitulo = document.getElementById('qr-ver-titulo');
+    var qrVerCategoria = document.getElementById('qr-ver-categoria');
+    var qrVerImagen = document.getElementById('qr-ver-imagen');
 
     function etiquetaCategoria(categoria) {
         var etiquetas = {
@@ -98,22 +108,151 @@ document.addEventListener('DOMContentLoaded', function () {
                 for (var i = 0; i < documentos.length; i++) {
                     var d = documentos[i];
                     var urlVer = construirUrlVer(d);
+                    var btnQr = '';
+                    if (d.id_qr) {
+                        btnQr = '<button type="button" class="btn-mostrar-qr" data-url="' + escapar(urlVer) + '" data-titulo="' + escapar(d.titulo_del_documento || '') + '" data-categoria="' + escapar(d.categoria_del_documento || '') + '">Mostrar QR</button>';
+                    } else {
+                        btnQr = '-';
+                    }
                     filas += '<tr>' +
                         '<td>' + escapar(d.titulo_del_documento || '') + '</td>' +
                         '<td>' + escapar(etiquetaCategoria(d.categoria_del_documento)) + '</td>' +
                         '<td>' + escapar(formatearFecha(d.fecha_publicacion)) + '</td>' +
                         '<td>' + escapar(d.nom_pac || '') + '</td>' +
                         '<td>' + escapar(d.cedula || '') + '</td>' +
-                        '<td><a href="' + urlVer + '" target="_blank" rel="noopener" class="btn-ver">Ver documento</a></td>' +
+                        '<td>' + btnQr + '</td>' +
                         '</tr>';
                 }
                 tabla.innerHTML = filas;
+
+                var botonesQr = tabla.querySelectorAll('.btn-mostrar-qr');
+                for (var j = 0; j < botonesQr.length; j++) {
+                    botonesQr[j].addEventListener('click', function () {
+                        var doc = {
+                            titulo_del_documento: this.getAttribute('data-titulo'),
+                            categoria_del_documento: this.getAttribute('data-categoria')
+                        };
+                        mostrarQrDocumento(doc, this.getAttribute('data-url'));
+                    });
+                }
             })
             .catch(function () {
                 tabla.innerHTML = '';
                 aviso.textContent = 'No se pudieron cargar los documentos';
                 aviso.style.display = 'block';
             });
+    }
+
+    function cargarEncuestasPendientes() {
+        if (listaEncuestasPaciente) {
+            listaEncuestasPaciente.innerHTML = '';
+        }
+        if (encuestasMensaje) {
+            encuestasMensaje.textContent = 'Cargando encuestas...';
+            encuestasMensaje.style.display = 'block';
+        }
+
+        fetch('../php/listar_encuestas_paciente.php')
+            .then(function (r) { return r.json(); })
+            .then(function (encuestas) {
+                if (encuestasMensaje) {
+                    encuestasMensaje.style.display = 'none';
+                }
+                if (!Array.isArray(encuestas) || encuestas.length === 0) {
+                    if (encuestasMensaje) {
+                        encuestasMensaje.textContent = 'No hay encuestas pendientes.';
+                        encuestasMensaje.style.display = 'block';
+                    }
+                    return;
+                }
+
+                var html = '';
+                for (var i = 0; i < encuestas.length; i++) {
+                    var e = encuestas[i];
+                    html += '<li class="encuesta-item">' +
+                        '<div class="encuesta-info">' +
+                        '<strong>' + escapar(e.titulo || '') + '</strong>' +
+                        '<p>' + escapar(e.descripcion || '') + '</p>' +
+                        '</div>' +
+                        '<a class="btn-responder-encuesta" href="../php/responderEncuesta.php?id=' + encodeURIComponent(e.id_encuesta) + '" target="_blank" rel="noopener">Responder</a>' +
+                        '</li>';
+                }
+                if (listaEncuestasPaciente) {
+                    listaEncuestasPaciente.innerHTML = html;
+                }
+            })
+            .catch(function () {
+                if (encuestasMensaje) {
+                    encuestasMensaje.textContent = 'No se pudieron cargar las encuestas.';
+                    encuestasMensaje.style.display = 'block';
+                }
+            });
+    }
+
+    if (btnEncuestasPendientes) {
+        btnEncuestasPendientes.addEventListener('click', function () {
+            if (modalEncuestas) {
+                modalEncuestas.style.display = 'flex';
+                cargarEncuestasPendientes();
+            }
+        });
+    }
+
+    if (btnCerrarEncuestas) {
+        btnCerrarEncuestas.addEventListener('click', function () {
+            if (modalEncuestas) {
+                modalEncuestas.style.display = 'none';
+            }
+        });
+    }
+
+    if (modalEncuestas) {
+        modalEncuestas.addEventListener('click', function (evento) {
+            if (evento.target === modalEncuestas) {
+                modalEncuestas.style.display = 'none';
+            }
+        });
+    }
+
+    if (btnCerrarVerQr) {
+        btnCerrarVerQr.addEventListener('click', function () {
+            if (modalVerQr) {
+                modalVerQr.style.display = 'none';
+            }
+        });
+    }
+
+    if (modalVerQr) {
+        modalVerQr.addEventListener('click', function (evento) {
+            if (evento.target === modalVerQr) {
+                modalVerQr.style.display = 'none';
+            }
+        });
+    }
+
+    function mostrarQrDocumento(documento, urlVer) {
+        if (!modalVerQr) {
+            return;
+        }
+
+        if (qrVerTitulo) {
+            qrVerTitulo.textContent = documento.titulo_del_documento || 'Sin título';
+        }
+
+        if (qrVerCategoria) {
+            qrVerCategoria.textContent = 'Categoría: ' + etiquetaCategoria(documento.categoria_del_documento);
+        }
+
+        if (qrVerImagen) {
+            try {
+                var qrUrlObj = new URL(urlVer, window.location.href);
+                qrVerImagen.src = 'https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=' + encodeURIComponent(qrUrlObj.href);
+            } catch (e) {
+                qrVerImagen.src = 'https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=' + encodeURIComponent(urlVer);
+            }
+        }
+
+        modalVerQr.style.display = 'flex';
     }
 
     btnBuscar.addEventListener('click', buscarDocumentos);

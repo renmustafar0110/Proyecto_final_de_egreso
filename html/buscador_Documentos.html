@@ -19,8 +19,16 @@
 
     <main>
         <div class="panel page-panel">
-            <h2>Buscador de Documentos</h2>
-            <p class="subtitulo" id="datos-paciente"></p>
+            <div class="encabezado-panel">
+                <div>
+                    <h2>Buscador de Documentos</h2>
+                    <p class="subtitulo" id="datos-paciente"></p>
+                </div>
+                <button type="button" id="btn-encuestas-pendientes" class="btn-encuestas">Encuestas Pendientes</button>
+            </div>
+
+            <div class="acciones-paciente">
+            </div>
 
             <div class="filtros">
                 <div class="filtro">
@@ -55,7 +63,7 @@
                         <th>Fecha publicación</th>
                         <th>Paciente</th>
                         <th>Cédula</th>
-                        <th>Acciones</th>
+                        <th>Código QR</th>
                     </tr>
                 </thead>
                 <tbody id="tabla-documentos">
@@ -63,6 +71,35 @@
             </table>
         </div>
     </main>
+
+    <div id="modal-ver-qr" class="modal-escaner" style="display:none;">
+        <div class="modal-escaner-contenido">
+            <div class="modal-escaner-header">
+                <h3>Código QR del documento</h3>
+                <button type="button" id="btn-cerrar-ver-qr" class="btn-cerrar">X</button>
+            </div>
+            <div class="qr-info">
+                <p class="qr-info-titulo"><strong>Pertenece a:</strong> <span id="qr-ver-titulo">-</span></p>
+                <div class="qr-imagen-contenedor">
+                    <img id="qr-ver-imagen" src="" alt="Código QR" class="qr-imagen">
+                </div>
+                <p class="qr-info-categoria" id="qr-ver-categoria"></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-encuestas" class="modal-escaner" style="display:none;">
+        <div class="modal-escaner-contenido modal-encuestas-contenido">
+            <div class="modal-escaner-header">
+                <h3>Encuestas pendientes</h3>
+                <button type="button" id="btn-cerrar-encuestas" class="btn-cerrar">X</button>
+            </div>
+            <div class="encuestas-lista">
+                <p id="encuestas-mensaje" class="encuestas-mensaje">Cargando encuestas...</p>
+                <ul id="lista-encuestas-paciente" class="lista-encuestas"></ul>
+            </div>
+        </div>
+    </div>
 
     <footer>
         <p>&copy; Hospital de Clínicas</p>

@@ -16,15 +16,15 @@
     <main>
         <div class="panel form-panel">
             <h2>Inicio de Sesión - Personal Administrativo</h2>
-            <form data-destino="gestion_Administrativa.html" data-tipo="administrador">
+            <form data-destino="gestion_Administrativa.html" data-tipo="administrador" autocomplete="off" onsubmit="return false;">
                 <div class="form-field">
                     <label for="cedula">Cédula:</label>
-                    <input type="text" id="cedula" name="cedula">
+                    <input type="text" id="cedula" name="cedula" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="numeric">
                 </div>
 
                 <div class="form-field">
                     <label for="password">Contraseña:</label>
-                    <input type="password" id="password" name="password">
+                    <input type="password" id="password" name="password" autocomplete="off">
                     <label class="mostrar-contrasena">
                         <input type="checkbox" id="togglePassword"> Mostrar contraseña
                     </label>
@@ -44,6 +44,6 @@
     </footer>
 
     <script src="../js/fecha_Y_hora.js"></script>
-    <script src="../js/login.js"></script>
+    <script src="../js/login.js?v=3"></script>
 </body>
 </html>

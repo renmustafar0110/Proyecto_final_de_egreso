@@ -43,6 +43,23 @@ if (formularioTraslado) {
 
         evento.preventDefault();
 
+        var tipoSelect = document.getElementById('input-elemento-tipo');
+        var comboNivel = document.getElementById('input-tipo-equipamiento');
+
+        if (tipoSelect && tipoSelect.value == 'equipamiento_medico') {
+
+            if (!comboNivel || comboNivel.value == '') {
+
+                alert('Seleccione el nivel del equipamiento (SVB o SVA).');
+
+                if (comboNivel) {
+                    comboNivel.focus();
+                }
+
+                return;
+            }
+        }
+
         var datos = new FormData(formularioTraslado);
 
         if (idTrasladoAEditar > 0) {
@@ -67,6 +84,7 @@ if (formularioTraslado) {
 
                 alert('Traslado #' + resultado.id_traslado + ' ordenado correctamente.');
                 formularioTraslado.reset();
+                actualizarCamposEquipamiento();
                 cargarCochesDisponibles();
             } else {
                 var mensajeError = resultado.error;
@@ -108,21 +126,143 @@ function armarOpciones(lista, idSelect, campoId, textoInicial, textoVacio) {
     select.innerHTML = html;
 }
 
+var EQUIPOS_POR_NIVEL = {
+
+    SVB: [
+        { codigo: 'oxigenoterapia', nombre: 'Oxigenoterapia' },
+        { codigo: 'dea', nombre: 'DEA (desfibrilador externo automático)' },
+        { codigo: 'inmovilizacion', nombre: 'Material de inmovilización' },
+        { codigo: 'botiquin_epp', nombre: 'Botiquín / EPP' }
+    ],
+
+    SVA: [
+        { codigo: 'oxigenoterapia', nombre: 'Oxigenoterapia' },
+        { codigo: 'dea', nombre: 'DEA (desfibrilador externo automático)' },
+        { codigo: 'inmovilizacion', nombre: 'Material de inmovilización' },
+        { codigo: 'botiquin_epp', nombre: 'Botiquín / EPP' },
+        { codigo: 'monitor_desfibrilador', nombre: 'Monitor-desfibrilador / marcapasos' },
+        { codigo: 'respirador', nombre: 'Respirador portátil' },
+        { codigo: 'laringoscopio', nombre: 'Laringoscopio / tubos endotraqueales' },
+        { codigo: 'bombas_infusion', nombre: 'Bombas de infusión / accesos' },
+        { codigo: 'farmacos_aclspals', nombre: 'Fármacos ACLS / PALS' }
+    ]
+
+};
+
+
+function renderizarEquiposNivel() {
+
+    var combo = document.getElementById('input-tipo-equipamiento');
+    var contenedor = document.getElementById('campo-lista-equipos');
+    var lista = document.getElementById('lista-equipos');
+    var ocultos = document.getElementById('equipos-ocultos');
+
+    if (!combo || !contenedor || !lista || !ocultos) {
+        return;
+    }
+
+    var nivel = combo.value;
+    var equipos = EQUIPOS_POR_NIVEL[nivel];
+
+    if (!equipos) {
+        lista.innerHTML = '';
+        ocultos.innerHTML = '';
+        contenedor.style.display = 'none';
+        return;
+    }
+
+    var htmlLista = '';
+    var htmlOcultos = '';
+
+    for (var i = 0; i < equipos.length; i++) {
+
+        htmlLista = htmlLista + '<li>' + escapar(equipos[i].nombre) + '</li>';
+
+        htmlOcultos = htmlOcultos + '<input type="hidden" name="equipos[]" value="' +
+            escapar(equipos[i].codigo) + '">';
+
+    }
+
+    lista.innerHTML = htmlLista;
+    ocultos.innerHTML = htmlOcultos;
+    contenedor.style.display = '';
+
+}
+
+
+function actualizarCamposEquipamiento() {
+
+    var tipoSelect = document.getElementById('input-elemento-tipo');
+    var campoNivel = document.getElementById('campo-tipo-equipamiento');
+    var combo = document.getElementById('input-tipo-equipamiento');
+
+    if (!tipoSelect || !campoNivel || !combo) {
+        return;
+    }
+
+    if (tipoSelect.value == 'equipamiento_medico') {
+        campoNivel.style.display = '';
+    } else {
+        campoNivel.style.display = 'none';
+        combo.value = '';
+    }
+
+    renderizarEquiposNivel();
+
+}
+
+
+function configurarEquipamiento() {
+
+    var tipoSelect = document.getElementById('input-elemento-tipo');
+    var combo = document.getElementById('input-tipo-equipamiento');
+
+    if (!tipoSelect || !combo) {
+        return;
+    }
+
+    tipoSelect.addEventListener('change', actualizarCamposEquipamiento);
+    combo.addEventListener('change', renderizarEquiposNivel);
+
+    actualizarCamposEquipamiento();
+
+}
+
+
 function configurarCamposElemento() {
     var tipoSelect = document.getElementById('input-elemento-tipo');
+    var campo1 = document.getElementById('campo-elemento-dato1');
     var label1 = document.getElementById('label-elemento-dato1');
     var input1 = document.getElementById('input-elemento-dato1');
+    var campo2 = document.getElementById('campo-elemento-dato2');
     var label2 = document.getElementById('label-elemento-dato2');
     var input2 = document.getElementById('input-elemento-dato2');
+    var campo3 = document.getElementById('campo-elemento-dato3');
     var label3 = document.getElementById('label-elemento-dato3');
     var input3 = document.getElementById('input-elemento-dato3');
 
-    if (!tipoSelect || !label1 || !input1 || !label2 || !input2 || !label3 || !input3) {
+    if (!tipoSelect || !campo1 || !label1 || !input1 || !campo2 || !label2 || !input2 ||
+        !campo3 || !label3 || !input3) {
         return;
     }
 
     function actualizar() {
         var tipo = tipoSelect.value;
+        var esEquipamiento = (tipo == 'equipamiento_medico');
+
+        campo1.style.display = esEquipamiento ? 'none' : '';
+        campo2.style.display = esEquipamiento ? 'none' : '';
+        campo3.style.display = esEquipamiento ? 'none' : '';
+
+        if (esEquipamiento) {
+            input1.required = false;
+            input2.required = false;
+            input3.required = false;
+
+            input1.value = '';
+            input2.value = '';
+            input3.value = '';
+        }
 
         if (tipo == 'paciente_biologico') {
             label1.textContent = 'Nombre y apellido:';
@@ -135,18 +275,6 @@ function configurarCamposElemento() {
 
             label3.textContent = 'Diagnóstico / observaciones:';
             input3.placeholder = 'Ej: Politraumatismo';
-            input3.required = false;
-        } else if (tipo == 'equipamiento_medico') {
-            label1.textContent = 'Nombre del equipo:';
-            input1.placeholder = 'Ej: Respirador';
-            input1.required = true;
-
-            label2.textContent = 'N° de serie:';
-            input2.placeholder = 'Ej: RM-12345';
-            input2.required = true;
-
-            label3.textContent = 'Observaciones:';
-            input3.placeholder = 'Ej: Para traslado con soporte';
             input3.required = false;
         } else if (tipo == 'muestra_biologica') {
             label1.textContent = 'Tipo de muestra:';
@@ -255,6 +383,16 @@ function aplicarDatosAlFormulario(traslado) {
     document.getElementById('input-elemento-tipo').value =
         traslado.elemento_tipo != null ? traslado.elemento_tipo : 'paciente_biologico';
     configurarCamposElemento();
+    actualizarCamposEquipamiento();
+
+    var comboNivel = document.getElementById('input-tipo-equipamiento');
+
+    if (comboNivel && traslado.tipo_equipamiento != null) {
+        comboNivel.value = traslado.tipo_equipamiento;
+    }
+
+    renderizarEquiposNivel();
+
     document.getElementById('input-elemento-dato1').value =
         traslado.elemento_dato1 != null ? traslado.elemento_dato1 : '';
     document.getElementById('input-elemento-dato2').value =
@@ -295,6 +433,7 @@ function aplicarDatosAlFormulario(traslado) {
 }
 
 configurarCamposElemento();
+configurarEquipamiento();
 
 if (idTrasladoAEditar > 0) {
     Promise.all([cargarCochesDisponibles(), cargarPersonal()])

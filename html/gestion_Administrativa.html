@@ -70,7 +70,7 @@
         <div class="contenedores">
             <div class="panel form-panel">
                 <h2>Añadir Funcionario</h2>
-                <form action="" method="post" novalidate>
+                <form id="form-funcionario" action="" method="post" novalidate>
                     <div class="form-field">
                         <label for="cedula_funcionario">Cédula:</label>
                         <input type="text" id="cedula_funcionario" name="cedula_funcionario">
@@ -97,14 +97,31 @@
                     </div>
 
                     <div class="form-field">
+                        <label for="telefono_funcionario">Teléfono (conductor/copiloto):</label>
+                        <input type="text" id="telefono_funcionario" name="telefono_funcionario" inputmode="numeric" placeholder="Opcional">
+                    </div>
+
+                    <div class="form-field">
+                        <label class="checkbox-line">
+                            <input type="checkbox" id="es_conductor" name="es_conductor" value="1">
+                            Registrar también como conductor
+                        </label>
+                        <label class="checkbox-line">
+                            <input type="checkbox" id="es_copiloto" name="es_copiloto" value="1">
+                            Registrar también como copiloto
+                        </label>
+                    </div>
+
+                    <div class="form-field">
                         <input type="submit" value="Registrar Funcionario">
                     </div>
+                    <p class="form-mensaje" id="mensaje-funcionario"></p>
                 </form>
             </div>
 
             <div class="panel form-panel">
                 <h2>Añadir Paciente</h2>
-                <form action="" method="post" novalidate>
+                <form id="form-paciente" action="" method="post" novalidate>
                     <div class="form-field">
                         <label for="cedula_paciente">Cédula:</label>
                         <input type="text" id="cedula_paciente" name="cedula_paciente">
@@ -143,6 +160,7 @@
                     <div class="form-field">
                         <input type="submit" value="Registrar Paciente">
                     </div>
+                    <p class="form-mensaje" id="mensaje-paciente"></p>
                 </form>
             </div>
         </div>
@@ -156,5 +174,6 @@
     <script src="../js/auth.js?v=3"></script>
     <script src="../js/menu.js?v=3"></script>
     <script src="../js/fecha_Y_hora.js"></script>
+    <script src="../js/gestion_Administrativa.js?v=1"></script>
 </body>
 </html>

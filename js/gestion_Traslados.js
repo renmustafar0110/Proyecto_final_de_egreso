@@ -77,6 +77,8 @@ function dibujarDetalle(traslado) {
     document.getElementById('detalle-origen').textContent = traslado.origen || '—';
     document.getElementById('detalle-destino').textContent = traslado.destino || '—';
     document.getElementById('detalle-salida').textContent = formatearFechaHora(traslado.hora_salida);
+    document.getElementById('detalle-llegada').textContent = formatearFechaHora(traslado.hora_llegada);
+    document.getElementById('detalle-llegada-efectiva').textContent = formatearFechaHora(traslado.hora_llegada_efectiva);
     document.getElementById('detalle-estado').textContent = traslado.estado;
 
     document.getElementById('titulo-traslado').textContent = 'Traslado #' + traslado.id_traslado;

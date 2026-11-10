@@ -92,6 +92,15 @@
                     </div>
 
                     <div class="form-field">
+                        <label for="rol_funcionario">Rol (módulos a los que accede):</label>
+                        <select id="rol_funcionario" name="rol">
+                            <option value="ambos" selected>Ambos módulos (documentación y ambulancias)</option>
+                            <option value="admin_documentos">Solo documentación y encuestas</option>
+                            <option value="admin_ambulancias">Solo trazabilidad de ambulancias</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
                         <label for="password_funcionario">Contraseña:</label>
                         <input type="password" id="password_funcionario" name="password">
                     </div>
@@ -172,7 +181,7 @@
     </footer>
 
     <script src="../js/auth.js?v=3"></script>
-    <script src="../js/menu.js?v=3"></script>
+    <script src="../js/menu.js?v=4"></script>
     <script src="../js/fecha_Y_hora.js"></script>
     <script src="../js/gestion_Administrativa.js?v=1"></script>
 </body>

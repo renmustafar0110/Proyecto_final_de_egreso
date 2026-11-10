@@ -161,7 +161,8 @@ Describe como responde el sistema ante los eventos, expresado mediante diagramas
 | - apellido       |          | - apellido        |
 | - fecha_nac      |          | - cargo           |
 | - telefono       |          | - password_hash   |
-| - email          |          +-------------------+
+| - email          |          | - rol             |
+| - direccion      |          +-------------------+
 | - direccion      |                   | 1
 +------------------+                   |
         | 1                            | N
@@ -227,6 +228,7 @@ Describe como responde el sistema ante los eventos, expresado mediante diagramas
 | - descripcion           |          | - fecha_envio                |
 | - estado                |          +------------------------------+
 | - fecha_creacion        |                     | 1
+| - id_documento: FK      |                     |
 +-------------------------+                     |
         | 1                                     | N
         |                             +------------------------------+
@@ -256,7 +258,10 @@ Describe como responde el sistema ante los eventos, expresado mediante diagramas
 > La tabla `Funcionarios_carga_Documentos` fue eliminada por no tener uso en el
 > sistema. Las antiguas tablas `Encuestas` y `Respuestas` se reemplazaron por el
 > esquema normalizado `Encuestas_Formularios`, `Encuestas_Preguntas`,
-> `Encuestas_Respuestas` y `Encuestas_Respuesta_Detalle`.
+> `Encuestas_Respuestas` y `Encuestas_Respuesta_Detalle`. `Funcionarios`
+> incorpora el atributo `rol` (módulos a los que accede cada funcionario) y
+> `Encuestas_Formularios` la FK `id_documento` para asociar una encuesta a un
+> documento.
 
 ### Diagrama de Secuencia - Carga de Documento
 

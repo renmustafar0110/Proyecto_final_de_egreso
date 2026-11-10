@@ -77,11 +77,11 @@ if ($archivo == '' && $idQr <= 0) {
 }
 
 if ($idQr > 0) {
-    $sql = "SELECT titulo_del_documento, categoria_del_documento, fecha_publicacion, estado, archivo
+    $sql = "SELECT id_documento, titulo_del_documento, categoria_del_documento, fecha_publicacion, estado, archivo
             FROM Documentos WHERE id_qr = $idQr";
 } else {
     $rutaBD = $conexion->real_escape_string('Documento/' . $archivo);
-    $sql = "SELECT titulo_del_documento, categoria_del_documento, fecha_publicacion, estado, archivo
+    $sql = "SELECT id_documento, titulo_del_documento, categoria_del_documento, fecha_publicacion, estado, archivo
             FROM Documentos WHERE archivo = '$rutaBD'";
 }
 
@@ -113,6 +113,21 @@ $categoria = etiquetaCategoria($documento['categoria_del_documento']);
 $fecha = formatearFecha($documento['fecha_publicacion']);
 $urlArchivo = 'verDocumento.php?archivo=' . urlencode($archivo) . '&amp;raw=1';
 
+// US-04: encuesta activa asociada a este documento (si tiene alguna)
+$encuestaAsociada = null;
+
+if (!empty($documento['id_documento'])) {
+    $idDocumento = intval($documento['id_documento']);
+
+    $resultadoEncuesta = $conexion->query("SELECT id_encuesta, titulo FROM Encuestas_Formularios
+                                           WHERE id_documento = $idDocumento AND estado = 1
+                                           ORDER BY id_encuesta DESC LIMIT 1");
+
+    if ($resultadoEncuesta && $resultadoEncuesta->num_rows > 0) {
+        $encuestaAsociada = $resultadoEncuesta->fetch_assoc();
+    }
+}
+
 $agente = '';
 if (isset($_SERVER['HTTP_USER_AGENT'])) {
     $agente = $_SERVER['HTTP_USER_AGENT'];
@@ -143,6 +158,11 @@ header('Content-Type: text/html; charset=utf-8');
         <div class="acciones">
             <a class="btn-abrir" href="<?php echo $urlArchivo; ?>" target="_blank" rel="noopener">Abrir documento</a>
             <a class="btn-descargar" href="<?php echo $urlArchivo; ?>" download>Descargar</a>
+            <?php if ($encuestaAsociada !== null) { ?>
+                <a class="btn-encuesta" href="responderEncuesta.php?id=<?php echo intval($encuestaAsociada['id_encuesta']); ?>">
+                    Completar encuesta de satisfacción
+                </a>
+            <?php } ?>
         </div>
         <?php if ($esIOS) { ?>
             <p class="aviso-ios">En iPhone/iPad el documento puede no visualizarse dentro de esta página. Use «Abrir documento» para verlo.</p>

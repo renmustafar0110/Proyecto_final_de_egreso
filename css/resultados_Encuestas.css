@@ -148,6 +148,27 @@ main {
     margin-top: 6px;
 }
 
+.filtro-info {
+    font-size: 13px;
+    color: #5a7a9a;
+    margin: 0 0 16px 0;
+    align-self: center;
+}
+
+.filtro-info:empty {
+    display: none;
+}
+
+.filtro input[type="date"] {
+    padding: 6px 8px;
+    border: 1px solid #b8c8dc;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: inherit;
+    background-color: #ffffff;
+    color: #1e3a5f;
+}
+
 .tarjeta-pregunta {
     border: 1px solid #d0dbe8;
     border-radius: 8px;

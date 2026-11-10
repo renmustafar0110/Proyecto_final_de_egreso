@@ -56,6 +56,14 @@ function etiquetaElemento(tipo) {
         return 'Paciente biológico';
     }
 
+    if (tipo == 'insumo') {
+        return 'Insumo';
+    }
+
+    if (tipo == 'otro') {
+        return 'Otro';
+    }
+
     return tipo || 'Elemento';
 }
 

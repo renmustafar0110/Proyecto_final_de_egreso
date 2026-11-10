@@ -1,8 +1,12 @@
 var selectEncuesta = document.getElementById('select-encuesta');
+var filtroDesde = document.getElementById('filtro-desde');
+var filtroHasta = document.getElementById('filtro-hasta');
+var botonLimpiarFiltro = document.getElementById('btn-limpiar-filtro');
 var botonExportar = document.getElementById('btn-exportar');
 var avisoResultados = document.getElementById('aviso-resultados');
 var resumen = document.getElementById('resumen');
 var totalRespuestas = document.getElementById('total-respuestas');
+var filtroInfo = document.getElementById('filtro-info');
 var contenedor = document.getElementById('contenedor-resultados');
 
 var ultimoResultado = null;
@@ -65,6 +69,46 @@ function cargarLista() {
         });
 }
 
+// CU-07: URL de resultados con el filtro de fechas aplicado
+function urlResultados(id) {
+    var url = '../php/encuestas.php?accion=resultados&id=' + encodeURIComponent(id);
+
+    if (filtroDesde.value != '') {
+        url = url + '&desde=' + encodeURIComponent(filtroDesde.value);
+    }
+
+    if (filtroHasta.value != '') {
+        url = url + '&hasta=' + encodeURIComponent(filtroHasta.value);
+    }
+
+    return url;
+}
+
+// Texto informativo del filtro activo (ej: "Filtro: 01/10/2026 a 31/10/2026")
+function textoFiltroActivo() {
+    var desde = filtroDesde.value;
+    var hasta = filtroHasta.value;
+
+    if (desde == '' && hasta == '') {
+        return '';
+    }
+
+    function legible(fecha) {
+        var partes = fecha.split('-');
+        return partes.length == 3 ? partes[2] + '/' + partes[1] + '/' + partes[0] : fecha;
+    }
+
+    if (desde != '' && hasta != '') {
+        return 'Respuestas entre ' + legible(desde) + ' y ' + legible(hasta);
+    }
+
+    if (desde != '') {
+        return 'Respuestas desde ' + legible(desde);
+    }
+
+    return 'Respuestas hasta ' + legible(hasta);
+}
+
 function cargarResultados(id) {
     if (id <= 0) {
         avisoResultados.textContent = 'Seleccione una encuesta para ver sus resultados.';
@@ -75,7 +119,7 @@ function cargarResultados(id) {
         return;
     }
 
-    fetch('../php/encuestas.php?accion=resultados&id=' + encodeURIComponent(id))
+    fetch(urlResultados(id))
         .then(function (respuesta) {
             return respuesta.json();
         })
@@ -92,6 +136,7 @@ function cargarResultados(id) {
             avisoResultados.style.display = 'none';
             resumen.style.display = 'block';
             totalRespuestas.textContent = resultado.total_respuestas;
+            filtroInfo.textContent = textoFiltroActivo();
 
             renderPreguntas(resultado.preguntas);
         })
@@ -311,6 +356,21 @@ function campoCSV(valor) {
 selectEncuesta.addEventListener('change', function () {
     cargarResultados(parseInt(selectEncuesta.value, 10) || 0);
 });
+
+// CU-07: al cambiar el rango de fechas se recargan los resultados filtrados
+filtroDesde.addEventListener('change', function () {
+    cargarResultados(parseInt(selectEncuesta.value, 10) || 0);
+});
+
+filtroHasta.addEventListener('change', function () {
+    cargarResultados(parseInt(selectEncuesta.value, 10) || 0);
+});
+
+botonLimpiarFiltro.onclick = function () {
+    filtroDesde.value = '';
+    filtroHasta.value = '';
+    cargarResultados(parseInt(selectEncuesta.value, 10) || 0);
+};
 
 botonExportar.onclick = exportarCSV;
 

@@ -60,6 +60,7 @@ function armarFila(traslado) {
     fila = fila + '<td>' + escapar(destino) + '</td>';
     fila = fila + '<td>' + formatearFechaHora(traslado.hora_salida) + '</td>';
     fila = fila + '<td>' + formatearFechaHora(traslado.hora_llegada) + '</td>';
+    fila = fila + '<td>' + formatearFechaHora(traslado.hora_llegada_efectiva) + '</td>';
     fila = fila + '<td><span class="estado ' + claseEstado(traslado.estado) + '">' + escapar(traslado.estado) + '</span></td>';
     fila = fila + '<td><a href="gestion_Traslados.html?id=' + encodeURIComponent(traslado.id_traslado) + '" class="btn-gestionar">Gestionar</a></td>';
     fila = fila + '</tr>';

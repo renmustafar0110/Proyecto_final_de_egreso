@@ -16,6 +16,7 @@ Basado en el Documento de Requisitos de Producto (PRD 3.0 / PRD 2.0).
   - `admin_documentos`: gestiona documentos y encuestas.
   - `admin_ambulancias`: gestiona traslados y estados.
   - `super_admin`: control total del sistema, administración de usuarios y auditoría.
+- El rol se asigna a cada funcionario al registrarlo (solo documentación, solo ambulancias o ambos). Un funcionario sin un módulo asignado no ve sus menús y los endpoints de ese módulo le responden `403`.
 - Los pacientes **no requieren autenticación** para acceder a documentos vía QR, pero sí solo lectura y sin listado.
 
 ### 1.2. Política de Comunicaciones y Transporte

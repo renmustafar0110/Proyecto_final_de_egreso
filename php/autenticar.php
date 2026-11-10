@@ -50,7 +50,7 @@ if ($tipo === 'administrador') {
         'tipo' => 'administrador'
     );
 } else {
-    $consulta = "SELECT id_funcionario, cedula, nombre, apellido, cargo, password_hash
+    $consulta = "SELECT id_funcionario, cedula, nombre, apellido, cargo, password_hash, rol
                  FROM Funcionarios
                  WHERE cedula = ?
                  LIMIT 1";
@@ -64,7 +64,7 @@ if ($tipo === 'administrador') {
 
     $stmt->bind_param('s', $cedula);
     $stmt->execute();
-    $stmt->bind_result($idUsuario, $cedulaBD, $nombre, $apellido, $cargo, $passwordHash);
+    $stmt->bind_result($idUsuario, $cedulaBD, $nombre, $apellido, $cargo, $passwordHash, $rolBD);
 
     $encontrado = $stmt->fetch();
     $stmt->close();
@@ -74,14 +74,26 @@ if ($tipo === 'administrador') {
         exit;
     }
 
+    // CU-01 / PRD 7.3: el rol se define por funcionario en la tabla Funcionarios
+    // (admin_documentos, admin_ambulancias o ambos). Antes todos recibían ambos roles.
+    $roles = array('admin_documentos', 'admin_ambulancias');
+
+    if ($rolBD == 'admin_documentos') {
+        $roles = array('admin_documentos');
+    } elseif ($rolBD == 'admin_ambulancias') {
+        $roles = array('admin_ambulancias');
+    } else {
+        $rolBD = 'ambos';
+    }
+
     $usuario = array(
         'id_usuario' => intval($idUsuario),
         'cedula' => $cedulaBD,
         'nombre' => $nombre,
         'apellido' => $apellido,
         'cargo' => $cargo,
-        'rol' => 'admin_documentos',
-        'roles' => array('admin_documentos', 'admin_ambulancias'),
+        'rol' => $rolBD,
+        'roles' => $roles,
         'tipo' => 'funcionario'
     );
 }

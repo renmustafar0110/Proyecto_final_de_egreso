@@ -117,6 +117,7 @@ Incluye además un módulo de **encuestas de satisfacción**: los administrativo
 *Criterios de aceptación:*
 - Soporta preguntas de opción múltiple, escala numérica y texto libre
 - La encuesta se asocia a un documento o es independiente
+- El visor público del documento ofrece un acceso directo a su encuesta activa asociada
 - Se genera un QR específico para la encuesta
 
 ---
@@ -140,6 +141,7 @@ Incluye además un módulo de **encuestas de satisfacción**: los administrativo
 
 *Criterios de aceptación:*
 - El dashboard muestra cantidad de respuestas por encuesta
+- Se puede filtrar por rango de fechas de envío de las respuestas (desde/hasta)
 - Los datos se pueden exportar a CSV
 - Se muestran gráficos básicos (barras, torta)
 
@@ -283,6 +285,7 @@ El administrativo actualiza manualmente el estado de cada operación durante tod
 *Criterios de aceptación:*
 - Los estados disponibles son: Pendiente, En curso, En ruta, Llegada a destino, Retorno, Finalizado
 - Cada cambio de estado se registra con timestamp
+- Al pasar a "Llegada a destino" queda registrada la hora efectiva de llegada, visible en el detalle del traslado y en el panel
 - No se puede retroceder a un estado anterior
 
 ---
@@ -383,6 +386,7 @@ flowchart LR
     PACIENTES -->|1:N| QR
     QR -->|1:N| DOCUMENTOS
     PACIENTES -.->|cedula| DOCUMENTOS
+    DOCUMENTOS -->|1:N| ENC_FORM
 
     FUNCIONARIOS -->|1:N| CONDUCTORES
     FUNCIONARIOS -->|1:N| COPILOTOS
@@ -409,11 +413,11 @@ flowchart LR
 | Entidad | Atributos | Descripción |
 |---------|-----------|-------------|
 | **Pacientes** | id_paciente (PK), cedula (UNIQUE), nombre, apellido, fecha_nac, telefono, email, direccion | Pacientes del hospital que acceden a su documentación y responden encuestas |
-| **Funcionarios** | id_funcionario (PK), nombre, apellido, cargo, cedula, password_hash | Personal del hospital que inicia sesión y opera los módulos |
+| **Funcionarios** | id_funcionario (PK), nombre, apellido, cargo, cedula, password_hash, rol | Personal del hospital que inicia sesión y opera los módulos. `rol` define a cuáles accede: `admin_documentos`, `admin_ambulancias` o `ambos` |
 | **Administradores** | id_administrador (PK), cedula (UNIQUE), nombre, cargo, contraseña | Cuentas del personal administrativo (`super_admin`). Se cargan directamente en la base |
 | **QR** | id_qr (PK), url, cedula | Códigos QR generados para acceder a los documentos |
 | **Documentos** | id_documento (PK), nom_doc, nom_pac, cedula, id_qr (FK), titulo_del_documento, archivo, fecha_publicacion, categoria_del_documento, estado | Documentos informativos cargados y vinculados a un QR |
-| **Encuestas_Formularios** | id_encuesta (PK), titulo, descripcion, estado, fecha_creacion | Cabecera de cada encuesta de satisfacción |
+| **Encuestas_Formularios** | id_encuesta (PK), titulo, descripcion, estado, fecha_creacion, id_documento (FK) | Cabecera de cada encuesta de satisfacción; opcionalmente asociada a un documento |
 | **Encuestas_Preguntas** | id_pregunta (PK), id_encuesta (FK), texto, tipo, opciones, orden | Preguntas de una encuesta (`multiple`, `escala`, `texto`) |
 | **Encuestas_Respuestas** | id_respuesta (PK), id_encuesta (FK), fecha_envio | Cabecera de cada respuesta enviada por un paciente |
 | **Encuestas_Respuesta_Detalle** | id_detalle (PK), id_respuesta (FK), id_pregunta (FK), valor | Valor respondido para cada pregunta |
@@ -439,6 +443,7 @@ flowchart LR
 | lleva | Traslados - Copilotos | 1:1 | Copilotos.id_traslado (UNIQUE) | Un traslado puede llevar un copiloto |
 | incluye | Traslados - Equipos | 1:N | Equipos.id_traslado | Un traslado puede incluir varios equipos |
 | historial | Traslados - Traslado_Estados | 1:N | Traslado_Estados.id_traslado | Un traslado acumula un historial de estados |
+| se asocia | Documentos - Encuestas_Formularios | 1:N | Encuestas_Formularios.id_documento | Un documento puede tener varias encuestas asociadas; si el documento se elimina, la encuesta queda independiente (SET NULL) |
 | agrupa | Encuestas_Formularios - Encuestas_Preguntas | 1:N | Encuestas_Preguntas.id_encuesta | Una encuesta contiene varias preguntas |
 | recibe | Encuestas_Formularios - Encuestas_Respuestas | 1:N | Encuestas_Respuestas.id_encuesta | Una encuesta recibe varias respuestas |
 | detalla | Encuestas_Respuestas - Encuestas_Respuesta_Detalle | 1:N | Encuestas_Respuesta_Detalle.id_respuesta | Una respuesta contiene el detalle de sus preguntas |
@@ -468,6 +473,7 @@ modelo y se usa únicamente para autenticar al personal administrativo.
 ### 7.3. Seguridad
 
 - Autenticación segura para el personal administrativo con roles: `admin_documentos`, `admin_ambulancias`, `super_admin`
+- El rol se asigna por funcionario al registrarlo (solo documentación, solo ambulancias o ambos); quien no tiene un módulo asignado no ve sus menús y sus endpoints responden `403`
 - HTTPS obligatorio en todos los endpoints
 - Los documentos de pacientes son de acceso público vía QR (sin autenticación), pero solo permiten lectura individual, no listado, y la gestión debe protegerse contra accesos no autorizados
 - Las encuestas son anónimas por defecto; los datos deben almacenarse de forma anónima o seudonimizada según normativa aplicable

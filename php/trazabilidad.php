@@ -86,6 +86,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
         $sql = "SELECT t.id_traslado, t.origen, t.destino,
                        t.hora_salida, t.hora_llegada, t.estado,
+                       (SELECT te.fecha_cambio FROM Traslado_Estados te
+                          WHERE te.id_traslado = t.id_traslado AND te.estado = 'Llegada a destino'
+                          ORDER BY te.fecha_cambio DESC, te.id_estado DESC LIMIT 1) AS hora_llegada_efectiva,
                        t.elemento_tipo, t.elemento_descripcion,
                        t.elemento_dato1, t.elemento_dato2, t.elemento_dato3,
                        c.nombre AS conductor_nombre, c.apellido AS conductor_apellido,
@@ -142,6 +145,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         $sql = "SELECT t.id_traslado, t.origen, t.destino, t.hora_salida, t.hora_llegada, t.estado,
                        t.elemento_tipo, t.elemento_descripcion, t.elemento_dato1, t.elemento_dato2, t.elemento_dato3,
                        t.id_conductor,
+                       (SELECT te.fecha_cambio FROM Traslado_Estados te
+                          WHERE te.id_traslado = $id AND te.estado = 'Llegada a destino'
+                          ORDER BY te.fecha_cambio DESC, te.id_estado DESC LIMIT 1) AS hora_llegada_efectiva,
                        c.nombre AS conductor_nombre, c.apellido AS conductor_apellido,
                        a.numero_coche,
                        ac.nombre AS acompanante_nombre, ac.apellido AS acompanante_apellido,
@@ -610,10 +616,12 @@ function leerDatosTraslado($conexion, $idTrasladoReferencia) {
     $horaLlegada = campoPost('hora_llegada');
 
     $idConductor = intval(campoPost('id_conductor'));
-    $idAcompanante = intval(campoPost('acompanante_id'));
+    $acompananteNuevo = (campoPost('acompanante_id') === 'nuevo');
+    $idAcompanante = $acompananteNuevo ? 0 : intval(campoPost('acompanante_id'));
     $idCopiloto = intval(campoPost('copiloto_id'));
 
-    $tiposValidos = array('paciente_biologico', 'equipamiento_medico', 'muestra_biologica');
+    // US-11: tipos de elemento trasladado (texto libre para insumos y otros)
+    $tiposValidos = array('paciente_biologico', 'equipamiento_medico', 'muestra_biologica', 'insumo', 'otro');
 
     $elementoTipo = campoPost('elemento_tipo');
     if (!in_array($elementoTipo, $tiposValidos, true)) {
@@ -706,17 +714,61 @@ function leerDatosTraslado($conexion, $idTrasladoReferencia) {
 
         $filaAcompanante = $resultadoAcompanante->fetch_assoc();
 
-        if ($cedulaConductor != '' && $filaAcompanante['cedula_acom'] == $cedulaConductor) {
-            echo json_encode(array('ok' => false, 'error' => 'El acompañante no puede ser la misma persona que el conductor'));
-            exit;
-        }
-
         $datosAcompanante = array(
             'nombre' => $filaAcompanante['nombre'],
             'apellido' => $filaAcompanante['apellido'],
             'cedula' => $filaAcompanante['cedula_acom'],
             'telefono' => $filaAcompanante['telefono']
         );
+    } elseif ($acompananteNuevo) {
+        // US-07: acompañante registrado con datos libres (nombre, apellido,
+        // cédula y teléfono opcional)
+        $nombreAcompanante = campoPost('acompanante_nombre');
+        $apellidoAcompanante = campoPost('acompanante_apellido');
+        $cedulaAcompanante = campoPost('acompanante_cedula');
+        $telefonoAcompanante = campoPost('acompanante_telefono');
+
+        if ($nombreAcompanante == '' || $apellidoAcompanante == '' || $cedulaAcompanante == '') {
+            echo json_encode(array('ok' => false, 'error' => 'Complete nombre, apellido y cédula del acompañante'));
+            exit;
+        }
+
+        if (!ctype_digit($cedulaAcompanante) || strlen($cedulaAcompanante) > 20) {
+            echo json_encode(array('ok' => false, 'error' => 'La cédula del acompañante no es válida'));
+            exit;
+        }
+
+        if ($telefonoAcompanante !== '' && (!ctype_digit($telefonoAcompanante) || strlen($telefonoAcompanante) > 20)) {
+            echo json_encode(array('ok' => false, 'error' => 'El teléfono del acompañante no es válido'));
+            exit;
+        }
+
+        $cedulaAcompananteEscapada = $conexion->real_escape_string($cedulaAcompanante);
+
+        // Si ya hay un acompañante libre con esa cédula, se usa el catálogo
+        $repetido = $conexion->query("SELECT id_acompanante FROM Acompanantes
+                                     WHERE cedula_acom = '$cedulaAcompananteEscapada'
+                                       AND id_traslado IS NULL
+                                     LIMIT 1");
+
+        if ($repetido && $repetido->num_rows > 0) {
+            echo json_encode(array('ok' => false, 'error' => 'Ya existe un acompañante con esa cédula, selecciónelo de la lista'));
+            exit;
+        }
+
+        $datosAcompanante = array(
+            'nombre' => $nombreAcompanante,
+            'apellido' => $apellidoAcompanante,
+            'cedula' => $cedulaAcompanante,
+            'telefono' => $telefonoAcompanante
+        );
+    }
+
+    // El acompañante no puede ser la misma persona que el conductor
+    // (aplica al catálogo y al acompañante nuevo, US-07 / CU-08)
+    if ($datosAcompanante !== null && $cedulaConductor != '' && $datosAcompanante['cedula'] == $cedulaConductor) {
+        echo json_encode(array('ok' => false, 'error' => 'El acompañante no puede ser la misma persona que el conductor'));
+        exit;
     }
 
     if ($idCopiloto > 0) {
@@ -750,9 +802,18 @@ function leerDatosTraslado($conexion, $idTrasladoReferencia) {
         exit;
     }
 
-    if ($elementoTipo != 'equipamiento_medico' && ($elementoDato1 == '' || $elementoDato2 == '')) {
-        echo json_encode(array('ok' => false, 'error' => 'Complete los datos del elemento a trasladar'));
-        exit;
+    // Validación de los datos del elemento según su tipo (US-11)
+    if ($elementoTipo != 'equipamiento_medico') {
+        if ($elementoTipo == 'insumo' || $elementoTipo == 'otro') {
+            // Texto libre: solo se exige la descripción
+            if ($elementoDato1 == '') {
+                echo json_encode(array('ok' => false, 'error' => 'Describa el elemento a trasladar'));
+                exit;
+            }
+        } elseif ($elementoDato1 == '' || $elementoDato2 == '') {
+            echo json_encode(array('ok' => false, 'error' => 'Complete los datos del elemento a trasladar'));
+            exit;
+        }
     }
 
     $numeroEscapado = $conexion->real_escape_string($numero);

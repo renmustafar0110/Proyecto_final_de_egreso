@@ -86,6 +86,19 @@ if (formularioTraslado) {
                 formularioTraslado.reset();
                 actualizarCamposEquipamiento();
                 cargarCochesDisponibles();
+
+                // Se oculta y limpia el bloque de acompañante nuevo
+                var grupoNuevo = document.getElementById('grupo-acompanante-nuevo');
+
+                if (grupoNuevo) {
+                    grupoNuevo.style.display = 'none';
+                    var camposNuevo = grupoNuevo.querySelectorAll('input');
+
+                    for (var c = 0; c < camposNuevo.length; c++) {
+                        camposNuevo[c].required = false;
+                        camposNuevo[c].value = '';
+                    }
+                }
             } else {
                 var mensajeError = resultado.error;
                 if (mensajeError == null) {
@@ -288,6 +301,32 @@ function configurarCamposElemento() {
             label3.textContent = 'Conservación / observaciones:';
             input3.placeholder = 'Ej: Refrigerado a 4 °C';
             input3.required = false;
+        } else if (tipo == 'insumo') {
+            // US-11: traslado de insumos (texto libre)
+            label1.textContent = 'Insumo / descripción:';
+            input1.placeholder = 'Ej: Caja de guantes de nitrilo';
+            input1.required = true;
+
+            label2.textContent = 'Cantidad / detalle:';
+            input2.placeholder = 'Ej: 10 unidades';
+            input2.required = false;
+
+            label3.textContent = 'Observaciones:';
+            input3.placeholder = 'Opcional';
+            input3.required = false;
+        } else if (tipo == 'otro') {
+            // US-11: cualquier otro elemento con texto libre
+            label1.textContent = 'Descripción del elemento:';
+            input1.placeholder = 'Ej: Elemento a trasladar';
+            input1.required = true;
+
+            label2.textContent = 'Detalle adicional:';
+            input2.placeholder = 'Opcional';
+            input2.required = false;
+
+            label3.textContent = 'Observaciones:';
+            input3.placeholder = 'Opcional';
+            input3.required = false;
         }
     }
 
@@ -315,11 +354,69 @@ function cargarPersonal() {
             'No se pudieron cargar los conductores'),
         cargarOpciones('acompanantes', 'input-acompanante', 'id',
             'Sin acompañante', 'Sin acompañantes cargados',
-            'No se pudieron cargar los acompañantes'),
+            'No se pudieron cargar los acompañantes')
+            .then(function () {
+                agregarOpcionAcompananteNuevo();
+            }),
         cargarOpciones('copilotos', 'input-copiloto', 'id',
             'Sin copiloto', 'Sin copilotos cargados',
             'No se pudieron cargar los copilotos')
     ]);
+}
+
+// ---------------------------------------------------------------------
+// US-07: registro de un acompañante nuevo desde el formulario
+// ---------------------------------------------------------------------
+function agregarOpcionAcompananteNuevo() {
+    var select = document.getElementById('input-acompanante');
+
+    if (select == null) {
+        return;
+    }
+
+    var yaExiste = false;
+
+    for (var i = 0; i < select.options.length; i++) {
+        if (select.options[i].value == 'nuevo') {
+            yaExiste = true;
+            break;
+        }
+    }
+
+    if (!yaExiste) {
+        var opcion = document.createElement('option');
+        opcion.value = 'nuevo';
+        opcion.textContent = 'Registrar nuevo acompañante...';
+        select.appendChild(opcion);
+    }
+}
+
+function configurarAcompananteNuevo() {
+    var select = document.getElementById('input-acompanante');
+    var grupo = document.getElementById('grupo-acompanante-nuevo');
+
+    if (!select || !grupo) {
+        return;
+    }
+
+    function actualizar() {
+        var esNuevo = select.value == 'nuevo';
+
+        grupo.style.display = esNuevo ? '' : 'none';
+
+        var campos = grupo.querySelectorAll('input');
+
+        for (var i = 0; i < campos.length; i++) {
+            // El teléfono es opcional, el resto obligatorio (US-07)
+            campos[i].required = esNuevo && campos[i].id != 'input-acompanante-telefono';
+
+            if (!esNuevo) {
+                campos[i].value = '';
+            }
+        }
+    }
+
+    select.addEventListener('change', actualizar);
 }
 
 // ---------------------------------------------------------------------
@@ -377,8 +474,34 @@ function aplicarDatosAlFormulario(traslado) {
         traslado.id_conductor != null ? String(traslado.id_conductor) : '';
     document.getElementById('input-copiloto').value =
         traslado.copiloto_id != null ? String(traslado.copiloto_id) : '';
-    document.getElementById('input-acompanante').value =
-        traslado.acompanante_id != null ? String(traslado.acompanante_id) : '';
+
+    var selectAcompanante = document.getElementById('input-acompanante');
+
+    if (traslado.acompanante_id != null) {
+        selectAcompanante.value = String(traslado.acompanante_id);
+    } else if (traslado.acompanante_nombre != null) {
+        // US-07: el acompañante del traslado no figura en el catálogo libre,
+        // se precargan sus datos como acompañante nuevo
+        selectAcompanante.value = 'nuevo';
+
+        document.getElementById('input-acompanante-nombre').value = traslado.acompanante_nombre || '';
+        document.getElementById('input-acompanante-apellido').value = traslado.acompanante_apellido || '';
+        document.getElementById('input-acompanante-cedula').value = traslado.acompanante_cedula || '';
+        document.getElementById('input-acompanante-telefono').value = traslado.acompanante_telefono || '';
+
+        var grupoNuevo = document.getElementById('grupo-acompanante-nuevo');
+
+        if (grupoNuevo) {
+            grupoNuevo.style.display = '';
+            var camposNuevo = grupoNuevo.querySelectorAll('input');
+
+            for (var c = 0; c < camposNuevo.length; c++) {
+                camposNuevo[c].required = camposNuevo[c].id != 'input-acompanante-telefono';
+            }
+        }
+    } else {
+        selectAcompanante.value = '';
+    }
 
     document.getElementById('input-elemento-tipo').value =
         traslado.elemento_tipo != null ? traslado.elemento_tipo : 'paciente_biologico';
@@ -399,7 +522,6 @@ function aplicarDatosAlFormulario(traslado) {
         traslado.elemento_dato2 != null ? traslado.elemento_dato2 : '';
     document.getElementById('input-elemento-dato3').value =
         traslado.elemento_dato3 != null ? traslado.elemento_dato3 : '';
-
     document.getElementById('input-origen').value =
         traslado.origen != null ? traslado.origen : '';
     document.getElementById('input-destino').value =
@@ -434,6 +556,7 @@ function aplicarDatosAlFormulario(traslado) {
 
 configurarCamposElemento();
 configurarEquipamiento();
+configurarAcompananteNuevo();
 
 if (idTrasladoAEditar > 0) {
     Promise.all([cargarCochesDisponibles(), cargarPersonal()])

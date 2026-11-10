@@ -92,6 +92,33 @@
                     </select>
                 </div>
 
+                <!-- US-07: registro de un acompañante nuevo con datos libres -->
+                <div id="grupo-acompanante-nuevo" style="display: none;">
+                    <div class="form-field">
+                        <label for="input-acompanante-nombre">Nombre del acompañante:</label>
+                        <input type="text" id="input-acompanante-nombre" name="acompanante_nombre"
+                               maxlength="100" placeholder="Ej: María">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="input-acompanante-apellido">Apellido del acompañante:</label>
+                        <input type="text" id="input-acompanante-apellido" name="acompanante_apellido"
+                               maxlength="100" placeholder="Ej: Fernández">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="input-acompanante-cedula">Cédula del acompañante:</label>
+                        <input type="text" id="input-acompanante-cedula" name="acompanante_cedula"
+                               maxlength="20" inputmode="numeric" placeholder="Ej: 12345678">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="input-acompanante-telefono">Teléfono del acompañante (opcional):</label>
+                        <input type="text" id="input-acompanante-telefono" name="acompanante_telefono"
+                               maxlength="20" inputmode="numeric" placeholder="Ej: 099123456">
+                    </div>
+                </div>
+
                 <div class="form-field">
                     <label for="input-copiloto">Copiloto:</label>
                     <select id="input-copiloto" name="copiloto_id">
@@ -105,6 +132,8 @@
                         <option value="paciente_biologico" selected>Paciente biológico</option>
                         <option value="equipamiento_medico">Equipamiento médico</option>
                         <option value="muestra_biologica">Muestra biológica</option>
+                        <option value="insumo">Insumo</option>
+                        <option value="otro">Otro</option>
                     </select>
                 </div>
 
@@ -217,10 +246,10 @@
     </footer>
 
     <script src="../js/auth.js?v=3"></script>
-    <script src="../js/menu.js?v=3"></script>
+    <script src="../js/menu.js?v=4"></script>
     <script src="../js/utilidades.js"></script>
     <script src="../js/ambulancias.js"></script>
-    <script src="../js/trazabilidad.js"></script>
+    <script src="../js/trazabilidad.js?v=2"></script>
     <script src="../js/fecha_Y_hora.js"></script>
 </body>
 </html>

@@ -32,9 +32,11 @@ if ($metodo == 'GET') {
         $encuestas = array();
 
         $sql = "SELECT e.id_encuesta, e.titulo, e.descripcion, e.estado, e.fecha_creacion,
+                       e.id_documento, d.titulo_del_documento,
                        (SELECT COUNT(*) FROM Encuestas_Preguntas p WHERE p.id_encuesta = e.id_encuesta) AS total_preguntas,
                        (SELECT COUNT(*) FROM Encuestas_Respuestas r WHERE r.id_encuesta = e.id_encuesta) AS total_respuestas
                 FROM Encuestas_Formularios e
+                LEFT JOIN Documentos d ON d.id_documento = e.id_documento
                 ORDER BY e.id_encuesta DESC";
 
         $resultado = $conexion->query($sql);
@@ -45,6 +47,7 @@ if ($metodo == 'GET') {
                 $fila['estado'] = intval($fila['estado']);
                 $fila['total_preguntas'] = intval($fila['total_preguntas']);
                 $fila['total_respuestas'] = intval($fila['total_respuestas']);
+                $fila['id_documento'] = $fila['id_documento'] !== null ? intval($fila['id_documento']) : null;
                 $encuestas[] = $fila;
             }
         }
@@ -76,7 +79,7 @@ if ($metodo == 'GET') {
         responder(true, array('encuesta' => $encuesta));
     }
 
-    // US-06: resultados agregados para el dashboard
+    // US-06: resultados agregados para el dashboard (con filtro opcional por fecha)
     if ($accion == 'resultados') {
 
         $id = 0;
@@ -88,6 +91,30 @@ if ($metodo == 'GET') {
             responder(false, array('mensaje' => 'Encuesta no válida'));
         }
 
+        // CU-07: filtro por rango de fechas de envío de las respuestas
+        $desde = isset($_GET['desde']) ? trim($_GET['desde']) : '';
+        $hasta = isset($_GET['hasta']) ? trim($_GET['hasta']) : '';
+
+        if ($desde != '' && !fechaSimpleValida($desde)) {
+            responder(false, array('mensaje' => 'La fecha inicial no es válida'));
+        }
+
+        if ($hasta != '' && !fechaSimpleValida($hasta)) {
+            responder(false, array('mensaje' => 'La fecha final no es válida'));
+        }
+
+        $filtroFechas = '';
+
+        if ($desde != '') {
+            $desdeEscapado = $conexion->real_escape_string($desde);
+            $filtroFechas = $filtroFechas . " AND r.fecha_envio >= '$desdeEscapado 00:00:00'";
+        }
+
+        if ($hasta != '') {
+            $hastaEscapada = $conexion->real_escape_string($hasta);
+            $filtroFechas = $filtroFechas . " AND r.fecha_envio <= '$hastaEscapada 23:59:59'";
+        }
+
         $encuesta = obtenerEncuesta($conexion, $id);
 
         if ($encuesta === null) {
@@ -95,7 +122,8 @@ if ($metodo == 'GET') {
         }
 
         $totalRespuestas = 0;
-        $resultadoTotal = $conexion->query("SELECT COUNT(*) AS total FROM Encuestas_Respuestas WHERE id_encuesta = $id");
+        $resultadoTotal = $conexion->query("SELECT COUNT(*) AS total FROM Encuestas_Respuestas r
+                                           WHERE r.id_encuesta = $id" . $filtroFechas);
 
         if ($resultadoTotal && $filaTotal = $resultadoTotal->fetch_assoc()) {
             $totalRespuestas = intval($filaTotal['total']);
@@ -108,9 +136,12 @@ if ($metodo == 'GET') {
 
             if ($pregunta['tipo'] == 'texto') {
                 $valores = array();
-                $res = $conexion->query("SELECT valor FROM Encuestas_Respuesta_Detalle
-                                         WHERE id_pregunta = $idPregunta AND valor IS NOT NULL AND valor <> ''
-                                         ORDER BY id_detalle DESC");
+                $res = $conexion->query("SELECT d.valor FROM Encuestas_Respuesta_Detalle d
+                                         INNER JOIN Encuestas_Respuestas r ON r.id_respuesta = d.id_respuesta
+                                         WHERE d.id_pregunta = $idPregunta AND r.id_encuesta = $id
+                                           AND d.valor IS NOT NULL AND d.valor <> ''"
+                                         . $filtroFechas .
+                                         " ORDER BY d.id_detalle DESC");
                 if ($res) {
                     while ($fila = $res->fetch_assoc()) {
                         $valores[] = $fila['valor'];
@@ -121,9 +152,11 @@ if ($metodo == 'GET') {
             }
 
             $conteos = array();
-            $res = $conexion->query("SELECT valor, COUNT(*) AS total FROM Encuestas_Respuesta_Detalle
-                                     WHERE id_pregunta = $idPregunta
-                                     GROUP BY valor");
+            $res = $conexion->query("SELECT d.valor, COUNT(*) AS total FROM Encuestas_Respuesta_Detalle d
+                                     INNER JOIN Encuestas_Respuestas r ON r.id_respuesta = d.id_respuesta
+                                     WHERE d.id_pregunta = $idPregunta AND r.id_encuesta = $id"
+                                     . $filtroFechas .
+                                     " GROUP BY d.valor");
             if ($res) {
                 while ($fila = $res->fetch_assoc()) {
                     $conteos[$fila['valor']] = intval($fila['total']);
@@ -155,7 +188,8 @@ if ($metodo == 'GET') {
         responder(true, array(
             'encuesta' => $encuesta,
             'total_respuestas' => $totalRespuestas,
-            'preguntas' => $preguntas
+            'preguntas' => $preguntas,
+            'filtro' => array('desde' => $desde, 'hasta' => $hasta)
         ));
     }
 
@@ -182,8 +216,12 @@ if ($accion == 'crear') {
     $tituloEscapado = $conexion->real_escape_string($datos['titulo']);
     $descripcionEscapada = $conexion->real_escape_string($datos['descripcion']);
 
-    $sql = "INSERT INTO Encuestas_Formularios (titulo, descripcion, estado, fecha_creacion)
-            VALUES ('$tituloEscapado', '$descripcionEscapada', 1, NOW())";
+    // US-04: la encuesta se asocia a un documento o es independiente
+    $idDocumento = documentoAsociado($conexion);
+    $valorDocumento = $idDocumento > 0 ? $idDocumento : 'NULL';
+
+    $sql = "INSERT INTO Encuestas_Formularios (titulo, descripcion, estado, fecha_creacion, id_documento)
+            VALUES ('$tituloEscapado', '$descripcionEscapada', 1, NOW(), $valorDocumento)";
 
     if (!$conexion->query($sql)) {
         responder(false, array('mensaje' => 'Falló el registro: ' . $conexion->error));
@@ -235,10 +273,15 @@ if ($accion == 'editar') {
     $tituloEscapado = $conexion->real_escape_string($datos['titulo']);
     $descripcionEscapada = $conexion->real_escape_string($datos['descripcion']);
 
+    // US-04: la asociación al documento también se puede cambiar al editar
+    $idDocumento = documentoAsociado($conexion);
+    $valorDocumento = $idDocumento > 0 ? $idDocumento : 'NULL';
+
     $conexion->begin_transaction();
 
     if (!$conexion->query("UPDATE Encuestas_Formularios
-                           SET titulo = '$tituloEscapado', descripcion = '$descripcionEscapada'
+                           SET titulo = '$tituloEscapado', descripcion = '$descripcionEscapada',
+                               id_documento = $valorDocumento
                            WHERE id_encuesta = $id")) {
         responder(false, array('mensaje' => 'Falló la actualización: ' . $conexion->error));
     }
@@ -445,9 +488,49 @@ function opcionesDePregunta($conexion, $pregunta) {
     return "'" . $json . "'";
 }
 
+// US-04: lee y valida el documento asociado enviado por el formulario.
+// Devuelve 0 cuando la encuesta es independiente.
+function documentoAsociado($conexion) {
+
+    $idDocumento = 0;
+    if (isset($_POST['id_documento'])) {
+        $idDocumento = intval($_POST['id_documento']);
+    }
+
+    if ($idDocumento <= 0) {
+        return 0;
+    }
+
+    $resultado = $conexion->query("SELECT id_documento FROM Documentos WHERE id_documento = $idDocumento LIMIT 1");
+
+    if (!$resultado || $resultado->num_rows == 0) {
+        responder(false, array('mensaje' => 'El documento asociado no existe'));
+    }
+
+    return $idDocumento;
+}
+
+// Valida una fecha simple en formato YYYY-MM-DD (filtro del dashboard US-06).
+function fechaSimpleValida($fecha) {
+    $partes = explode('-', $fecha);
+
+    if (count($partes) != 3) {
+        return false;
+    }
+
+    if (!ctype_digit($partes[0]) || !ctype_digit($partes[1]) || !ctype_digit($partes[2])) {
+        return false;
+    }
+
+    return checkdate(intval($partes[1]), intval($partes[2]), intval($partes[0]));
+}
+
 function obtenerEncuesta($conexion, $id) {
-    $resultado = $conexion->query("SELECT id_encuesta, titulo, descripcion, estado, fecha_creacion
-                                   FROM Encuestas_Formularios WHERE id_encuesta = $id");
+    $resultado = $conexion->query("SELECT e.id_encuesta, e.titulo, e.descripcion, e.estado, e.fecha_creacion,
+                                          e.id_documento, d.titulo_del_documento
+                                   FROM Encuestas_Formularios e
+                                   LEFT JOIN Documentos d ON d.id_documento = e.id_documento
+                                   WHERE e.id_encuesta = $id");
 
     if (!$resultado || $resultado->num_rows == 0) {
         return null;
@@ -456,6 +539,7 @@ function obtenerEncuesta($conexion, $id) {
     $encuesta = $resultado->fetch_assoc();
     $encuesta['id_encuesta'] = intval($encuesta['id_encuesta']);
     $encuesta['estado'] = intval($encuesta['estado']);
+    $encuesta['id_documento'] = $encuesta['id_documento'] !== null ? intval($encuesta['id_documento']) : null;
 
     return $encuesta;
 }

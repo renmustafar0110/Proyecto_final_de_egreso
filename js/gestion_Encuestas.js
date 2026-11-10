@@ -123,8 +123,15 @@ function armarFila(encuesta) {
     var siguiente = estadoActivo ? 0 : 1;
     var textoBoton = estadoActivo ? 'Desactivar' : 'Activar';
 
+    // US-04: documento asociado (o encuesta independiente)
+    var documentoAsociado = 'Independiente';
+    if (encuesta.titulo_del_documento != null && encuesta.titulo_del_documento != '') {
+        documentoAsociado = encuesta.titulo_del_documento;
+    }
+
     var fila = '<tr>';
     fila = fila + '<td>' + escapar(encuesta.titulo) + '</td>';
+    fila = fila + '<td>' + escapar(documentoAsociado) + '</td>';
     fila = fila + '<td>' + escapar(encuesta.total_preguntas) + '</td>';
     fila = fila + '<td>' + escapar(encuesta.total_respuestas) + '</td>';
     fila = fila + '<td><span class="' + claseEstado + '">' + textoEstado + '</span></td>';
@@ -302,6 +309,7 @@ function cargarFormularioEdicion(encuesta) {
 
     document.getElementById('enc-titulo').value = encuesta.titulo != null ? encuesta.titulo : '';
     document.getElementById('enc-descripcion').value = encuesta.descripcion != null ? encuesta.descripcion : '';
+    document.getElementById('enc-documento').value = encuesta.id_documento != null ? String(encuesta.id_documento) : '';
 
     listaPreguntas.innerHTML = '';
 
@@ -325,6 +333,7 @@ function volverAModoCrear() {
     idEncuestaEnEdicion = 0;
 
     formulario.reset();
+    document.getElementById('enc-documento').value = '';
     listaPreguntas.innerHTML = '';
     contadorPreguntas = 0;
     crearPregunta();
@@ -426,6 +435,7 @@ formulario.addEventListener('submit', function (evento) {
 
     datos.append('titulo', titulo);
     datos.append('descripcion', descripcion);
+    datos.append('id_documento', document.getElementById('enc-documento').value);
     datos.append('preguntas', JSON.stringify(preguntas));
 
     enviar(datos, function (resultado) {
@@ -440,5 +450,44 @@ formulario.addEventListener('submit', function (evento) {
 
 document.getElementById('btn-cancelar-edicion').onclick = volverAModoCrear;
 
+// ---------------------------------------------------------------------
+// Documentos asociables (US-04)
+// ---------------------------------------------------------------------
+function cargarDocumentos() {
+    var select = document.getElementById('enc-documento');
+
+    if (select == null) {
+        return;
+    }
+
+    fetch('../php/listarDocumentos.php')
+        .then(function (respuesta) {
+            return respuesta.json();
+        })
+        .then(function (documentos) {
+            if (!Array.isArray(documentos)) {
+                documentos = [];
+            }
+
+            var html = '<option value="">Independiente (sin documento)</option>';
+
+            for (var i = 0; i < documentos.length; i++) {
+                var texto = documentos[i].titulo_del_documento;
+
+                if (documentos[i].estado != 1) {
+                    texto = texto + ' (inactivo)';
+                }
+
+                html = html + '<option value="' + documentos[i].id_documento + '">' + escapar(texto) + '</option>';
+            }
+
+            select.innerHTML = html;
+        })
+        .catch(function () {
+            select.innerHTML = '<option value="">Independiente (sin documento)</option>';
+        });
+}
+
 crearPregunta();
+cargarDocumentos();
 renderizarLista();

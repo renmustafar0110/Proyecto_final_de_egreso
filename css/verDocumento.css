@@ -68,7 +68,8 @@ body {
 }
 
 .btn-abrir,
-.btn-descargar {
+.btn-descargar,
+.btn-encuesta {
     display: inline-block;
     min-height: 46px;
     line-height: 46px;
@@ -90,6 +91,11 @@ body {
     background-color: #ffffff;
     color: #1e3a5f;
     border: 1px solid #c7d5e6;
+}
+
+.btn-encuesta {
+    background-color: #2e7d32;
+    color: #ffffff;
 }
 
 .contenedor-pdf {
@@ -180,7 +186,8 @@ body {
     }
 
     .btn-abrir,
-    .btn-descargar {
+    .btn-descargar,
+    .btn-encuesta {
         width: 100%;
     }
 }

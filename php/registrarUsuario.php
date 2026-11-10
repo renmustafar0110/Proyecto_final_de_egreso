@@ -71,6 +71,17 @@ if ($accion == 'funcionario') {
     $esConductor = isset($_POST['es_conductor']) && $_POST['es_conductor'] === '1';
     $esCopiloto = isset($_POST['es_copiloto']) && $_POST['es_copiloto'] === '1';
 
+    // CU-01: rol del funcionario (ambos módulos por defecto)
+    $rol = campoPost('rol');
+
+    if ($rol === '') {
+        $rol = 'ambos';
+    }
+
+    if (!in_array($rol, array('admin_documentos', 'admin_ambulancias', 'ambos'), true)) {
+        responder(false, 'Rol no válido');
+    }
+
     if ($cargo === '') {
         responder(false, 'Ingrese el cargo del funcionario');
     }
@@ -118,15 +129,15 @@ if ($accion == 'funcionario') {
 
     // id_funcionario = 0 para que el trigger de la base asigne el ID.
     $insertar = $conexion->prepare("INSERT INTO Funcionarios
-                                      (id_funcionario, nombre, apellido, cargo, cedula, `password_hash`)
-                                    VALUES (0, ?, ?, ?, ?, ?)");
+                                      (id_funcionario, nombre, apellido, cargo, cedula, `password_hash`, rol)
+                                    VALUES (0, ?, ?, ?, ?, ?, ?)");
 
     if (!$insertar) {
         $conexion->rollback();
         responder(false, 'Error interno del servidor');
     }
 
-    $insertar->bind_param('sssss', $nombre, $apellido, $cargo, $cedula, $hash);
+    $insertar->bind_param('ssssss', $nombre, $apellido, $cargo, $cedula, $hash, $rol);
 
     if (!$insertar->execute()) {
         $error = $insertar->error;
@@ -242,6 +253,7 @@ if ($accion == 'funcionario') {
     responder(true, 'Funcionario registrado correctamente', array(
         'id_funcionario' => $idFuncionario,
         'cedula' => $cedula,
+        'rol' => $rol,
         'conductor' => $esConductor,
         'copiloto' => $esCopiloto
     ));

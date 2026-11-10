@@ -80,6 +80,20 @@
                 </div>
 
                 <div class="filtro">
+                    <label for="filtro-desde">Desde:</label>
+                    <input type="date" id="filtro-desde">
+                </div>
+
+                <div class="filtro">
+                    <label for="filtro-hasta">Hasta:</label>
+                    <input type="date" id="filtro-hasta">
+                </div>
+
+                <div class="filtro">
+                    <button type="button" id="btn-limpiar-filtro">Quitar filtro de fecha</button>
+                </div>
+
+                <div class="filtro">
                     <button type="button" id="btn-exportar">Exportar CSV</button>
                 </div>
             </div>
@@ -91,6 +105,7 @@
                     <span class="numero" id="total-respuestas">0</span>
                     <span class="etiqueta">Respuestas recibidas</span>
                 </div>
+                <p class="filtro-info" id="filtro-info"></p>
             </div>
 
             <div id="contenedor-resultados"></div>
@@ -103,9 +118,9 @@
     </footer>
 
     <script src="../js/auth.js?v=3"></script>
-    <script src="../js/menu.js?v=3"></script>
+    <script src="../js/menu.js?v=4"></script>
     <script src="../js/fecha_Y_hora.js"></script>
     <script src="../js/utilidades.js"></script>
-    <script src="../js/resultados_Encuestas.js"></script>
+    <script src="../js/resultados_Encuestas.js?v=2"></script>
 </body>
 </html>

@@ -109,3 +109,79 @@ footer {
 .menu a.menu-admin:hover {
     background-color: #2a4d7a;
 }
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    body {
+        background-attachment: scroll;
+    }
+
+    header {
+        padding: 12px 16px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    header h1 {
+        font-size: 18px;
+    }
+
+    .header-logo {
+        height: 30px;
+        width: 30px;
+    }
+
+    .reloj {
+        font-size: 12px;
+        margin-left: 0;
+        width: 100%;
+        text-align: center;
+    }
+
+    main {
+        padding: 16px;
+        gap: 16px;
+    }
+
+    .welcome {
+        font-size: 16px;
+        padding: 0 8px;
+    }
+
+    footer {
+        padding: 12px 16px;
+    }
+
+    .footer-fecha {
+        position: static;
+        right: auto;
+        top: auto;
+        transform: none;
+        display: block;
+        margin-top: 8px;
+        text-align: center;
+    }
+
+    .menu {
+        gap: 12px;
+    }
+
+    .menu a {
+        padding: 10px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 16px;
+    }
+
+    .welcome {
+        font-size: 14px;
+    }
+
+    .menu a {
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+}

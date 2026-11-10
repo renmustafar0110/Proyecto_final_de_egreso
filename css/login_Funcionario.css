@@ -150,3 +150,26 @@ footer {
 .back-link a:hover {
     text-decoration: underline;
 }
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    body {
+        width: 100%;
+        overflow-x: hidden;
+    }
+    .contenedor,
+    .container,
+    main,
+    section,
+    .panel,
+    .card,
+    .tabla,
+    .formulario,
+    .contenido,
+    .menu,
+    header,
+    footer {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+}

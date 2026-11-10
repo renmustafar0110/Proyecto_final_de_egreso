@@ -16,7 +16,7 @@ if ($cedula === '' || $password === '') {
 
 if ($tipo === 'administrador') {
     $consulta = "SELECT id_administrador, cedula, nombre, cargo, `contraseña`
-                 FROM administradores
+                 FROM Administradores
                  WHERE cedula = ?
                  LIMIT 1";
 

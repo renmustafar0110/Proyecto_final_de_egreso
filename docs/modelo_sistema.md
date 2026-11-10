@@ -23,7 +23,7 @@ El modelo esencial representa la funcionalidad pura del sistema, independienteme
 
 ### Entidades Esenciales
 
-Pacientes, Funcionarios, Documentos, QR, Encuestas, Respuestas, Traslados, Ambulancias, Acompanantes, Copilotos, Equipos.
+Pacientes, Funcionarios, Administradores, Documentos, QR, Encuestas_Formularios, Encuestas_Preguntas, Encuestas_Respuestas, Encuestas_Respuesta_Detalle, Traslados, Conductores, Ambulancias, Acompanantes, Copilotos, Equipos, Traslado_Estados.
 
 ---
 
@@ -155,107 +155,108 @@ Describe como responde el sistema ante los eventos, expresado mediante diagramas
 +------------------+          +-------------------+
 |   Pacientes      |          |   Funcionarios    |
 +------------------+          +-------------------+
-| - cedula: PK     |<>--------| - id_funcionario  |
-| - nombre         |          | - cedula: FK      |
-| - apellido       |          | - nombre          |
-| - fecha_nac      |          | - apellido        |
-| - telefono       |          | - cargo           |
+| - id_paciente: PK|          | - id_funcionario  |
+| - cedula: UNIQUE |          | - cedula          |
+| - nombre         |          | - nombre          |
+| - apellido       |          | - apellido        |
+| - fecha_nac      |          | - cargo           |
+| - telefono       |          | - password_hash   |
 | - email          |          +-------------------+
-| - direccion      |
-+------------------+
-        | 1
-        |
-        | N
-+------------------+
-|   QR             |
-+------------------+
-| - id_qr: PK      |
-| - cedula: FK     |
-| - url            |
-+------------------+
-        | 1
-        |
-        | N
-+------------------+
-|   Documentos     |
-+------------------+
-| - id_documento   |
-| - id_qr: FK      |
-| - nom_doc        |
-| - nombre         |
-| - archivo        |
-| - nom_pac        |
-| - cedula         |
-+------------------+
-        |
-        | (tabla intermedia N:N)
-        |
-+-----------------------+
-| Funcionarios_carga_   |
-| Documentos            |
-+-----------------------+
-| - id_funcionario: FK  |
-| - id_documento: FK    |
-| - fecha_carga         |
-+-----------------------+
-
+| - direccion      |                   | 1
++------------------+                   |
+        | 1                            | N
+        |                    +-------------------+
+        | N                  |   Conductores     |
 +------------------+          +-------------------+
-|   Encuestas      |          |   Respuestas      |
-+------------------+          +-------------------+
-| - proveniencia   |<>--------| - id_respuesta    |
-| - cedula: FK     |    1   N | - proveniencia: FK|
-| - preguntas      |          | - grafico         |
-| - titulo         |          | - porcentaje      |
-+------------------+          | - comentario      |
+|   QR             |          | - id_conductor: PK|
++------------------+          | - id_funcionario  |
+| - id_qr: PK      |          | - cedula: UNIQUE  |
+| - cedula         |          | - nombre          |
+| - url            |          | - apellido        |
++------------------+          | - telefono        |
+        | 1                   +-------------------+
+        |                              | 1
+        | N                            |
++------------------+                   | N
+|   Documentos     |          +-------------------+
++------------------+          |   Traslados       |
+| - id_documento   |          +-------------------+
+| - id_qr: FK      |          | - id_traslado: PK |
+| - nom_doc        |          | - hora_salida     |
+| - nom_pac        |          | - hora_llegada    |
+| - cedula         |          | - origen          |
+| - titulo_del_doc |          | - destino         |
+| - archivo        |          | - km_recorridos   |
+| - fecha_public.  |          | - estado          |
+| - categoria      |          | - id_conductor:FK |
+| - estado         |          | - elemento_tipo   |
++------------------+          | - elemento_dato1  |
+                              | - elemento_dato2  |
+                              | - elemento_dato3  |
                               +-------------------+
+                                 | 1      | 1      | 1
+                                 |        |        |
+                                 | N      | 1      | 1
+                    +------------+  +-----+-----+  +------------------+
+                    |               |             |                  |
+              +-----------+   +-----------+  +-----------+   +-------------+
+              |  Equipos  |   |Ambulancias|  |Acompanant.|   |  Copilotos  |
+              +-----------+   +-----------+  +-----------+   +-------------+
+              | id_equipo |   | matricula |  | id_acomp. |   | id_copiloto |
+              | tipo_equip|   | numero_co.|  | cedula_ac.|   | id_funcion. |
+              | tipo_equipo|  | id_trasl. |  | nombre    |   | nombre_cop. |
+              | id_trasl. |   +-----------+  | apellido  |   | apellido_c. |
+              +-----------+                  | telefono  |   | cedula      |
+                                             | id_trasl. |   | id_trasl.   |
+                                             +-----------+   +-------------+
 
-+------------------+          +-------------------+
-|   Traslados      |          |   Ambulancias     |
-+------------------+          +-------------------+
-| - id_traslado    |<>--------| - matricula: PK   |
-| - hora_salida    |    1   N | - id_traslado: FK |
-| - hora_llegada   |          | - numero_coche    |
-| - origen         |          +-------------------+
-| - destino        |
-| - km_recorridos  |
-| - estado         |
-+------------------+
-        | 1
-        |
-        | 1
-+------------------+
-|   Acompanantes   |
-+------------------+
-| - id_acompanante |
-| - cedula_acom    |
-| - id_traslado:FK |
-| - nombre         |
-| - apellido       |
-| - telefono       |
-+------------------+
-        | 1
-        |
-        | 1
-+------------------+
-|   Copilotos      |
-+------------------+
-| - id_copiloto    |
-| - id_traslado:FK |
-| - id_funcionario |
-| - nombre_copiloto|
-| - apellido_copiloto|
-| - cedula         |
-+------------------+
++------------------+          +-----------------------+
+|   Traslados      |          |   Traslado_Estados    |
++------------------+          +-----------------------+
+| - id_traslado    |<>--------| - id_estado: PK       |
++------------------+    1   N | - id_traslado: FK     |
+                              | - estado              |
+                              | - fecha_cambio        |
+                              +-----------------------+
 
-+------------------+          +-------------------+
-|   Equipos        |
-+-------------------+
-| - id_equipo      |
-| - id_traslado:FK |
-| - funcion        |
-| - tipo           |
-+-------------------+
++-------------------------+          +------------------------------+
+| Encuestas_Formularios   |          | Encuestas_Respuestas         |
++-------------------------+          +------------------------------+
+| - id_encuesta: PK       |<>--------| - id_respuesta: PK           |
+| - titulo                |    1   N | - id_encuesta: FK            |
+| - descripcion           |          | - fecha_envio                |
+| - estado                |          +------------------------------+
+| - fecha_creacion        |                     | 1
++-------------------------+                     |
+        | 1                                     | N
+        |                             +------------------------------+
+        | N                           | Encuestas_Respuesta_Detalle  |
++-------------------------+           +------------------------------+
+| Encuestas_Preguntas     |<>---------| - id_detalle: PK             |
++-------------------------+    1   N  | - id_respuesta: FK           |
+| - id_pregunta: PK       |           | - id_pregunta: FK            |
+| - id_encuesta: FK       |           | - valor                      |
+| - texto                 |           +------------------------------+
+| - tipo                  |
+| - opciones              |
+| - orden                 |
++-------------------------+
+
++-------------------------+
+|   Administradores       |
++-------------------------+
+| - id_administrador: PK  |
+| - cedula: UNIQUE        |
+| - nombre                |
+| - cargo                 |
+| - contraseña            |
++-------------------------+
 ```
+
+> La tabla `Funcionarios_carga_Documentos` fue eliminada por no tener uso en el
+> sistema. Las antiguas tablas `Encuestas` y `Respuestas` se reemplazaron por el
+> esquema normalizado `Encuestas_Formularios`, `Encuestas_Preguntas`,
+> `Encuestas_Respuestas` y `Encuestas_Respuesta_Detalle`.
 
 ### Diagrama de Secuencia - Carga de Documento
 

@@ -794,7 +794,6 @@ function leerDatosTraslado($conexion, $idTrasladoReferencia) {
     }
 
     return array(
-        'numero' => $numero,
         'matricula' => $ambulancia['matricula'],
         'origen' => $origen,
         'destino' => $destino,

@@ -174,39 +174,10 @@ footer {
     color: #1e3a5f;
 }
 
-.btn-ver {
-    display: inline-block;
-    background-color: #1e3a5f;
-    color: #ffffff;
-    text-decoration: none;
-    border-radius: 3px;
-    padding: 4px 10px;
-    font-size: 12px;
-}
-
-.btn-ver:hover {
-    background-color: #2a4d7a;
-}
-
-
 .acciones-paciente {
     margin: 16px 0;
     display: flex;
     justify-content: flex-start;
-}
-
-.btn-escanear {
-    padding: 10px 18px;
-    background-color: #005a87;
-    color: #ffffff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.btn-escanear:hover {
-    background-color: #004a72;
 }
 
 .modal-escaner {
@@ -253,19 +224,6 @@ footer {
     cursor: pointer;
 }
 
-.lector-qr {
-    width: 100%;
-    min-height: 320px;
-}
-
-.modal-ayuda {
-    padding: 10px 16px;
-    margin: 0;
-    text-align: center;
-    font-size: 13px;
-    color: #333333;
-}
-
 .qr-info {
     padding: 16px;
     text-align: center;
@@ -294,35 +252,6 @@ footer {
     margin: 0;
     font-size: 13px;
     color: #333333;
-}
-
-.qr-info-acciones {
-    padding: 0 16px 16px 16px;
-    display: flex;
-    justify-content: center;
-}
-
-.btn-abrir-qr {
-    padding: 10px 18px;
-    background-color: #005a87;
-    color: #ffffff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.btn-abrir-qr:hover {
-    background-color: #004a72;
-}
-
-.tabla-qr-img {
-    width: 90px;
-    height: 90px;
-    display: block;
-    margin: 0 auto;
-    border: 1px solid #d0dce8;
-    border-radius: 6px;
 }
 
 .btn-mostrar-qr {

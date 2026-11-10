@@ -348,212 +348,104 @@ El administrativo actualiza manualmente el estado de cada operación durante tod
 
 ## 6. Modelo de Datos
 
+> **Nota de actualización:** este modelo refleja la base `hospital_clinicas` real.
+> La tabla `Funcionarios_carga_Documentos` fue eliminada porque ningún flujo del
+> sistema la utilizaba. Las antiguas tablas `Encuestas` y `Respuestas` fueron
+> reemplazadas por el esquema normalizado `Encuestas_*`.
+
 ### 6.1. Diagrama Entidad-Relación
 
 ```mermaid
 flowchart LR
     %% ESTILOS
     classDef entidad fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000
-    classDef atributo fill:#fff9c4,stroke:#f57f17,stroke-width:1px,color:#000
     classDef relacion fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#000
 
-    %% RELACIONES
-    tiene1{{tiene}}
-    carga_doc{{carga}}
-    contiene1{{contiene}}
-    escanea1{{escanea}}
-    realiza1{{realiza}}
-    genera1{{genera}}
-    tiene2{{tiene}}
-    lleva1{{lleva}}
-    lleva2{{lleva}}
-    pilota1{{pilota}}
-    tiene4{{tiene}}
-
     %% ENTIDADES
-    PACIENTES[PACIENTES]
-    TRASLADOS[TRASLADOS]
+    PACIENTES[Pacientes]
+    FUNCIONARIOS[Funcionarios]
+    ADMINISTRADORES[Administradores]
     QR[QR]
-    DOCUMENTOS[DOCUMENTOS]
-    ENCUESTAS[ENCUESTAS]
-    RESPUESTAS[RESPUESTAS]
-    FUNCIONARIOS[FUNCIONARIOS]
-    FC_D[FUNCIONARIOS_CARGA_DOCUMENTOS]
-    AMBULANCIAS[AMBULANCIAS]
-    ACOMPANANTES[ACOMPAÑANTES]
-    COPILOTOS[COPILOTOS]
-    EQUIPOS[EQUIPOS]
+    DOCUMENTOS[Documentos]
+    ENC_FORM[Encuestas_Formularios]
+    ENC_PREG[Encuestas_Preguntas]
+    ENC_RESP[Encuestas_Respuestas]
+    ENC_DET[Encuestas_Respuesta_Detalle]
+    TRASLADOS[Traslados]
+    CONDUCTORES[Conductores]
+    AMBULANCIAS[Ambulancias]
+    ACOMPANANTES[Acompanantes]
+    COPILOTOS[Copilotos]
+    EQUIPOS[Equipos]
+    TRASLADO_ESTADOS[Traslado_Estados]
 
-    %% ATRIBUTOS - PACIENTES
-    p_ced((cedula PK))
-    p_nombre((nombre))
-    p_apellido((apellido))
-    p_fnac((fecha_nac))
-    p_tel((telefono))
-    p_email((email))
-    p_dir((direccion))
+    %% RELACIONES
+    PACIENTES -->|1:N| QR
+    QR -->|1:N| DOCUMENTOS
+    PACIENTES -.->|cedula| DOCUMENTOS
 
-    %% ATRIBUTOS - TRASLADOS
-    t_id((id_traslado PK))
-    t_hsal((hora_salida))
-    t_hlleg((hora_llegada))
-    t_orig((origen))
-    t_dest((destino))
-    t_km((km_recorridos))
-    t_est((estado))
+    FUNCIONARIOS -->|1:N| CONDUCTORES
+    FUNCIONARIOS -->|1:N| COPILOTOS
 
-    %% ATRIBUTOS - QR
-    q_id((id_qr PK))
-    q_url((url))
-    q_ced((cedula FK))
+    CONDUCTORES -->|1:N| TRASLADOS
+    TRASLADOS -->|1:1| AMBULANCIAS
+    TRASLADOS -->|1:1| ACOMPANANTES
+    TRASLADOS -->|1:1| COPILOTOS
+    TRASLADOS -->|1:N| EQUIPOS
+    TRASLADOS -->|1:N| TRASLADO_ESTADOS
 
-    %% ATRIBUTOS - DOCUMENTOS
-    d_id((id_documento PK))
-    d_nom((nom_doc))
-    d_nombre((nombre))
-    d_arch((archivo))
-    d_nompac((nom_pac))
-    d_ced((cedula))
-    d_idqr((id_qr FK))
+    ENC_FORM -->|1:N| ENC_PREG
+    ENC_FORM -->|1:N| ENC_RESP
+    ENC_RESP -->|1:N| ENC_DET
+    ENC_PREG -->|1:N| ENC_DET
 
-    %% ATRIBUTOS - ENCUESTAS
-    e_prov((proveniencia PK))
-    e_preg((preguntas))
-    e_ced((cedula FK))
-    e_titulo((titulo))
+    %% ADMINISTRADORES es una tabla independiente de autenticación
 
-    %% ATRIBUTOS - RESPUESTAS
-    r_id((id_respuesta PK))
-    r_graf((grafico))
-    r_porc((porcentaje))
-    r_prov((proveniencia FK))
-    r_coment((comentario))
-
-    %% ATRIBUTOS - FUNCIONARIOS
-    f_id((id_funcionario PK))
-    f_nombre((nombre))
-    f_apellido((apellido))
-    f_cargo((cargo))
-    f_ced((cedula FK))
-
-    %% ATRIBUTOS - FUNCIONARIOS_CARGA_DOCUMENTOS
-    fcd_idf((id_funcionario FK))
-    fcd_idd((id_documento FK))
-    fcd_fcarga((fecha_carga))
-
-    %% ATRIBUTOS - AMBULANCIAS
-    a_mat((matricula PK))
-    a_num((numero_coche))
-    a_idt((id_traslado FK))
-
-    %% ATRIBUTOS - ACOMPAÑANTES
-    ac_id((id_acompanante PK))
-    ac_ced((cedula_acom))
-    ac_nom((nombre))
-    ac_ape((apellido))
-    ac_idt((id_traslado FK UNIQUE))
-    ac_tel((telefono))
-
-    %% ATRIBUTOS - COPILOTOS
-    cp_id((id_copiloto PK))
-    cp_idf((id_funcionario FK))
-    cp_nom((nombre_copiloto))
-    cp_ape((apellido_copiloto))
-    cp_ced((cedula))
-    cp_idt((id_traslado FK UNIQUE))
-
-    %% ATRIBUTOS - EQUIPOS
-    eq_id((id_equipo PK))
-    eq_func((funcion))
-    eq_tipo((tipo))
-    eq_idt((id_traslado FK))
-
-    %% CONEXIONES ENTIDAD - ATRIBUTOS
-    PACIENTES --- p_ced & p_nombre & p_apellido & p_fnac & p_tel & p_email & p_dir
-    TRASLADOS --- t_id & t_hsal & t_hlleg & t_orig & t_dest & t_km & t_est
-    QR --- q_id & q_url & q_ced
-    DOCUMENTOS --- d_id & d_nom & d_nombre & d_arch & d_nompac & d_ced & d_idqr
-    ENCUESTAS --- e_prov & e_preg & e_ced & e_titulo
-    RESPUESTAS --- r_id & r_graf & r_porc & r_prov & r_coment
-    FUNCIONARIOS --- f_id & f_nombre & f_apellido & f_cargo & f_ced
-    FC_D --- fcd_idf & fcd_idd & fcd_fcarga
-    AMBULANCIAS --- a_mat & a_num & a_idt
-    ACOMPANANTES --- ac_id & ac_ced & ac_nom & ac_ape & ac_idt & ac_tel
-    COPILOTOS --- cp_id & cp_idf & cp_nom & cp_ape & cp_ced & cp_idt
-    EQUIPOS --- eq_id & eq_func & eq_tipo & eq_idt
-
-    %% CONEXIONES ENTIDAD - RELACION - ENTIDAD
-    PACIENTES -- 1 --- tiene1
-    tiene1 -- N --- FUNCIONARIOS
-
-    FUNCIONARIOS -- N --- carga_doc
-    carga_doc -- N --- DOCUMENTOS
-
-    QR -- 1 --- contiene1
-    contiene1 -- N --- DOCUMENTOS
-
-    PACIENTES -- 1 --- escanea1
-    escanea1 -- N --- QR
-
-    PACIENTES -- 1 --- realiza1
-    realiza1 -- N --- ENCUESTAS
-
-    ENCUESTAS -- 1 --- genera1
-    genera1 -- N --- RESPUESTAS
-
-    TRASLADOS -- 1 --- tiene2
-    tiene2 -- N --- AMBULANCIAS
-
-    TRASLADOS -- 1 --- lleva1
-    lleva1 -- 1 --- ACOMPANANTES
-
-    TRASLADOS -- 1 --- lleva2
-    lleva2 -- 1 --- COPILOTOS
-
-    FUNCIONARIOS -- 1 --- pilota1
-    pilota1 -- N --- COPILOTOS
-
-    TRASLADOS -- 1 --- tiene4
-    tiene4 -- N --- EQUIPOS
-
-    %% APLICAR ESTILOS
-    class PACIENTES,TRASLADOS,QR,DOCUMENTOS,ENCUESTAS,RESPUESTAS,FUNCIONARIOS,FC_D,AMBULANCIAS,ACOMPANANTES,COPILOTOS,EQUIPOS entidad
-    class p_ced,p_nombre,p_apellido,p_fnac,p_tel,p_email,p_dir,t_id,t_hsal,t_hlleg,t_orig,t_dest,t_km,t_est,q_id,q_url,q_ced,d_id,d_nom,d_nombre,d_arch,d_nompac,d_ced,d_idqr,e_prov,e_preg,e_ced,e_titulo,r_id,r_graf,r_porc,r_prov,r_coment,f_id,f_nombre,f_apellido,f_cargo,f_ced,fcd_idf,fcd_idd,fcd_fcarga,a_mat,a_num,a_idt,ac_id,ac_ced,ac_nom,ac_ape,ac_idt,ac_tel,cp_id,cp_idf,cp_nom,cp_ape,cp_ced,cp_idt,eq_id,eq_func,eq_tipo,eq_idt atributo
-    class tiene1,carga_doc,contiene1,escanea1,realiza1,genera1,tiene2,lleva1,lleva2,pilota1,tiene4 relacion
+    class PACIENTES,FUNCIONARIOS,ADMINISTRADORES,QR,DOCUMENTOS,ENC_FORM,ENC_PREG,ENC_RESP,ENC_DET,TRASLADOS,CONDUCTORES,AMBULANCIAS,ACOMPANANTES,COPILOTOS,EQUIPOS,TRASLADO_ESTADOS entidad
 ```
 
 ### 6.2. Descripción de Entidades
 
 | Entidad | Atributos | Descripción |
 |---------|-----------|-------------|
-| **Pacientes** | cedula (PK), nombre, apellido, fecha_nac, telefono, email, direccion | Pacientes del hospital que acceden a documentación y completan encuestas |
-| **Traslados** | id_traslado (PK), hora_salida, hora_llegada, origen, destino, km_recorridos, estado | Solicitudes de traslado en ambulancia registradas |
-| **QR** | id_qr (PK), url, cedula (FK) | Códigos QR generados para documentos o encuestas |
-| **Documentos** | id_documento (PK), nom_doc, nombre, archivo, nom_pac, cedula, id_qr (FK) | Documentos informativos cargados por los funcionarios, vinculados a un QR |
-| **Encuestas** | proveniencia (PK), preguntas, cedula (FK), titulo | Formularios de satisfacción creados por administrativos |
-| **Respuestas** | id_respuesta (PK), grafico, porcentaje, proveniencia (FK), comentario | Respuestas recolectadas de las encuestas |
-| **Funcionarios** | id_funcionario (PK), nombre, apellido, cargo, cedula (FK) | Personal administrativo del hospital que opera los sistemas |
-| **Funcionarios_carga_Documentos** | id_funcionario (FK), id_documento (FK), fecha_carga | Tabla intermedia N:N: registra qué funcionario cargó qué documento y cuándo |
-| **Ambulancias** | matricula (PK), numero_coche, id_traslado (FK) | Vehículos de transporte del hospital |
-| **Acompañantes** | id_acompanante (PK), cedula_acom, nombre, apellido, id_traslado (FK UNIQUE), telefono | Acompañantes registrados manualmente en un traslado (máx. 1 por traslado) |
-| **Copilotos** | id_copiloto (PK), id_funcionario (FK), nombre_copiloto, apellido_copiloto, cedula, id_traslado (FK UNIQUE) | Copilotos de los traslados, elegidos entre los funcionarios del hospital (máx. 1 por traslado) |
-| **Equipos** | id_equipo (PK), funcion, tipo, id_traslado (FK) | Equipamiento médico u otros insumos transportados |
+| **Pacientes** | id_paciente (PK), cedula (UNIQUE), nombre, apellido, fecha_nac, telefono, email, direccion | Pacientes del hospital que acceden a su documentación y responden encuestas |
+| **Funcionarios** | id_funcionario (PK), nombre, apellido, cargo, cedula, password_hash | Personal del hospital que inicia sesión y opera los módulos |
+| **Administradores** | id_administrador (PK), cedula (UNIQUE), nombre, cargo, contraseña | Cuentas del personal administrativo (`super_admin`). Se cargan directamente en la base |
+| **QR** | id_qr (PK), url, cedula | Códigos QR generados para acceder a los documentos |
+| **Documentos** | id_documento (PK), nom_doc, nom_pac, cedula, id_qr (FK), titulo_del_documento, archivo, fecha_publicacion, categoria_del_documento, estado | Documentos informativos cargados y vinculados a un QR |
+| **Encuestas_Formularios** | id_encuesta (PK), titulo, descripcion, estado, fecha_creacion | Cabecera de cada encuesta de satisfacción |
+| **Encuestas_Preguntas** | id_pregunta (PK), id_encuesta (FK), texto, tipo, opciones, orden | Preguntas de una encuesta (`multiple`, `escala`, `texto`) |
+| **Encuestas_Respuestas** | id_respuesta (PK), id_encuesta (FK), fecha_envio | Cabecera de cada respuesta enviada por un paciente |
+| **Encuestas_Respuesta_Detalle** | id_detalle (PK), id_respuesta (FK), id_pregunta (FK), valor | Valor respondido para cada pregunta |
+| **Traslados** | id_traslado (PK), hora_salida, hora_llegada, origen, destino, km_recorridos, estado, id_conductor (FK), elemento_tipo, elemento_descripcion, elemento_dato1, elemento_dato2, elemento_dato3 | Registro principal de cada traslado en ambulancia |
+| **Conductores** | id_conductor (PK), id_funcionario (FK), cedula (UNIQUE), nombre, apellido, telefono | Catálogo de conductores habilitados para traslados |
+| **Ambulancias** | matricula (PK), numero_coche, id_traslado (FK) | Vehículos del hospital y el traslado que tienen asignado |
+| **Acompañantes** | id_acompanante (PK), cedula_acom, nombre, apellido, id_traslado (FK UNIQUE), telefono | Acompañante de un traslado (máximo uno por traslado) |
+| **Copilotos** | id_copiloto (PK), id_funcionario (FK), nombre_copiloto, apellido_copiloto, cedula, id_traslado (FK UNIQUE) | Copiloto de un traslado, elegido entre los funcionarios (máximo uno por traslado) |
+| **Equipos** | id_equipo (PK), tipo_equipamiento, tipo_equipo, id_traslado (FK) | Equipamiento médico incluido en un traslado |
+| **Traslado_Estados** | id_estado (PK), id_traslado (FK), estado, fecha_cambio | Historial de cambios de estado de cada traslado |
 
 ### 6.3. Relaciones
 
 | Relación | Entidades | Cardinalidad | FK en | Descripción |
 |----------|-----------|--------------|-------|-------------|
-| tiene | Pacientes - Funcionarios | 1:N | Funcionarios.cedula | Un paciente puede estar asociado a varios funcionarios |
-| carga | Funcionarios - Documentos | N:N | Tabla intermedia Funcionarios_carga_Documentos | Un funcionario carga varios documentos y un documento puede ser cargado por varios funcionarios |
+| accede | Pacientes - QR | 1:N | QR.cedula | Un paciente puede tener varios QR (relación lógica por cédula) |
 | contiene | QR - Documentos | 1:N | Documentos.id_qr | Un QR puede estar asociado a varios documentos |
-| escanea | Pacientes - QR | 1:N | QR.cedula | Un paciente puede escanear varios QRs |
-| realiza | Pacientes - Encuestas | 1:N | Encuestas.cedula | Un paciente puede realizar varias encuestas |
-| genera | Encuestas - Respuestas | 1:N | Respuestas.proveniencia | Una encuesta genera múltiples respuestas |
-| tiene | Traslados - Ambulancias | 1:N | Ambulancias.id_traslado | Un traslado tiene una ambulancia asignada |
-| lleva | Traslados - Acompañantes | 1:1 | Acompanantes.id_traslado (UNIQUE) | Un traslado puede llevar un acompañante registrado con datos libres |
-| lleva | Traslados - Copilotos | 1:1 | Copilotos.id_traslado (UNIQUE) | Un traslado puede llevar un copiloto elegido entre los funcionarios |
-| pilota | Funcionarios - Copilotos | 1:N | Copilotos.id_funcionario | Un funcionario puede actuar como copiloto en varios traslados |
-| tiene | Traslados - Equipos | 1:N | Equipos.id_traslado | Un traslado puede incluir varios equipos |
+| registra | Funcionarios - Conductores | 1:N | Conductores.id_funcionario | Un funcionario puede estar habilitado como conductor |
+| actúa | Funcionarios - Copilotos | 1:N | Copilotos.id_funcionario | Un funcionario puede actuar como copiloto en varios traslados |
+| conduce | Conductores - Traslados | 1:N | Traslados.id_conductor | Un conductor puede realizar varios traslados |
+| asigna | Traslados - Ambulancias | 1:1 | Ambulancias.id_traslado | Un traslado tiene una ambulancia asignada |
+| lleva | Traslados - Acompañantes | 1:1 | Acompanantes.id_traslado (UNIQUE) | Un traslado puede llevar un acompañante |
+| lleva | Traslados - Copilotos | 1:1 | Copilotos.id_traslado (UNIQUE) | Un traslado puede llevar un copiloto |
+| incluye | Traslados - Equipos | 1:N | Equipos.id_traslado | Un traslado puede incluir varios equipos |
+| historial | Traslados - Traslado_Estados | 1:N | Traslado_Estados.id_traslado | Un traslado acumula un historial de estados |
+| agrupa | Encuestas_Formularios - Encuestas_Preguntas | 1:N | Encuestas_Preguntas.id_encuesta | Una encuesta contiene varias preguntas |
+| recibe | Encuestas_Formularios - Encuestas_Respuestas | 1:N | Encuestas_Respuestas.id_encuesta | Una encuesta recibe varias respuestas |
+| detalla | Encuestas_Respuestas - Encuestas_Respuesta_Detalle | 1:N | Encuestas_Respuesta_Detalle.id_respuesta | Una respuesta contiene el detalle de sus preguntas |
+| responde | Encuestas_Preguntas - Encuestas_Respuesta_Detalle | 1:N | Encuestas_Respuesta_Detalle.id_pregunta | Cada pregunta puede aparecer en muchas respuestas |
+
+`Administradores` es una tabla independiente: no tiene relaciones con el resto del
+modelo y se usa únicamente para autenticar al personal administrativo.
 
 ---
 

@@ -22,7 +22,6 @@
 
     var togglePassword = document.getElementById('togglePassword');
     var destino = formulario.getAttribute('data-destino');
-    var tipo = formulario.getAttribute('data-tipo') || 'funcionario';
 
 
 
@@ -101,11 +100,10 @@
 
         datos.append('cedula', cedula);
         datos.append('password', password);
-        datos.append('tipo', tipo);
 
 
 
-        fetch('../php/autenticar.php', {
+        fetch('../php/login_Funcionario.php', {
             method: 'POST',
             body: datos
         })

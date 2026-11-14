@@ -5,43 +5,65 @@
     var mensajeFuncionario = document.getElementById('mensaje-funcionario');
     var mensajePaciente = document.getElementById('mensaje-paciente');
 
+
+
     function mostrarMensaje(elemento, texto, esError) {
         if (!elemento) {
             return;
         }
 
+
+
         elemento.textContent = texto;
         elemento.className = 'form-mensaje ' + (esError ? 'mensaje-error' : 'mensaje-exito');
     }
+
+
 
     function limpiarMensaje(elemento) {
         if (!elemento) {
             return;
         }
 
+
+
         elemento.textContent = '';
         elemento.className = 'form-mensaje';
     }
+
+
 
     function enviar(formulario, accion, elementoMensaje) {
         if (!formulario) {
             return;
         }
 
+
+
         formulario.addEventListener('submit', function (evento) {
             evento.preventDefault();
+
+
 
             var boton = formulario.querySelector('input[type="submit"]');
             var datos = new FormData(formulario);
 
+
+
             datos.append('accion', accion);
 
+
+
             limpiarMensaje(elementoMensaje);
+
+
 
             if (boton) {
                 boton.disabled = true;
                 boton.value = 'Guardando...';
             }
+
+
 
             fetch('../php/registrarUsuario.php', {
                 method: 'POST',
@@ -57,11 +79,17 @@
                         return;
                     }
 
+
+
                     var mensaje = 'No se pudo completar el registro.';
+
+
 
                     if (resultado && resultado.mensaje) {
                         mensaje = resultado.mensaje;
                     }
+
+
 
                     mostrarMensaje(elementoMensaje, mensaje, true);
                 })
@@ -76,6 +104,8 @@
                 });
         });
     }
+
+
 
     enviar(formularioFuncionario, 'funcionario', mensajeFuncionario);
     enviar(formularioPaciente, 'paciente', mensajePaciente);

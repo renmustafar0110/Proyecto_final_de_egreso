@@ -2,14 +2,22 @@ document.addEventListener('DOMContentLoaded', function () {
     var formulario = document.getElementById('form-login');
     var campoCedula = document.getElementById('cedula');
 
+
+
     if (!formulario) {
         return;
     }
 
+
+
     formulario.addEventListener('submit', function (evento) {
         evento.preventDefault();
 
+
+
         var cedula = campoCedula.value.trim();
+
+
 
         if (cedula === '') {
             alert('Ingrese su cédula.');
@@ -17,14 +25,20 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
+
+
         if (!/^\d+$/.test(cedula)) {
             alert('La cédula solo debe contener números.');
             campoCedula.focus();
             return;
         }
 
+
+
         var datos = new FormData();
         datos.append('cedula', cedula);
+
+
 
         fetch('../php/login_paciente.php', {
             method: 'POST',
@@ -39,10 +53,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     return;
                 }
 
+
+
                 var mensaje = 'No se pudo iniciar sesión.';
                 if (resultado && resultado.mensaje) {
                     mensaje = resultado.mensaje;
                 }
+
+
 
                 alert(mensaje);
                 campoCedula.focus();

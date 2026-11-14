@@ -2,11 +2,15 @@ var listaEncuestas = [];
 var contadorPreguntas = 0;
 var idEncuestaEnEdicion = 0;
 
+
+
 var listaPreguntas = document.getElementById('lista-preguntas');
 var botonAgregar = document.getElementById('btn-agregar-pregunta');
 var formulario = document.getElementById('form-encuesta');
 var tablaEncuestas = document.getElementById('tabla-encuestas');
 var avisoEncuestas = document.getElementById('aviso-encuestas');
+
+
 
 function urlEncuesta(id) {
     var base = new URL('../php/responderEncuesta.php', window.location.href);
@@ -14,15 +18,21 @@ function urlEncuesta(id) {
     return base.href;
 }
 
+
+
 // ---------------------------------------------------------------------
 // Constructor de preguntas
 // ---------------------------------------------------------------------
 function crearPregunta(datos) {
     contadorPreguntas++;
 
+
+
     var bloque = document.createElement('div');
     bloque.className = 'pregunta-bloque';
     bloque.setAttribute('data-indice', contadorPreguntas);
+
+
 
     bloque.innerHTML = [
         '<div class="pregunta-cabecera">',
@@ -47,42 +57,64 @@ function crearPregunta(datos) {
         '</div>'
     ].join('');
 
+
+
     listaPreguntas.appendChild(bloque);
+
+
 
     var tipo = bloque.querySelector('.pregunta-tipo');
     var campoOpciones = bloque.querySelector('.campo-opciones');
+
+
 
     // Carga de una pregunta existente (modo edición)
     if (datos != null) {
         bloque.querySelector('.pregunta-texto').value = datos.texto != null ? datos.texto : '';
 
+
+
         if (datos.tipo != null) {
             tipo.value = datos.tipo;
         }
 
+
+
         if (Array.isArray(datos.opciones) && datos.opciones.length > 0) {
             bloque.querySelector('.pregunta-opciones').value = datos.opciones.join('\n');
         }
+
+
 
         if (datos.id_pregunta != null) {
             bloque.setAttribute('data-id-pregunta', datos.id_pregunta);
         }
     }
 
+
+
     tipo.addEventListener('change', function () {
         campoOpciones.style.display = (tipo.value == 'multiple') ? 'block' : 'none';
     });
+
+
 
     bloque.querySelector('[data-accion="quitar"]').onclick = function () {
         listaPreguntas.removeChild(bloque);
     };
 
+
+
     campoOpciones.style.display = (tipo.value == 'multiple') ? 'block' : 'none';
 }
+
+
 
 function recogerPreguntas() {
     var bloques = listaPreguntas.querySelectorAll('.pregunta-bloque');
     var preguntas = [];
+
+
 
     for (var i = 0; i < bloques.length; i++) {
         var bloque = bloques[i];
@@ -90,8 +122,12 @@ function recogerPreguntas() {
         var tipo = bloque.querySelector('.pregunta-tipo').value;
         var opciones = [];
 
+
+
         if (tipo == 'multiple') {
             var lineas = bloque.querySelector('.pregunta-opciones').value.split('\n');
+
+
 
             for (var j = 0; j < lineas.length; j++) {
                 if (lineas[j].trim() != '') {
@@ -100,18 +136,28 @@ function recogerPreguntas() {
             }
         }
 
+
+
         var pregunta = { texto: texto, tipo: tipo, opciones: opciones };
         var idPregunta = bloque.getAttribute('data-id-pregunta');
+
+
 
         if (idPregunta != null) {
             pregunta.id_pregunta = parseInt(idPregunta, 10);
         }
 
+
+
         preguntas.push(pregunta);
     }
 
+
+
     return preguntas;
 }
+
+
 
 // ---------------------------------------------------------------------
 // Listado
@@ -123,11 +169,15 @@ function armarFila(encuesta) {
     var siguiente = estadoActivo ? 0 : 1;
     var textoBoton = estadoActivo ? 'Desactivar' : 'Activar';
 
+
+
     // US-04: documento asociado (o encuesta independiente)
     var documentoAsociado = 'Independiente';
     if (encuesta.titulo_del_documento != null && encuesta.titulo_del_documento != '') {
         documentoAsociado = encuesta.titulo_del_documento;
     }
+
+
 
     var fila = '<tr>';
     fila = fila + '<td>' + escapar(encuesta.titulo) + '</td>';
@@ -143,37 +193,55 @@ function armarFila(encuesta) {
     fila = fila + '</td>';
     fila = fila + '</tr>';
 
+
+
     return fila;
 }
 
+
+
 function conectarBotones() {
     var botones = document.querySelectorAll('#tabla-encuestas [data-accion]');
+
+
 
     for (var i = 0; i < botones.length; i++) {
         botones[i].onclick = manejarBoton;
     }
 }
 
+
+
 function manejarBoton() {
     var accion = this.getAttribute('data-accion');
     var id = this.getAttribute('data-id');
+
+
 
     if (accion == 'qr') {
         mostrarQR(id);
     }
 
+
+
     if (accion == 'estado') {
         cambiarEstado(id, this.getAttribute('data-estado'));
     }
+
+
 
     if (accion == 'editar') {
         editarEncuesta(id);
     }
 
+
+
     if (accion == 'eliminar') {
         eliminarEncuesta(id);
     }
 }
+
+
 
 function buscarEncuesta(id) {
     for (var i = 0; i < listaEncuestas.length; i++) {
@@ -182,8 +250,12 @@ function buscarEncuesta(id) {
         }
     }
 
+
+
     return null;
 }
+
+
 
 function renderizarLista() {
     fetch('../php/encuestas.php?accion=listar')
@@ -195,7 +267,11 @@ function renderizarLista() {
                 encuestas = [];
             }
 
+
+
             listaEncuestas = encuestas;
+
+
 
             if (encuestas.length == 0) {
                 tablaEncuestas.innerHTML = '';
@@ -203,13 +279,21 @@ function renderizarLista() {
                 return;
             }
 
+
+
             avisoEncuestas.style.display = 'none';
 
+
+
             var filas = '';
+
+
 
             for (var i = 0; i < encuestas.length; i++) {
                 filas = filas + armarFila(encuestas[i]);
             }
+
+
 
             tablaEncuestas.innerHTML = filas;
             conectarBotones();
@@ -220,6 +304,8 @@ function renderizarLista() {
             avisoEncuestas.style.display = 'block';
         });
 }
+
+
 
 // ---------------------------------------------------------------------
 // Acciones
@@ -243,6 +329,8 @@ function enviar(datos, alTerminar, silenciarAlerta) {
             return;
         }
 
+
+
         alert(resultado != null && resultado.mensaje ? resultado.mensaje : 'No se pudo completar la operación.');
     })
     .catch(function () {
@@ -250,38 +338,56 @@ function enviar(datos, alTerminar, silenciarAlerta) {
     });
 }
 
+
+
 function cambiarEstado(id, estado) {
     var mensaje = '¿Activar esta encuesta? El QR volverá a funcionar.';
     if (estado == '0') {
         mensaje = '¿Desactivar esta encuesta? Su QR dejará de funcionar.';
     }
 
+
+
     if (confirm(mensaje) == false) {
         return;
     }
+
+
 
     var datos = new FormData();
     datos.append('accion', 'estado');
     datos.append('id_encuesta', id);
     datos.append('estado', estado);
 
+
+
     enviar(datos, renderizarLista);
 }
+
+
 
 function eliminarEncuesta(id) {
     var encuesta = buscarEncuesta(id);
     var titulo = encuesta != null ? encuesta.titulo : '#' + id;
 
+
+
     if (confirm('¿Eliminar la encuesta "' + titulo + '" y todas sus respuestas?') == false) {
         return;
     }
+
+
 
     var datos = new FormData();
     datos.append('accion', 'eliminar');
     datos.append('id_encuesta', id);
 
+
+
     enviar(datos, renderizarLista);
 }
+
+
 
 // ---------------------------------------------------------------------
 // Edición
@@ -297,6 +403,8 @@ function editarEncuesta(id) {
                 return;
             }
 
+
+
             cargarFormularioEdicion(resultado.encuesta);
         })
         .catch(function () {
@@ -304,24 +412,38 @@ function editarEncuesta(id) {
         });
 }
 
+
+
 function cargarFormularioEdicion(encuesta) {
     idEncuestaEnEdicion = encuesta.id_encuesta;
+
+
 
     document.getElementById('enc-titulo').value = encuesta.titulo != null ? encuesta.titulo : '';
     document.getElementById('enc-descripcion').value = encuesta.descripcion != null ? encuesta.descripcion : '';
     document.getElementById('enc-documento').value = encuesta.id_documento != null ? String(encuesta.id_documento) : '';
 
+
+
     listaPreguntas.innerHTML = '';
 
+
+
     var preguntas = Array.isArray(encuesta.preguntas) ? encuesta.preguntas : [];
+
+
 
     if (preguntas.length == 0) {
         crearPregunta();
     }
 
+
+
     for (var i = 0; i < preguntas.length; i++) {
         crearPregunta(preguntas[i]);
     }
+
+
 
     document.getElementById('titulo-formulario').textContent = 'Editar Encuesta #' + encuesta.id_encuesta;
     document.getElementById('btn-crear-encuesta').value = 'Guardar Cambios';
@@ -329,8 +451,12 @@ function cargarFormularioEdicion(encuesta) {
     formulario.scrollIntoView({ block: 'start' });
 }
 
+
+
 function volverAModoCrear() {
     idEncuestaEnEdicion = 0;
+
+
 
     formulario.reset();
     document.getElementById('enc-documento').value = '';
@@ -338,10 +464,14 @@ function volverAModoCrear() {
     contadorPreguntas = 0;
     crearPregunta();
 
+
+
     document.getElementById('titulo-formulario').textContent = 'Crear Encuesta';
     document.getElementById('btn-crear-encuesta').value = 'Crear Encuesta';
     document.getElementById('btn-cancelar-edicion').style.display = 'none';
 }
+
+
 
 // ---------------------------------------------------------------------
 // QR
@@ -349,16 +479,22 @@ function volverAModoCrear() {
 function mostrarQR(id) {
     var url = urlEncuesta(id);
 
+
+
     document.getElementById('modal-qr-url').textContent = url;
     var contenedor = document.getElementById('modal-qr-codigo');
     contenedor.innerHTML = '';
     document.getElementById('modal-qr-descargar').style.display = 'none';
     document.getElementById('modal-qr').style.display = 'flex';
 
+
+
     if (typeof QRCode == 'undefined') {
         contenedor.innerHTML = '<p class="modal-qr-error">No se pudo generar el QR.</p>';
         return;
     }
+
+
 
     new QRCode(contenedor, {
         text: url,
@@ -369,8 +505,12 @@ function mostrarQR(id) {
         correctLevel: QRCode.CorrectLevel.M
     });
 
+
+
     var lienzo = contenedor.querySelector('canvas');
     var descarga = document.getElementById('modal-qr-descargar');
+
+
 
     if (lienzo) {
         descarga.href = lienzo.toDataURL('image/png');
@@ -379,15 +519,21 @@ function mostrarQR(id) {
     }
 }
 
+
+
 document.getElementById('modal-qr-cerrar').onclick = function () {
     document.getElementById('modal-qr').style.display = 'none';
 };
+
+
 
 document.getElementById('modal-qr').onclick = function (evento) {
     if (evento.target === this) {
         this.style.display = 'none';
     }
 };
+
+
 
 // ---------------------------------------------------------------------
 // Eventos
@@ -396,22 +542,32 @@ botonAgregar.onclick = function () {
     crearPregunta();
 };
 
+
+
 formulario.addEventListener('submit', function (evento) {
     evento.preventDefault();
+
+
 
     var titulo = document.getElementById('enc-titulo').value.trim();
     var descripcion = document.getElementById('enc-descripcion').value.trim();
     var preguntas = recogerPreguntas();
+
+
 
     if (titulo == '') {
         alert('Ingrese el título de la encuesta.');
         return;
     }
 
+
+
     if (preguntas.length == 0) {
         alert('Agregue al menos una pregunta.');
         return;
     }
+
+
 
     for (var i = 0; i < preguntas.length; i++) {
         if (preguntas[i].texto == '') {
@@ -424,23 +580,35 @@ formulario.addEventListener('submit', function (evento) {
         }
     }
 
+
+
     var datos = new FormData();
     var esEdicion = idEncuestaEnEdicion > 0;
 
+
+
     datos.append('accion', esEdicion ? 'editar' : 'crear');
+
+
 
     if (esEdicion) {
         datos.append('id_encuesta', idEncuestaEnEdicion);
     }
+
+
 
     datos.append('titulo', titulo);
     datos.append('descripcion', descripcion);
     datos.append('id_documento', document.getElementById('enc-documento').value);
     datos.append('preguntas', JSON.stringify(preguntas));
 
+
+
     enviar(datos, function (resultado) {
         volverAModoCrear();
         renderizarLista();
+
+
 
         if (esEdicion == false && resultado != null && resultado.id_encuesta) {
             mostrarQR(resultado.id_encuesta);
@@ -448,7 +616,11 @@ formulario.addEventListener('submit', function (evento) {
     }, esEdicion == false);
 });
 
+
+
 document.getElementById('btn-cancelar-edicion').onclick = volverAModoCrear;
+
+
 
 // ---------------------------------------------------------------------
 // Documentos asociables (US-04)
@@ -456,9 +628,13 @@ document.getElementById('btn-cancelar-edicion').onclick = volverAModoCrear;
 function cargarDocumentos() {
     var select = document.getElementById('enc-documento');
 
+
+
     if (select == null) {
         return;
     }
+
+
 
     fetch('../php/listarDocumentos.php')
         .then(function (respuesta) {
@@ -469,17 +645,27 @@ function cargarDocumentos() {
                 documentos = [];
             }
 
+
+
             var html = '<option value="">Independiente (sin documento)</option>';
+
+
 
             for (var i = 0; i < documentos.length; i++) {
                 var texto = documentos[i].titulo_del_documento;
+
+
 
                 if (documentos[i].estado != 1) {
                     texto = texto + ' (inactivo)';
                 }
 
+
+
                 html = html + '<option value="' + documentos[i].id_documento + '">' + escapar(texto) + '</option>';
             }
+
+
 
             select.innerHTML = html;
         })
@@ -487,6 +673,8 @@ function cargarDocumentos() {
             select.innerHTML = '<option value="">Independiente (sin documento)</option>';
         });
 }
+
+
 
 crearPregunta();
 cargarDocumentos();

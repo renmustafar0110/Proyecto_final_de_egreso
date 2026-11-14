@@ -2,6 +2,8 @@
 
 require_once 'conexion.php';
 
+
+
 function responderNoDisponible() {
     http_response_code(404);
     header('Content-Type: text/html; charset=utf-8');
@@ -26,6 +28,8 @@ function responderNoDisponible() {
     exit;
 }
 
+
+
 function etiquetaCategoria($categoria) {
     $etiquetas = array(
         'informacion_general' => 'Información general',
@@ -35,46 +39,70 @@ function etiquetaCategoria($categoria) {
         'encuestas' => 'Encuestas'
     );
 
+
+
     if (isset($etiquetas[$categoria])) {
         return $etiquetas[$categoria];
     }
 
+
+
     return 'Documento';
 }
 
+
+
 function formatearFecha($fecha) {
     $partes = explode('-', $fecha);
+
+
 
     if (count($partes) == 3) {
         return $partes[2] . '/' . $partes[1] . '/' . $partes[0];
     }
 
+
+
     return $fecha;
 }
+
+
 
 function servirArchivo($rutaCompleta, $nombre) {
     header('Content-Type: application/pdf');
     header('Content-Disposition: inline; filename="' . $nombre . '"');
     header('Content-Length: ' . filesize($rutaCompleta));
 
+
+
     readfile($rutaCompleta);
     exit;
 }
 
+
+
 $archivo = '';
+
+
 
 if (isset($_GET['archivo'])) {
     $archivo = basename(trim($_GET['archivo']));
 }
+
+
 
 $idQr = 0;
 if (isset($_GET['qr'])) {
     $idQr = intval($_GET['qr']);
 }
 
+
+
 if ($archivo == '' && $idQr <= 0) {
     responderNoDisponible();
 }
+
+
 
 if ($idQr > 0) {
     $sql = "SELECT id_documento, titulo_del_documento, categoria_del_documento, fecha_publicacion, estado, archivo
@@ -85,55 +113,85 @@ if ($idQr > 0) {
             FROM Documentos WHERE archivo = '$rutaBD'";
 }
 
+
+
 $resultado = $conexion->query($sql);
+
+
 
 if (!$resultado || $resultado->num_rows == 0) {
     responderNoDisponible();
 }
 
+
+
 $documento = $resultado->fetch_assoc();
+
+
 
 if (intval($documento['estado']) != 1) {
     responderNoDisponible();
 }
 
+
+
 $archivo = basename($documento['archivo']);
 $rutaCompleta = __DIR__ . '/Documento/' . $archivo;
+
+
 
 if (!is_file($rutaCompleta)) {
     responderNoDisponible();
 }
 
+
+
 if (isset($_GET['raw'])) {
     servirArchivo($rutaCompleta, $archivo);
 }
+
+
 
 $titulo = htmlspecialchars($documento['titulo_del_documento'], ENT_QUOTES, 'UTF-8');
 $categoria = etiquetaCategoria($documento['categoria_del_documento']);
 $fecha = formatearFecha($documento['fecha_publicacion']);
 $urlArchivo = 'verDocumento.php?archivo=' . urlencode($archivo) . '&amp;raw=1';
 
+
+
 // US-04: encuesta activa asociada a este documento (si tiene alguna)
 $encuestaAsociada = null;
+
+
 
 if (!empty($documento['id_documento'])) {
     $idDocumento = intval($documento['id_documento']);
 
+
+
     $resultadoEncuesta = $conexion->query("SELECT id_encuesta, titulo FROM Encuestas_Formularios
                                            WHERE id_documento = $idDocumento AND estado = 1
                                            ORDER BY id_encuesta DESC LIMIT 1");
+
+
 
     if ($resultadoEncuesta && $resultadoEncuesta->num_rows > 0) {
         $encuestaAsociada = $resultadoEncuesta->fetch_assoc();
     }
 }
 
+
+
 $agente = '';
 if (isset($_SERVER['HTTP_USER_AGENT'])) {
     $agente = $_SERVER['HTTP_USER_AGENT'];
 }
 
+
+
 $esIOS = (bool) preg_match('/iPad|iPhone|iPod/', $agente);
+
+
 
 header('Content-Type: text/html; charset=utf-8');
 ?>
@@ -151,9 +209,13 @@ header('Content-Type: text/html; charset=utf-8');
         <span class="categoria-badge"><?php echo $categoria; ?></span>
     </header>
 
+
+
     <main class="visor-main">
         <h1 class="titulo-documento"><?php echo $titulo; ?></h1>
         <p class="meta-documento">Publicado el <?php echo $fecha; ?></p>
+
+
 
         <div class="acciones">
             <a class="btn-abrir" href="<?php echo $urlArchivo; ?>" target="_blank" rel="noopener">Abrir documento</a>
@@ -171,6 +233,8 @@ header('Content-Type: text/html; charset=utf-8');
             <iframe src="<?php echo $urlArchivo; ?>" title="Documento PDF"></iframe>
         </div>
     </main>
+
+
 
     <footer class="visor-footer">
         &copy; Hospital de Clínicas

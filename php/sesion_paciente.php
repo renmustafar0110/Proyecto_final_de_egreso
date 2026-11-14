@@ -4,9 +4,13 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+
+
 function sesionPaciente() {
     return isset($_SESSION['paciente']) ? $_SESSION['paciente'] : null;
 }
+
+
 
 function responderNoAutorizadoPaciente($codigo, $mensaje) {
     http_response_code($codigo);
@@ -15,6 +19,8 @@ function responderNoAutorizadoPaciente($codigo, $mensaje) {
     exit;
 }
 
+
+
 function verificarSesionPaciente() {
     $paciente = sesionPaciente();
     if ($paciente === null) {
@@ -22,6 +28,8 @@ function verificarSesionPaciente() {
     }
     return $paciente;
 }
+
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['accion']) && $_GET['accion'] === 'info') {
     header('Content-Type: application/json; charset=utf-8');

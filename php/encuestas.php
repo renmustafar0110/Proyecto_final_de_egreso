@@ -2,20 +2,32 @@
 
 header('Content-Type: application/json; charset=utf-8');
 
+
+
 require_once 'conexion.php';
 require_once 'sesion.php';
 require_once 'encuestas_comun.php';
 
+
+
 requiereSesion(array('admin_documentos', 'super_admin'));
 
+
+
 $tiposValidos = array('multiple', 'escala', 'texto');
+
+
 
 function responder($ok, $datos = array()) {
     echo json_encode(array_merge(array('ok' => $ok), $datos));
     exit;
 }
 
+
+
 $metodo = $_SERVER['REQUEST_METHOD'];
+
+
 
 // ---------------------------------------------------------------------
 // GET
@@ -27,9 +39,13 @@ if ($metodo == 'GET') {
         $accion = $_GET['accion'];
     }
 
+
+
     // US-04: listado de encuestas con su cantidad de preguntas y respuestas
     if ($accion == 'listar') {
         $encuestas = array();
+
+
 
         $sql = "SELECT e.id_encuesta, e.titulo, e.descripcion, e.estado, e.fecha_creacion,
                        e.id_documento, d.titulo_del_documento,
@@ -39,7 +55,11 @@ if ($metodo == 'GET') {
                 LEFT JOIN Documentos d ON d.id_documento = e.id_documento
                 ORDER BY e.id_encuesta DESC";
 
+
+
         $resultado = $conexion->query($sql);
+
+
 
         if ($resultado) {
             while ($fila = $resultado->fetch_assoc()) {
@@ -52,9 +72,13 @@ if ($metodo == 'GET') {
             }
         }
 
+
+
         echo json_encode($encuestas);
         exit;
     }
+
+
 
     // US-04: detalle de una encuesta con sus preguntas
     if ($accion == 'detalle') {
@@ -64,20 +88,32 @@ if ($metodo == 'GET') {
             $id = intval($_GET['id']);
         }
 
+
+
         if ($id <= 0) {
             responder(false, array('mensaje' => 'Encuesta no válida'));
         }
 
+
+
         $encuesta = obtenerEncuesta($conexion, $id);
+
+
 
         if ($encuesta === null) {
             responder(false, array('mensaje' => 'La encuesta no existe'));
         }
 
+
+
         $encuesta['preguntas'] = obtenerPreguntas($conexion, $id);
+
+
 
         responder(true, array('encuesta' => $encuesta));
     }
+
+
 
     // US-06: resultados agregados para el dashboard (con filtro opcional por fecha)
     if ($accion == 'resultados') {
@@ -87,52 +123,80 @@ if ($metodo == 'GET') {
             $id = intval($_GET['id']);
         }
 
+
+
         if ($id <= 0) {
             responder(false, array('mensaje' => 'Encuesta no válida'));
         }
+
+
 
         // CU-07: filtro por rango de fechas de envío de las respuestas
         $desde = isset($_GET['desde']) ? trim($_GET['desde']) : '';
         $hasta = isset($_GET['hasta']) ? trim($_GET['hasta']) : '';
 
+
+
         if ($desde != '' && !fechaSimpleValida($desde)) {
             responder(false, array('mensaje' => 'La fecha inicial no es válida'));
         }
+
+
 
         if ($hasta != '' && !fechaSimpleValida($hasta)) {
             responder(false, array('mensaje' => 'La fecha final no es válida'));
         }
 
+
+
         $filtroFechas = '';
+
+
 
         if ($desde != '') {
             $desdeEscapado = $conexion->real_escape_string($desde);
             $filtroFechas = $filtroFechas . " AND r.fecha_envio >= '$desdeEscapado 00:00:00'";
         }
 
+
+
         if ($hasta != '') {
             $hastaEscapada = $conexion->real_escape_string($hasta);
             $filtroFechas = $filtroFechas . " AND r.fecha_envio <= '$hastaEscapada 23:59:59'";
         }
 
+
+
         $encuesta = obtenerEncuesta($conexion, $id);
+
+
 
         if ($encuesta === null) {
             responder(false, array('mensaje' => 'La encuesta no existe'));
         }
 
+
+
         $totalRespuestas = 0;
         $resultadoTotal = $conexion->query("SELECT COUNT(*) AS total FROM Encuestas_Respuestas r
                                            WHERE r.id_encuesta = $id" . $filtroFechas);
+
+
 
         if ($resultadoTotal && $filaTotal = $resultadoTotal->fetch_assoc()) {
             $totalRespuestas = intval($filaTotal['total']);
         }
 
+
+
         $preguntas = obtenerPreguntas($conexion, $id);
+
+
 
         foreach ($preguntas as $indice => $pregunta) {
             $idPregunta = intval($pregunta['id_pregunta']);
+
+
 
             if ($pregunta['tipo'] == 'texto') {
                 $valores = array();
@@ -151,6 +215,8 @@ if ($metodo == 'GET') {
                 continue;
             }
 
+
+
             $conteos = array();
             $res = $conexion->query("SELECT d.valor, COUNT(*) AS total FROM Encuestas_Respuesta_Detalle d
                                      INNER JOIN Encuestas_Respuestas r ON r.id_respuesta = d.id_respuesta
@@ -163,7 +229,11 @@ if ($metodo == 'GET') {
                 }
             }
 
+
+
             $categorias = array();
+
+
 
             if ($pregunta['tipo'] == 'escala') {
                 for ($i = 1; $i <= 5; $i++) {
@@ -172,6 +242,8 @@ if ($metodo == 'GET') {
             } else {
                 $categorias = $pregunta['opciones'];
             }
+
+
 
             $datos = array();
             foreach ($categorias as $categoria) {
@@ -182,8 +254,12 @@ if ($metodo == 'GET') {
                 $datos[] = array('etiqueta' => $categoria, 'total' => $cantidad);
             }
 
+
+
             $preguntas[$indice]['resultados'] = $datos;
         }
+
+
 
         responder(true, array(
             'encuesta' => $encuesta,
@@ -193,8 +269,12 @@ if ($metodo == 'GET') {
         ));
     }
 
+
+
     responder(false, array('mensaje' => 'Acción no reconocida'));
 }
+
+
 
 // ---------------------------------------------------------------------
 // POST
@@ -203,50 +283,76 @@ if ($metodo != 'POST') {
     responder(false, array('mensaje' => 'Método no permitido'));
 }
 
+
+
 $accion = '';
 if (isset($_POST['accion'])) {
     $accion = $_POST['accion'];
 }
+
+
 
 // US-04: crear encuesta con preguntas personalizables
 if ($accion == 'crear') {
 
     $datos = leerEncuestaValidada($tiposValidos);
 
+
+
     $tituloEscapado = $conexion->real_escape_string($datos['titulo']);
     $descripcionEscapada = $conexion->real_escape_string($datos['descripcion']);
+
+
 
     // US-04: la encuesta se asocia a un documento o es independiente
     $idDocumento = documentoAsociado($conexion);
     $valorDocumento = $idDocumento > 0 ? $idDocumento : 'NULL';
 
+
+
     $sql = "INSERT INTO Encuestas_Formularios (titulo, descripcion, estado, fecha_creacion, id_documento)
             VALUES ('$tituloEscapado', '$descripcionEscapada', 1, NOW(), $valorDocumento)";
+
+
 
     if (!$conexion->query($sql)) {
         responder(false, array('mensaje' => 'Falló el registro: ' . $conexion->error));
     }
 
+
+
     $idEncuesta = ultimoIdInsertado($conexion);
     $orden = 0;
+
+
 
     foreach ($datos['preguntas'] as $pregunta) {
         $texto = $conexion->real_escape_string(trim($pregunta['texto']));
         $entidadTipo = $conexion->real_escape_string($pregunta['tipo']);
         $opcionesJson = opcionesDePregunta($conexion, $pregunta);
 
+
+
         $sqlPregunta = "INSERT INTO Encuestas_Preguntas (id_encuesta, texto, tipo, opciones, orden)
                         VALUES ($idEncuesta, '$texto', '$entidadTipo', $opcionesJson, $orden)";
+
+
 
         if (!$conexion->query($sqlPregunta)) {
             responder(false, array('mensaje' => 'Falló el registro de una pregunta: ' . $conexion->error));
         }
 
+
+
         $orden++;
     }
 
+
+
     responder(true, array('mensaje' => 'Encuesta creada', 'id_encuesta' => $idEncuesta));
 }
+
+
 
 // US-04: editar una encuesta existente (título, descripción y preguntas).
 // Las preguntas que conservan su id se actualizan, las nuevas se agregan
@@ -258,26 +364,42 @@ if ($accion == 'editar') {
         $id = intval($_POST['id_encuesta']);
     }
 
+
+
     if ($id <= 0) {
         responder(false, array('mensaje' => 'Encuesta no válida'));
     }
 
+
+
     $encuestaExistente = obtenerEncuesta($conexion, $id);
+
+
 
     if ($encuestaExistente === null) {
         responder(false, array('mensaje' => 'La encuesta no existe'));
     }
 
+
+
     $datos = leerEncuestaValidada($tiposValidos);
+
+
 
     $tituloEscapado = $conexion->real_escape_string($datos['titulo']);
     $descripcionEscapada = $conexion->real_escape_string($datos['descripcion']);
+
+
 
     // US-04: la asociación al documento también se puede cambiar al editar
     $idDocumento = documentoAsociado($conexion);
     $valorDocumento = $idDocumento > 0 ? $idDocumento : 'NULL';
 
+
+
     $conexion->begin_transaction();
+
+
 
     if (!$conexion->query("UPDATE Encuestas_Formularios
                            SET titulo = '$tituloEscapado', descripcion = '$descripcionEscapada',
@@ -286,9 +408,13 @@ if ($accion == 'editar') {
         responder(false, array('mensaje' => 'Falló la actualización: ' . $conexion->error));
     }
 
+
+
     $existentes = array();
     $resultadoExistente = $conexion->query("SELECT id_pregunta FROM Encuestas_Preguntas
                                             WHERE id_encuesta = $id");
+
+
 
     if ($resultadoExistente) {
         while ($fila = $resultadoExistente->fetch_assoc()) {
@@ -296,42 +422,62 @@ if ($accion == 'editar') {
         }
     }
 
+
+
     $conservadas = array();
     $orden = 0;
+
+
 
     foreach ($datos['preguntas'] as $pregunta) {
         $texto = $conexion->real_escape_string(trim($pregunta['texto']));
         $entidadTipo = $conexion->real_escape_string($pregunta['tipo']);
         $opcionesJson = opcionesDePregunta($conexion, $pregunta);
 
+
+
         $idPregunta = 0;
         if (isset($pregunta['id_pregunta'])) {
             $idPregunta = intval($pregunta['id_pregunta']);
         }
+
+
 
         if ($idPregunta > 0 && in_array($idPregunta, $existentes, true)) {
             $sqlPregunta = "UPDATE Encuestas_Preguntas
                             SET texto = '$texto', tipo = '$entidadTipo', opciones = $opcionesJson, orden = $orden
                             WHERE id_pregunta = $idPregunta AND id_encuesta = $id";
 
+
+
             if (!$conexion->query($sqlPregunta)) {
                 responder(false, array('mensaje' => 'Falló la actualización de una pregunta: ' . $conexion->error));
             }
+
+
 
             $conservadas[] = $idPregunta;
         } else {
             $sqlPregunta = "INSERT INTO Encuestas_Preguntas (id_encuesta, texto, tipo, opciones, orden)
                             VALUES ($id, '$texto', '$entidadTipo', $opcionesJson, $orden)";
 
+
+
             if (!$conexion->query($sqlPregunta)) {
                 responder(false, array('mensaje' => 'Falló el registro de una pregunta: ' . $conexion->error));
             }
         }
 
+
+
         $orden++;
     }
 
+
+
     $eliminadas = array();
+
+
 
     foreach ($existentes as $idExistente) {
         if (in_array($idExistente, $conservadas, true) == false) {
@@ -339,12 +485,18 @@ if ($accion == 'editar') {
         }
     }
 
+
+
     if (count($eliminadas) > 0) {
         $listaEliminadas = implode(', ', $eliminadas);
+
+
 
         // Primero se quitan las respuestas que dependen de esas preguntas
         $conexion->query("DELETE FROM Encuestas_Respuesta_Detalle
                           WHERE id_pregunta IN ($listaEliminadas)");
+
+
 
         if (!$conexion->query("DELETE FROM Encuestas_Preguntas
                                WHERE id_pregunta IN ($listaEliminadas) AND id_encuesta = $id")) {
@@ -352,10 +504,16 @@ if ($accion == 'editar') {
         }
     }
 
+
+
     $conexion->commit();
+
+
 
     responder(true, array('mensaje' => 'Encuesta actualizada', 'id_encuesta' => $id));
 }
+
+
 
 // US-04: activar / desactivar encuesta (el QR deja de funcionar al desactivar)
 if ($accion == 'estado') {
@@ -365,14 +523,20 @@ if ($accion == 'estado') {
         $id = intval($_POST['id_encuesta']);
     }
 
+
+
     $estado = 0;
     if (isset($_POST['estado']) && intval($_POST['estado']) == 1) {
         $estado = 1;
     }
 
+
+
     if ($id <= 0) {
         responder(false, array('mensaje' => 'Encuesta no válida'));
     }
+
+
 
     if ($conexion->query("UPDATE Encuestas_Formularios SET estado = $estado WHERE id_encuesta = $id")) {
         if ($estado == 1) {
@@ -381,8 +545,12 @@ if ($accion == 'estado') {
         responder(true, array('mensaje' => 'Encuesta desactivada'));
     }
 
+
+
     responder(false, array('mensaje' => 'Falló el cambio de estado: ' . $conexion->error));
 }
+
+
 
 // US-04: eliminar encuesta
 if ($accion == 'eliminar') {
@@ -392,18 +560,28 @@ if ($accion == 'eliminar') {
         $id = intval($_POST['id_encuesta']);
     }
 
+
+
     if ($id <= 0) {
         responder(false, array('mensaje' => 'Encuesta no válida'));
     }
+
+
 
     if ($conexion->query("DELETE FROM Encuestas_Formularios WHERE id_encuesta = $id")) {
         responder(true, array('mensaje' => 'Encuesta eliminada'));
     }
 
+
+
     responder(false, array('mensaje' => 'Falló la eliminación: ' . $conexion->error));
 }
 
+
+
 responder(false, array('mensaje' => 'Acción no reconocida'));
+
+
 
 // ---------------------------------------------------------------------
 // Funciones auxiliares
@@ -417,14 +595,20 @@ function leerEncuestaValidada($tiposValidos) {
         $titulo = trim($_POST['titulo']);
     }
 
+
+
     $descripcion = '';
     if (isset($_POST['descripcion'])) {
         $descripcion = trim($_POST['descripcion']);
     }
 
+
+
     if ($titulo == '') {
         responder(false, array('mensaje' => 'Ingrese el título de la encuesta'));
     }
+
+
 
     $preguntas = array();
     if (isset($_POST['preguntas'])) {
@@ -434,21 +618,31 @@ function leerEncuestaValidada($tiposValidos) {
         }
     }
 
+
+
     if (count($preguntas) == 0) {
         responder(false, array('mensaje' => 'Agregue al menos una pregunta'));
     }
+
+
 
     foreach ($preguntas as $pregunta) {
         $texto = isset($pregunta['texto']) ? trim($pregunta['texto']) : '';
         $tipo = isset($pregunta['tipo']) ? $pregunta['tipo'] : '';
 
+
+
         if ($texto == '') {
             responder(false, array('mensaje' => 'Todas las preguntas deben tener un enunciado'));
         }
 
+
+
         if (!in_array($tipo, $tiposValidos, true)) {
             responder(false, array('mensaje' => 'Tipo de pregunta no válido'));
         }
+
+
 
         if ($tipo == 'multiple') {
             $opciones = isset($pregunta['opciones']) && is_array($pregunta['opciones']) ? $pregunta['opciones'] : array();
@@ -465,8 +659,12 @@ function leerEncuestaValidada($tiposValidos) {
         }
     }
 
+
+
     return array('titulo' => $titulo, 'descripcion' => $descripcion, 'preguntas' => $preguntas);
 }
+
+
 
 // Devuelve la lista de opciones en JSON listo para la consulta,
 // o NULL cuando la pregunta no es de opción múltiple.
@@ -474,6 +672,8 @@ function opcionesDePregunta($conexion, $pregunta) {
     if ($pregunta['tipo'] != 'multiple') {
         return 'NULL';
     }
+
+
 
     $limpias = array();
     foreach ($pregunta['opciones'] as $opcion) {
@@ -483,10 +683,16 @@ function opcionesDePregunta($conexion, $pregunta) {
         }
     }
 
+
+
     $json = $conexion->real_escape_string(json_encode($limpias, JSON_UNESCAPED_UNICODE));
+
+
 
     return "'" . $json . "'";
 }
+
+
 
 // US-04: lee y valida el documento asociado enviado por el formulario.
 // Devuelve 0 cuando la encuesta es independiente.
@@ -497,33 +703,51 @@ function documentoAsociado($conexion) {
         $idDocumento = intval($_POST['id_documento']);
     }
 
+
+
     if ($idDocumento <= 0) {
         return 0;
     }
 
+
+
     $resultado = $conexion->query("SELECT id_documento FROM Documentos WHERE id_documento = $idDocumento LIMIT 1");
+
+
 
     if (!$resultado || $resultado->num_rows == 0) {
         responder(false, array('mensaje' => 'El documento asociado no existe'));
     }
 
+
+
     return $idDocumento;
 }
+
+
 
 // Valida una fecha simple en formato YYYY-MM-DD (filtro del dashboard US-06).
 function fechaSimpleValida($fecha) {
     $partes = explode('-', $fecha);
 
+
+
     if (count($partes) != 3) {
         return false;
     }
+
+
 
     if (!ctype_digit($partes[0]) || !ctype_digit($partes[1]) || !ctype_digit($partes[2])) {
         return false;
     }
 
+
+
     return checkdate(intval($partes[1]), intval($partes[2]), intval($partes[0]));
 }
+
+
 
 function obtenerEncuesta($conexion, $id) {
     $resultado = $conexion->query("SELECT e.id_encuesta, e.titulo, e.descripcion, e.estado, e.fecha_creacion,
@@ -532,14 +756,20 @@ function obtenerEncuesta($conexion, $id) {
                                    LEFT JOIN Documentos d ON d.id_documento = e.id_documento
                                    WHERE e.id_encuesta = $id");
 
+
+
     if (!$resultado || $resultado->num_rows == 0) {
         return null;
     }
+
+
 
     $encuesta = $resultado->fetch_assoc();
     $encuesta['id_encuesta'] = intval($encuesta['id_encuesta']);
     $encuesta['estado'] = intval($encuesta['estado']);
     $encuesta['id_documento'] = $encuesta['id_documento'] !== null ? intval($encuesta['id_documento']) : null;
+
+
 
     return $encuesta;
 }

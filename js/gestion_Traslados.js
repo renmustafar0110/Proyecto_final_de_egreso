@@ -1,5 +1,7 @@
 var idTraslado = 0;
 
+
+
 var avisoDetalle = document.getElementById('aviso-detalle');
 var contenido = document.getElementById('contenido-traslado');
 var formulario = document.getElementById('form-estado');
@@ -12,22 +14,32 @@ var avisoBloqueo = document.getElementById('aviso-bloqueo');
 var botonEditarTraslado = document.getElementById('btn-editar-traslado');
 var botonEliminarTraslado = document.getElementById('btn-eliminar-traslado');
 
+
+
 function obtenerIdDeLaUrl() {
     var parametros = new URLSearchParams(window.location.search);
     var id = parametros.get('id');
+
+
 
     if (id == null) {
         return 0;
     }
 
+
+
     return parseInt(id, 10);
 }
+
+
 
 function mostrarAviso(mensaje) {
     avisoDetalle.textContent = mensaje;
     avisoDetalle.style.display = 'block';
     contenido.style.display = 'none';
 }
+
+
 
 function cargarDetalle() {
     fetch('../php/trazabilidad.php?accion=detalle&id=' + idTraslado)
@@ -44,8 +56,12 @@ function cargarDetalle() {
                 return;
             }
 
+
+
             avisoDetalle.style.display = 'none';
             contenido.style.display = 'block';
+
+
 
             dibujarDetalle(resultado.traslado);
             dibujarHistorial(resultado.historial);
@@ -56,19 +72,29 @@ function cargarDetalle() {
         });
 }
 
+
+
 function dibujarDetalle(traslado) {
     var conductor = 'Sin asignar';
+
+
 
     if (traslado.conductor_nombre != null) {
         conductor = traslado.conductor_nombre + ' ' + traslado.conductor_apellido;
     }
+
+
 
     var coche = '—';
     if (traslado.numero_coche != null) {
         coche = traslado.numero_coche;
     }
 
+
+
     var elemento = textoElemento(traslado);
+
+
 
     document.getElementById('detalle-id').textContent = '#' + traslado.id_traslado;
     document.getElementById('detalle-coche').textContent = coche;
@@ -81,29 +107,45 @@ function dibujarDetalle(traslado) {
     document.getElementById('detalle-llegada-efectiva').textContent = formatearFechaHora(traslado.hora_llegada_efectiva);
     document.getElementById('detalle-estado').textContent = traslado.estado;
 
+
+
     document.getElementById('titulo-traslado').textContent = 'Traslado #' + traslado.id_traslado;
+
+
 
     // Editar / eliminar solo están disponibles mientras siga en estado "Pendiente"
     var editable = traslado.estado == 'Pendiente';
+
+
 
     accionesTraslado.style.display = editable ? 'flex' : 'none';
     avisoBloqueo.style.display = editable ? 'none' : 'block';
     botonEditarTraslado.setAttribute('href', 'trazabilidad.html?editar=' + traslado.id_traslado);
 }
 
+
+
 function dibujarHistorial(historial) {
     var lista = document.getElementById('historial-estados');
     lista.innerHTML = '';
+
+
 
     if (!Array.isArray(historial) || historial.length == 0) {
         lista.innerHTML = '<li class="historial-vacio">Sin cambios registrados.</li>';
         return;
     }
 
+
+
     var html = '';
+
+
 
     for (var i = 0; i < historial.length; i++) {
         var cambio = historial[i];
+
+
 
         html = html + '<li>' +
             '<span class="historial-estado">' + escapar(cambio.estado) + '</span>' +
@@ -111,11 +153,17 @@ function dibujarHistorial(historial) {
             '</li>';
     }
 
+
+
     lista.innerHTML = html;
 }
 
+
+
 function dibujarFormulario(estadosPermitidos) {
     selectEstado.innerHTML = '<option value="">Seleccione un estado...</option>';
+
+
 
     if (!Array.isArray(estadosPermitidos) || estadosPermitidos.length == 0) {
         campoNuevoEstado.style.display = 'none';
@@ -124,9 +172,13 @@ function dibujarFormulario(estadosPermitidos) {
         return;
     }
 
+
+
     campoNuevoEstado.style.display = 'block';
     botonActualizar.style.display = 'block';
     avisoFinalizado.style.display = 'none';
+
+
 
     for (var i = 0; i < estadosPermitidos.length; i++) {
         var opcion = document.createElement('option');
@@ -136,18 +188,26 @@ function dibujarFormulario(estadosPermitidos) {
     }
 }
 
+
+
 formulario.addEventListener('submit', function (evento) {
     evento.preventDefault();
+
+
 
     if (selectEstado.value == '') {
         alert('Seleccione el nuevo estado.');
         return;
     }
 
+
+
     var datos = new FormData();
     datos.append('accion', 'actualizar_estado');
     datos.append('id_traslado', idTraslado);
     datos.append('estado', selectEstado.value);
+
+
 
     fetch('../php/trazabilidad.php', {
         method: 'POST',
@@ -173,14 +233,20 @@ formulario.addEventListener('submit', function (evento) {
         });
 });
 
+
+
 botonEliminarTraslado.onclick = function () {
     if (confirm('¿Eliminar el traslado #' + idTraslado + '?\nEsta acción no se puede deshacer.') == false) {
         return;
     }
 
+
+
     var datos = new FormData();
     datos.append('accion', 'eliminar');
     datos.append('id_traslado', idTraslado);
+
+
 
     fetch('../php/trazabilidad.php', {
         method: 'POST',
@@ -196,6 +262,8 @@ botonEliminarTraslado.onclick = function () {
                 return;
             }
 
+
+
             var mensaje = 'No se pudo eliminar el traslado.';
             if (resultado != null && resultado.error != null) {
                 mensaje = resultado.error;
@@ -207,7 +275,11 @@ botonEliminarTraslado.onclick = function () {
         });
 };
 
+
+
 idTraslado = obtenerIdDeLaUrl();
+
+
 
 if (idTraslado <= 0) {
     mostrarAviso('No se indicó un traslado válido.');

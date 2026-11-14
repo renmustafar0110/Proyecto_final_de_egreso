@@ -1,5 +1,7 @@
 var listaDocumentos = [];
 
+
+
 var modal = document.getElementById('edit-modal');
 var formEditar = document.getElementById('edit-form');
 var campoId = document.getElementById('edit-id');
@@ -7,9 +9,13 @@ var campoTitulo = document.getElementById('edit-titulo');
 var campoCategoria = document.getElementById('edit-categoria');
 var campoFecha = document.getElementById('edit-fecha');
 
+
+
 var campoBuscar = document.getElementById('buscar-titulo');
 var selectCategoria = document.getElementById('filtrar-categoria');
 var avisoSinResultados = document.getElementById('sin-resultados');
+
+
 
 function obtenerDocumentos() {
     return fetch('../php/listarDocumentos.php')
@@ -21,37 +27,55 @@ function obtenerDocumentos() {
         });
 }
 
+
+
 function formatearFecha(valor) {
     if (valor == null || valor == '') {
         return '—';
     }
 
+
+
     var partes = valor.split('-');
+
+
 
     if (partes.length != 3) {
         return valor;
     }
 
+
+
     return partes[2] + '/' + partes[1] + '/' + partes[0];
 }
+
+
 
 function normalizarCategoria(valor) {
     if (valor == null || valor == '') {
         return 'informacion_general';
     }
 
+
+
     return valor;
 }
+
+
 
 function crearFila(documento) {
     var ruta = '../php/' + documento.archivo;
     var activo = documento.estado == 1;
+
+
 
     var claseBotonEstado = 'btn-accion btn-encender';
     var textoBotonEstado = 'Activar';
     var textoEstado = 'Inactivo';
     var claseEstado = 'estado-inactivo';
     var estadoSiguiente = 1;
+
+
 
     if (activo) {
         claseBotonEstado = 'btn-accion btn-apagar';
@@ -60,6 +84,8 @@ function crearFila(documento) {
         claseEstado = 'estado-activo';
         estadoSiguiente = 0;
     }
+
+
 
     var fila = '<tr>';
     fila = fila + '<td>' + escapar(documento.titulo_del_documento) + '</td>';
@@ -73,61 +99,95 @@ function crearFila(documento) {
     fila = fila + '</td>';
     fila = fila + '</tr>';
 
+
+
     return fila;
 }
 
+
+
 function aplicarFiltros() {
     var texto = '';
+
+
 
     if (campoBuscar != null) {
         texto = campoBuscar.value.trim().toLowerCase();
     }
 
+
+
     var categoriaSeleccionada = '';
+
+
 
     if (selectCategoria != null) {
         categoriaSeleccionada = selectCategoria.value;
     }
 
+
+
     var carpetas = document.querySelectorAll('.carpeta');
     var totalVisibles = 0;
+
+
 
     for (var i = 0; i < carpetas.length; i++) {
         var carpeta = carpetas[i];
         var clave = carpeta.getAttribute('data-categoria');
+
+
 
         if (categoriaSeleccionada != '' && categoriaSeleccionada != clave) {
             carpeta.style.display = 'none';
             continue;
         }
 
+
+
         var cuerpoTabla = carpeta.querySelector('tbody');
         var aviso = carpeta.querySelector('.vacia');
         var filas = '';
         var coincidencias = 0;
 
+
+
         for (var j = 0; j < listaDocumentos.length; j++) {
             var documento = listaDocumentos[j];
+
+
 
             if (normalizarCategoria(documento.categoria_del_documento) != clave) {
                 continue;
             }
 
+
+
             var titulo = '';
+
+
 
             if (documento.titulo_del_documento != null) {
                 titulo = String(documento.titulo_del_documento).toLowerCase();
             }
 
+
+
             if (texto != '' && titulo.indexOf(texto) == -1) {
                 continue;
             }
+
+
 
             filas = filas + crearFila(documento);
             coincidencias++;
         }
 
+
+
         cuerpoTabla.innerHTML = filas;
+
+
 
         if (aviso != null) {
             if (coincidencias == 0) {
@@ -137,15 +197,23 @@ function aplicarFiltros() {
             }
         }
 
+
+
         carpeta.style.display = '';
+
+
 
         if (coincidencias > 0) {
             totalVisibles = totalVisibles + coincidencias;
         }
     }
 
+
+
     if (avisoSinResultados != null) {
         var hayFiltro = texto != '' || categoriaSeleccionada != '';
+
+
 
         if (hayFiltro && totalVisibles == 0) {
             avisoSinResultados.style.display = 'block';
@@ -154,33 +222,49 @@ function aplicarFiltros() {
         }
     }
 
+
+
     conectarBotones();
 }
 
+
+
 function conectarBotones() {
     var botones = document.querySelectorAll('[data-accion]');
+
+
 
     for (var i = 0; i < botones.length; i++) {
         botones[i].onclick = manejarBoton;
     }
 }
 
+
+
 function manejarBoton() {
     var accion = this.getAttribute('data-accion');
     var id = this.getAttribute('data-id');
+
+
 
     if (accion == 'editar') {
         abrirEdicion(id);
     }
 
+
+
     if (accion == 'estado') {
         cambiarEstado(this);
     }
+
+
 
     if (accion == 'eliminar') {
         eliminarDocumento(id);
     }
 }
+
+
 
 function renderizarTabla() {
     obtenerDocumentos().then(function (documentos) {
@@ -188,19 +272,29 @@ function renderizarTabla() {
             documentos = [];
         }
 
+
+
         listaDocumentos = documentos;
+
+
 
         aplicarFiltros();
     });
 }
 
+
+
 if (campoBuscar != null) {
     campoBuscar.addEventListener('input', aplicarFiltros);
 }
 
+
+
 if (selectCategoria != null) {
     selectCategoria.addEventListener('change', aplicarFiltros);
 }
+
+
 
 function buscarDocumento(id) {
     for (var i = 0; i < listaDocumentos.length; i++) {
@@ -209,8 +303,12 @@ function buscarDocumento(id) {
         }
     }
 
+
+
     return null;
 }
+
+
 
 function enviarGestion(datos, alTerminar) {
     fetch('../php/gestionarDocumento.php', {
@@ -225,7 +323,11 @@ function enviarGestion(datos, alTerminar) {
             return;
         }
 
+
+
         alert(resultado.mensaje);
+
+
 
         if (resultado.ok && alTerminar != null) {
             alTerminar();
@@ -236,33 +338,49 @@ function enviarGestion(datos, alTerminar) {
     });
 }
 
+
+
 function abrirEdicion(id) {
     var documento = buscarDocumento(id);
+
+
 
     if (documento == null) {
         return;
     }
 
+
+
     campoId.value = documento.id_documento;
     campoTitulo.value = documento.titulo_del_documento;
     campoCategoria.value = normalizarCategoria(documento.categoria_del_documento);
+
+
 
     campoFecha.value = '';
     if (documento.fecha_publicacion != null) {
         campoFecha.value = documento.fecha_publicacion;
     }
 
+
+
     modal.classList.add('abierto');
 }
+
+
 
 function cerrarEdicion() {
     modal.classList.remove('abierto');
 }
 
+
+
 function cambiarEstado(boton) {
     var id = boton.getAttribute('data-id');
     var estado = boton.getAttribute('data-estado');
     var mensaje = '';
+
+
 
     if (estado == '1') {
         mensaje = '¿Activar este documento? Volverá a estar disponible para los pacientes.';
@@ -270,39 +388,61 @@ function cambiarEstado(boton) {
         mensaje = '¿Desactivar este documento? Dejará de mostrarse en la consulta pública.';
     }
 
+
+
     if (confirm(mensaje) == false) {
         return;
     }
+
+
 
     var datos = new FormData();
     datos.append('accion', 'estado');
     datos.append('id_documento', id);
     datos.append('estado', estado);
 
+
+
     enviarGestion(datos, renderizarTabla);
 }
 
+
+
 function eliminarDocumento(id) {
     var documento = buscarDocumento(id);
+
+
 
     if (documento == null) {
         return;
     }
 
+
+
     var mensaje = '¿Eliminar "' + documento.titulo_del_documento + '"? Esta acción no se puede deshacer y se borrará el archivo del servidor.';
+
+
 
     if (confirm(mensaje) == false) {
         return;
     }
 
+
+
     var datos = new FormData();
     datos.append('accion', 'eliminar');
     datos.append('id_documento', id);
 
+
+
     enviarGestion(datos, renderizarTabla);
 }
 
+
+
 document.getElementById('edit-cancelar').onclick = cerrarEdicion;
+
+
 
 modal.addEventListener('click', function (evento) {
     if (evento.target == modal) {
@@ -310,18 +450,26 @@ modal.addEventListener('click', function (evento) {
     }
 });
 
+
+
 formEditar.onsubmit = function (evento) {
     evento.preventDefault();
+
+
 
     if (campoTitulo.value.trim() == '') {
         alert('El título no puede quedar vacío.');
         return;
     }
 
+
+
     if (campoFecha.value == '') {
         alert('Seleccione una fecha de publicación.');
         return;
     }
+
+
 
     var datos = new FormData();
     datos.append('accion', 'editar');
@@ -330,11 +478,15 @@ formEditar.onsubmit = function (evento) {
     datos.append('categoria_del_documento', campoCategoria.value);
     datos.append('fecha_publicacion', campoFecha.value);
 
+
+
     enviarGestion(datos, function () {
         cerrarEdicion();
         renderizarTabla();
     });
 };
+
+
 
 window.onload = function () {
     renderizarTabla();

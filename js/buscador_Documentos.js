@@ -17,6 +17,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var qrVerCategoria = document.getElementById('qr-ver-categoria');
     var qrVerImagen = document.getElementById('qr-ver-imagen');
 
+
+
     function etiquetaCategoria(categoria) {
         var etiquetas = {
             'informacion_general': 'Información general',
@@ -31,6 +33,8 @@ document.addEventListener('DOMContentLoaded', function () {
         return categoria || 'Documento';
     }
 
+
+
     function formatearFecha(fecha) {
         if (!fecha) return '';
         var partes = fecha.split('-');
@@ -40,6 +44,8 @@ document.addEventListener('DOMContentLoaded', function () {
         return fecha;
     }
 
+
+
     function construirUrlQR(idQr) {
         var base = new URL('../php/verDocumento.php', window.location.href);
         if (idQr) {
@@ -47,6 +53,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         return base.href;
     }
+
+
 
     function construirUrlArchivo(archivo) {
         if (!archivo) return '';
@@ -57,12 +65,16 @@ document.addEventListener('DOMContentLoaded', function () {
         return base.href;
     }
 
+
+
     function construirUrlVer(documento) {
         if (documento.id_qr) {
             return construirUrlQR(documento.id_qr);
         }
         return construirUrlArchivo(documento.archivo);
     }
+
+
 
     function cargarPaciente() {
         fetch('../php/sesion_paciente.php?accion=info')
@@ -86,6 +98,8 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
+
+
     function buscarDocumentos() {
         var params = new URLSearchParams();
         if (campoCategoria && campoCategoria.value) {
@@ -94,6 +108,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (campoTitulo && campoTitulo.value.trim()) {
             params.set('titulo', campoTitulo.value.trim());
         }
+
+
 
         fetch('../php/buscador_documentos.php?' + params.toString())
             .then(function (r) { return r.json(); })
@@ -125,6 +141,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 tabla.innerHTML = filas;
 
+
+
                 var botonesQr = tabla.querySelectorAll('.btn-mostrar-qr');
                 for (var j = 0; j < botonesQr.length; j++) {
                     botonesQr[j].addEventListener('click', function () {
@@ -143,6 +161,8 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
+
+
     function cargarEncuestasPendientes() {
         if (listaEncuestasPaciente) {
             listaEncuestasPaciente.innerHTML = '';
@@ -151,6 +171,8 @@ document.addEventListener('DOMContentLoaded', function () {
             encuestasMensaje.textContent = 'Cargando encuestas...';
             encuestasMensaje.style.display = 'block';
         }
+
+
 
         fetch('../php/listar_encuestas_paciente.php')
             .then(function (r) { return r.json(); })
@@ -165,6 +187,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                     return;
                 }
+
+
 
                 var html = '';
                 for (var i = 0; i < encuestas.length; i++) {
@@ -189,6 +213,8 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
+
+
     if (btnEncuestasPendientes) {
         btnEncuestasPendientes.addEventListener('click', function () {
             if (modalEncuestas) {
@@ -198,6 +224,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+
+
     if (btnCerrarEncuestas) {
         btnCerrarEncuestas.addEventListener('click', function () {
             if (modalEncuestas) {
@@ -205,6 +233,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+
+
 
     if (modalEncuestas) {
         modalEncuestas.addEventListener('click', function (evento) {
@@ -214,6 +244,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+
+
     if (btnCerrarVerQr) {
         btnCerrarVerQr.addEventListener('click', function () {
             if (modalVerQr) {
@@ -221,6 +253,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+
+
 
     if (modalVerQr) {
         modalVerQr.addEventListener('click', function (evento) {
@@ -230,18 +264,26 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+
+
     function mostrarQrDocumento(documento, urlVer) {
         if (!modalVerQr) {
             return;
         }
 
+
+
         if (qrVerTitulo) {
             qrVerTitulo.textContent = documento.titulo_del_documento || 'Sin título';
         }
 
+
+
         if (qrVerCategoria) {
             qrVerCategoria.textContent = 'Categoría: ' + etiquetaCategoria(documento.categoria_del_documento);
         }
+
+
 
         if (qrVerImagen) {
             try {
@@ -252,10 +294,16 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
+
+
         modalVerQr.style.display = 'flex';
     }
 
+
+
     btnBuscar.addEventListener('click', buscarDocumentos);
+
+
 
     if (btnCerrarSesion) {
         btnCerrarSesion.addEventListener('click', function () {
@@ -268,6 +316,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
         });
     }
+
+
 
     cargarPaciente();
 });

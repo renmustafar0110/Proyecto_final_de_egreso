@@ -7,12 +7,18 @@ function obtenerClaseDeEstado(estado) {
         'Finalizado': 'finalizado'
     };
 
+
+
     if (clases[estado]) {
         return clases[estado];
     }
 
+
+
     return '';
 }
+
+
 
 function obtenerAmbulancias() {
     return fetch('../php/trazabilidad.php', { method: 'GET' })

@@ -4,9 +4,12 @@
     var campoPassword = document.getElementById('password');
     var formulario = document.querySelector('form');
 
+
+
     if (!formulario) {
         return;
     }
+
 
 
     if (window.history && window.history.replaceState) {
@@ -16,9 +19,11 @@
     }
 
 
+
     var togglePassword = document.getElementById('togglePassword');
     var destino = formulario.getAttribute('data-destino');
     var tipo = formulario.getAttribute('data-tipo') || 'funcionario';
+
 
 
     if (togglePassword && campoPassword) {
@@ -32,13 +37,18 @@
     }
 
 
+
     function guardarSesion(usuario) {
 
         var nombreCompleto = usuario.nombre + ' ' + usuario.apellido;
 
+
+
         sessionStorage.setItem('sesion', usuario.cedula);
         sessionStorage.setItem('rol', usuario.rol);
         sessionStorage.setItem('nombre', nombreCompleto);
+
+
 
         localStorage.setItem('sesion', usuario.cedula);
         localStorage.setItem('rol', usuario.rol);
@@ -47,9 +57,12 @@
     }
 
 
+
     function informarError(mensaje) {
 
         alert(mensaje);
+
+
 
         campoPassword.value = '';
         campoCedula.focus();
@@ -58,27 +71,38 @@
     }
 
 
+
     formulario.addEventListener('submit', function (evento) {
 
         evento.preventDefault();
 
+
+
         var cedula = campoCedula.value.replace(/\s+/g, '');
         var password = campoPassword.value;
+
+
 
         if (cedula === '' || password === '') {
 
             informarError('Ingrese cédula y contraseña.');
+
+
 
             return;
 
         }
 
 
+
         var datos = new FormData();
+
+
 
         datos.append('cedula', cedula);
         datos.append('password', password);
         datos.append('tipo', tipo);
+
 
 
         fetch('../php/autenticar.php', {
@@ -97,18 +121,25 @@
                     guardarSesion(resultado.usuario);
                     window.location.href = destino;
 
+
+
                     return;
 
                 }
 
 
+
                 var mensaje = 'No se pudo iniciar sesión.';
+
+
 
                 if (resultado && resultado.mensaje) {
 
                     mensaje = resultado.mensaje;
 
                 }
+
+
 
                 informarError(mensaje);
 

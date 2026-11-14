@@ -10,6 +10,8 @@ function actualizarReloj() {
     document.getElementById('reloj').textContent = texto;
 }
 
+
+
 function actualizarFechaPie() {
     var ahora = new Date();
     var opciones = {
@@ -25,8 +27,14 @@ function actualizarFechaPie() {
     }
 }
 
+
+
 actualizarReloj();
 
+
+
 setInterval(actualizarReloj, 1000);
+
+
 
 actualizarFechaPie();

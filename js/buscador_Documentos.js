@@ -1,3 +1,5 @@
+// buscador_Documentos.js - Buscador de documentos del paciente y modales de encuestas/QR.
+// Referencias a la tabla, filtros, datos del paciente y modales.
 document.addEventListener('DOMContentLoaded', function () {
     var tabla = document.getElementById('tabla-documentos');
     var aviso = document.getElementById('aviso-sin-resultados');
@@ -19,6 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+    // Devuelve el nombre visible de la categoria del documento.
     function etiquetaCategoria(categoria) {
         var etiquetas = {
             'informacion_general': 'Información general',
@@ -35,6 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+    // Convierte una fecha YYYY-MM-DD a DD/MM/YYYY.
     function formatearFecha(fecha) {
         if (!fecha) return '';
         var partes = fecha.split('-');
@@ -46,6 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+    // Genera la URL publica del documento a partir de su id de QR.
     function construirUrlQR(idQr) {
         var base = new URL('../php/verDocumento.php', window.location.href);
         if (idQr) {
@@ -56,6 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+    // Genera la URL del visor usando el nombre del archivo PDF.
     function construirUrlArchivo(archivo) {
         if (!archivo) return '';
         var partes = String(archivo).split('/');
@@ -67,6 +73,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+    // Elige la URL de visualizacion segun si el documento tiene QR o archivo.
     function construirUrlVer(documento) {
         if (documento.id_qr) {
             return construirUrlQR(documento.id_qr);
@@ -76,6 +83,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+    // Pide los datos del paciente logueado y, si hay sesion, carga los documentos.
     function cargarPaciente() {
         fetch('../php/sesion_paciente.php?accion=info')
             .then(function (r) { return r.json(); })
@@ -100,6 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+    // Consulta los documentos con los filtros activos y arma la tabla.
     function buscarDocumentos() {
         var params = new URLSearchParams();
         if (campoCategoria && campoCategoria.value) {
@@ -111,9 +120,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+        // Se piden al backend los documentos que cumplen los filtros.
         fetch('../php/buscador_documentos.php?' + params.toString())
             .then(function (r) { return r.json(); })
             .then(function (documentos) {
+                // Si no hay resultados, se muestra el aviso de la tabla.
                 if (!Array.isArray(documentos) || documentos.length === 0) {
                     tabla.innerHTML = '';
                     aviso.style.display = 'block';
@@ -143,6 +154,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+                // Se conectan los botones Mostrar QR generados dinamicamente.
                 var botonesQr = tabla.querySelectorAll('.btn-mostrar-qr');
                 for (var j = 0; j < botonesQr.length; j++) {
                     botonesQr[j].addEventListener('click', function () {
@@ -163,6 +175,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+    // Carga en el modal las encuestas activas para que el paciente responda.
     function cargarEncuestasPendientes() {
         if (listaEncuestasPaciente) {
             listaEncuestasPaciente.innerHTML = '';
@@ -174,6 +187,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+        // Se piden las encuestas pendientes al backend.
         fetch('../php/listar_encuestas_paciente.php')
             .then(function (r) { return r.json(); })
             .then(function (encuestas) {
@@ -215,6 +229,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+    // Eventos de apertura y cierre del modal de encuestas.
     if (btnEncuestasPendientes) {
         btnEncuestasPendientes.addEventListener('click', function () {
             if (modalEncuestas) {
@@ -246,6 +261,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+    // Eventos de cierre del modal de QR.
     if (btnCerrarVerQr) {
         btnCerrarVerQr.addEventListener('click', function () {
             if (modalVerQr) {
@@ -266,6 +282,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+    // Muestra el QR del documento en el modal usando un servicio externo.
     function mostrarQrDocumento(documento, urlVer) {
         if (!modalVerQr) {
             return;
@@ -301,6 +318,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+    // Busqueda, cierre de sesion y carga inicial de la pagina.
     btnBuscar.addEventListener('click', buscarDocumentos);
 
 
@@ -319,5 +337,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+    // Al cargar la pagina se valida la sesion del paciente y se buscan documentos.
     cargarPaciente();
 });

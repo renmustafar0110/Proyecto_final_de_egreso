@@ -1,19 +1,24 @@
 <?php
 
+// login_Funcionario.php - Autentica a un funcionario y define su rol.
+// Se cargan la conexion y el helper de sesion.
 require_once 'conexion.php';
 require_once 'sesion.php';
 
 
 
+// La respuesta siempre sera JSON.
 header('Content-Type: application/json; charset=utf-8');
 
 
 
+// Datos recibidos del formulario de login.
 $cedula = isset($_POST['cedula']) ? trim($_POST['cedula']) : '';
 $password = isset($_POST['password']) ? $_POST['password'] : '';
 
 
 
+// Validacion de campos obligatorios.
 if ($cedula === '' || $password === '') {
     echo json_encode(array('ok' => false, 'mensaje' => 'Ingrese cédula y contraseña'));
     exit;
@@ -21,6 +26,7 @@ if ($cedula === '' || $password === '') {
 
 
 
+// Consulta preparada para buscar el funcionario por cedula.
 $consulta = "SELECT id_funcionario, cedula, nombre, apellido, cargo, password_hash, rol
              FROM Funcionarios
              WHERE cedula = ?
@@ -28,6 +34,7 @@ $consulta = "SELECT id_funcionario, cedula, nombre, apellido, cargo, password_ha
 
 
 
+// Se prepara y ejecuta la consulta.
 $stmt = $conexion->prepare($consulta);
 
 
@@ -50,6 +57,7 @@ $stmt->close();
 
 
 
+// Se verifica la contrasena con password_verify.
 if (!$encontrado || !password_verify($password, $passwordHash)) {
     echo json_encode(array('ok' => false, 'mensaje' => 'Cédula o contraseña incorrecta.'));
     exit;
@@ -73,6 +81,7 @@ if ($rolBD == 'admin_documentos') {
 
 
 
+// Datos del usuario que se guardan en la sesion.
 $usuario = array(
     'id_usuario' => intval($idUsuario),
     'cedula' => $cedulaBD,
@@ -86,6 +95,7 @@ $usuario = array(
 
 
 
+// Se regenera la sesion y se responde con el usuario autenticado.
 session_regenerate_id(true);
 
 

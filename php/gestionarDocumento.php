@@ -1,14 +1,18 @@
 <?php
 
+// gestionarDocumento.php - Edita, activa/desactiva y elimina documentos.
+// Se cargan la conexion y el control de sesion.
 require_once 'conexion.php';
 require_once 'sesion.php';
 
 
 
+// Solo el personal de documentos puede gestionar.
 requiereSesion(array('admin_documentos', 'super_admin'));
 
 
 
+// Devuelve una respuesta JSON y termina la ejecucion.
 function responder($ok, $mensaje) {
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode(array('ok' => $ok, 'mensaje' => $mensaje));
@@ -17,6 +21,7 @@ function responder($ok, $mensaje) {
 
 
 
+// Categorias aceptadas por el sistema.
 $categoriasValidas = array(
     'informacion_general',
     'indicaciones',
@@ -27,6 +32,7 @@ $categoriasValidas = array(
 
 
 
+// Se leen la accion y el id del documento.
 $accion = '';
 if (isset($_POST['accion'])) {
     $accion = $_POST['accion'];
@@ -41,12 +47,14 @@ if (isset($_POST['id_documento'])) {
 
 
 
+// Sin id valido no se puede operar.
 if ($id <= 0) {
     responder(false, 'Documento no válido');
 }
 
 
 
+// Edicion de titulo, categoria y fecha.
 if ($accion == 'editar') {
 
     $titulo = '';
@@ -70,6 +78,7 @@ if ($accion == 'editar') {
 
 
 
+    // Validacion de los datos recibidos.
     if ($titulo == '') {
         responder(false, 'El título no puede quedar vacío');
     }
@@ -104,6 +113,7 @@ if ($accion == 'editar') {
 
 
 
+    // Se escapan los datos y se actualiza el documento.
     $tituloEscapado = $conexion->real_escape_string($titulo);
     $categoriaEscapada = $conexion->real_escape_string($categoria);
     $fechaEscapada = $conexion->real_escape_string($fecha);
@@ -127,6 +137,7 @@ if ($accion == 'editar') {
 
 
 
+// Activacion o desactivacion del documento.
 if ($accion == 'estado') {
 
     $estado = 0;
@@ -164,6 +175,7 @@ if ($accion == 'estado') {
 
 
 
+// Eliminacion del registro y del archivo PDF del servidor.
 if ($accion == 'eliminar') {
 
     $sql = "SELECT archivo FROM Documentos WHERE id_documento = $id";
@@ -208,4 +220,5 @@ if ($accion == 'eliminar') {
 
 
 
+// Si ninguna accion coincide, se informa el error.
 responder(false, 'Acción no reconocida');

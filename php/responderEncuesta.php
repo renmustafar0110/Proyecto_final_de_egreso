@@ -1,10 +1,13 @@
 <?php
 
+// responderEncuesta.php - Muestra y guarda las respuestas anonimas de una encuesta.
+// Se cargan la conexion y las funciones del modulo de encuestas.
 require_once 'conexion.php';
 require_once 'encuestas_comun.php';
 
 
 
+// Pagina de error para encuestas inexistentes o desactivadas.
 function paginaError($titulo, $mensaje) {
     http_response_code(404);
     ?>
@@ -30,6 +33,7 @@ function paginaError($titulo, $mensaje) {
 
 
 
+// Se obtiene el id por GET (enlace/QR) o por POST (envio del formulario).
 $id = 0;
 if (isset($_GET['id'])) {
     $id = intval($_GET['id']);
@@ -39,12 +43,14 @@ if (isset($_GET['id'])) {
 
 
 
+// Validacion de la encuesta.
 if ($id <= 0) {
     paginaError('Encuesta no disponible', 'El enlace no corresponde a una encuesta válida.');
 }
 
 
 
+// Se carga la encuesta y se controla que este activa.
 $resultado = $conexion->query("SELECT id_encuesta, titulo, descripcion, estado
                                FROM Encuestas_Formularios WHERE id_encuesta = $id");
 
@@ -66,19 +72,23 @@ if (intval($encuesta['estado']) != 1) {
 
 
 
+// Se cargan las preguntas y se prepara el indicador de envio.
 $preguntas = obtenerPreguntas($conexion, $id);
 $enviado = false;
 
 
 
+// Al enviar el formulario se guarda una respuesta anonima y su detalle.
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // US-05: guardar respuestas de forma anónima
+    // Primero se crea la cabecera de la respuesta.
     $conexion->query("INSERT INTO Encuestas_Respuestas (id_encuesta, fecha_envio) VALUES ($id, NOW())");
     $idRespuesta = ultimoIdInsertado($conexion);
 
 
 
+    // Luego se guarda el valor de cada pregunta.
     foreach ($preguntas as $pregunta) {
         $idPregunta = intval($pregunta['id_pregunta']);
         $campo = 'resp_' . $idPregunta;
@@ -107,6 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
 
+// Datos escapados para mostrar en el HTML.
 $titulo = htmlspecialchars($encuesta['titulo'], ENT_QUOTES, 'UTF-8');
 $descripcion = htmlspecialchars($encuesta['descripcion'], ENT_QUOTES, 'UTF-8');
 
@@ -131,6 +142,7 @@ header('Content-Type: text/html; charset=utf-8');
 
 
     <main class="enc-main">
+        <?php // Si ya se envio, se muestra el mensaje de agradecimiento. ?>
         <?php if ($enviado) { ?>
 
 
@@ -143,6 +155,7 @@ header('Content-Type: text/html; charset=utf-8');
 
 
 
+        <?php // Si no se envio, se muestra el formulario con los tres tipos de pregunta. ?>
         <?php } else { ?>
 
 
@@ -159,6 +172,7 @@ header('Content-Type: text/html; charset=utf-8');
 
 
 
+                <?php // Se recorre cada pregunta numerandola en pantalla. ?>
                 <?php $numero = 1; foreach ($preguntas as $pregunta) { ?>
                     <?php
                         $idPregunta = intval($pregunta['id_pregunta']);
@@ -169,6 +183,7 @@ header('Content-Type: text/html; charset=utf-8');
 
 
 
+                        <?php // Render segun tipo: opcion multiple, escala 1-5 o texto libre. ?>
                         <?php if ($pregunta['tipo'] == 'multiple') { ?>
                             <?php foreach ($pregunta['opciones'] as $opcion) { ?>
                                 <label class="opcion">

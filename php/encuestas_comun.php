@@ -1,7 +1,9 @@
 <?php
 
+// encuestas_comun.php - Funciones compartidas del modulo de encuestas.
 // Funciones compartidas por el modulo de encuestas (gestion y respuesta publica).
 
+// Obtiene las preguntas de una encuesta y decodifica sus opciones.
 function obtenerPreguntas($conexion, $id) {
     $preguntas = array();
 
@@ -21,6 +23,7 @@ function obtenerPreguntas($conexion, $id) {
 
 
 
+            // Las opciones se guardan como JSON solo en preguntas de opcion multiple.
             if ($fila['tipo'] == 'multiple' && $opcionesJson != null) {
                 $decodificado = json_decode($opcionesJson, true);
                 if (is_array($decodificado)) {

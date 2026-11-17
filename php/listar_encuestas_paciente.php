@@ -1,13 +1,17 @@
 <?php
 
+// listar_encuestas_paciente.php - Devuelve las encuestas activas para el paciente.
+// Se carga la conexion a la base.
 require_once 'conexion.php';
 
 
 
+// La respuesta sera un arreglo JSON.
 header('Content-Type: application/json; charset=utf-8');
 
 
 
+// Se consultan las encuestas activas y se devuelven como JSON.
 $encuestas = array();
 
 

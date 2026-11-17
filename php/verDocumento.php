@@ -1,9 +1,12 @@
 <?php
 
+// verDocumento.php - Visor publico de documentos por QR o por nombre de archivo.
+// Se carga la conexion a la base.
 require_once 'conexion.php';
 
 
 
+// Pagina de error cuando el documento no existe o esta inactivo.
 function responderNoDisponible() {
     http_response_code(404);
     header('Content-Type: text/html; charset=utf-8');
@@ -30,6 +33,7 @@ function responderNoDisponible() {
 
 
 
+// Nombre visible de la categoria.
 function etiquetaCategoria($categoria) {
     $etiquetas = array(
         'informacion_general' => 'Información general',
@@ -52,6 +56,7 @@ function etiquetaCategoria($categoria) {
 
 
 
+// Convierte una fecha YYYY-MM-DD a DD/MM/YYYY.
 function formatearFecha($fecha) {
     $partes = explode('-', $fecha);
 
@@ -68,6 +73,7 @@ function formatearFecha($fecha) {
 
 
 
+// Envia el PDF al navegador para verlo o descargarlo.
 function servirArchivo($rutaCompleta, $nombre) {
     header('Content-Type: application/pdf');
     header('Content-Disposition: inline; filename="' . $nombre . '"');
@@ -81,6 +87,7 @@ function servirArchivo($rutaCompleta, $nombre) {
 
 
 
+// Se leen los parametros: archivo o id de QR.
 $archivo = '';
 
 
@@ -98,12 +105,14 @@ if (isset($_GET['qr'])) {
 
 
 
+// Debe venir al menos uno de los dos parametros.
 if ($archivo == '' && $idQr <= 0) {
     responderNoDisponible();
 }
 
 
 
+// Se busca el documento por QR o por archivo.
 if ($idQr > 0) {
     $sql = "SELECT id_documento, titulo_del_documento, categoria_del_documento, fecha_publicacion, estado, archivo
             FROM Documentos WHERE id_qr = $idQr";
@@ -119,6 +128,7 @@ $resultado = $conexion->query($sql);
 
 
 
+// Si no existe se muestra la pagina de error.
 if (!$resultado || $resultado->num_rows == 0) {
     responderNoDisponible();
 }
@@ -129,6 +139,7 @@ $documento = $resultado->fetch_assoc();
 
 
 
+// Los documentos inactivos no se muestran.
 if (intval($documento['estado']) != 1) {
     responderNoDisponible();
 }
@@ -140,18 +151,21 @@ $rutaCompleta = __DIR__ . '/Documento/' . $archivo;
 
 
 
+// Tambien se controla que el archivo exista fisicamente.
 if (!is_file($rutaCompleta)) {
     responderNoDisponible();
 }
 
 
 
+// Si se pide el archivo crudo, se envia el PDF directamente.
 if (isset($_GET['raw'])) {
     servirArchivo($rutaCompleta, $archivo);
 }
 
 
 
+// Datos que se muestran en el visor HTML.
 $titulo = htmlspecialchars($documento['titulo_del_documento'], ENT_QUOTES, 'UTF-8');
 $categoria = etiquetaCategoria($documento['categoria_del_documento']);
 $fecha = formatearFecha($documento['fecha_publicacion']);
@@ -182,6 +196,7 @@ if (!empty($documento['id_documento'])) {
 
 
 
+// Deteccion simple de iPhone/iPad para avisar sobre la previsualizacion.
 $agente = '';
 if (isset($_SERVER['HTTP_USER_AGENT'])) {
     $agente = $_SERVER['HTTP_USER_AGENT'];
@@ -193,6 +208,7 @@ $esIOS = (bool) preg_match('/iPad|iPhone|iPod/', $agente);
 
 
 
+// Se renderiza la pagina del visor.
 header('Content-Type: text/html; charset=utf-8');
 ?>
 <!DOCTYPE html>

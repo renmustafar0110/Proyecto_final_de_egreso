@@ -1,3 +1,5 @@
+// vistaPreviaT.js - Mapa Leaflet con la posicion simulada de las ambulancias.
+// Coordenadas del Hospital de Clinicas, punto de partida de los traslados.
 var COORDENADAS_HOSPITAL = {
     latitud: -34.9069,
     longitud: -56.1913
@@ -5,6 +7,7 @@ var COORDENADAS_HOSPITAL = {
 
 
 
+// Coordenadas aproximadas de cada departamento usadas para dibujar las rutas.
 var COORDENADAS_DEPARTAMENTOS = {
     'Artigas': [-30.4000, -56.4667],
     'Canelones': [-34.5228, -56.2778],
@@ -29,11 +32,13 @@ var COORDENADAS_DEPARTAMENTOS = {
 
 
 
+// Referencias globales al mapa y a la capa de marcadores de ambulancias.
 var mapa = null;
 var capaAmbulancias = null;
 
 
 
+// Ubica las ambulancias libres en una grilla alrededor del hospital.
 function calcularPosicion(indice) {
     var filas = Math.floor(indice / 3);
     var columna = indice % 3;
@@ -50,6 +55,7 @@ function calcularPosicion(indice) {
 
 
 
+// Busca las coordenadas de un departamento por su nombre.
 function obtenerCoordenadasDestino(destino) {
     if (destino == null) {
         return null;
@@ -72,6 +78,7 @@ function obtenerCoordenadasDestino(destino) {
 
 
 
+// Define que porcentaje del trayecto se pinta segun el estado del traslado.
 function factorDeEstado(estado) {
     if (estado == 'En curso') {
         return 0.35;
@@ -102,6 +109,7 @@ function factorDeEstado(estado) {
 
 
 
+// Interpola la posicion de la ambulancia entre el hospital y el destino.
 function calcularPosicionEnRuta(origen, destino, estado) {
     var factor = factorDeEstado(estado);
 
@@ -117,6 +125,7 @@ function calcularPosicionEnRuta(origen, destino, estado) {
 
 
 
+// Escapa un texto para el popup o muestra un guion si esta vacio.
 function escaparTexto(valor) {
     if (valor == null || valor == '') {
         return '—';
@@ -129,6 +138,7 @@ function escaparTexto(valor) {
 
 
 
+// Crea el icono personalizado del hospital.
 function crearIconoHospital() {
     return L.divIcon({
         className: 'marcador-contenedor',
@@ -141,6 +151,7 @@ function crearIconoHospital() {
 
 
 
+// Crea el icono de la ambulancia con el color de su estado.
 function crearIconoAmbulancia(estado) {
     var clase = obtenerClaseDeEstado(estado);
 
@@ -157,6 +168,7 @@ function crearIconoAmbulancia(estado) {
 
 
 
+// Crea el icono del marcador de destino.
 function crearIconoDestino() {
     return L.divIcon({
         className: 'marcador-contenedor',
@@ -169,6 +181,7 @@ function crearIconoDestino() {
 
 
 
+// Contenido del popup del marcador de destino.
 function armarContenidoDestino(ambulancia) {
     var destino = escaparTexto(ambulancia.destino);
     var coche = escaparTexto(ambulancia.numero_coche);
@@ -183,6 +196,7 @@ function armarContenidoDestino(ambulancia) {
 
 
 
+// Contenido del popup de la ambulancia con ruta, horarios y estado.
 function armarContenidoPopup(ambulancia) {
     var origen = escaparTexto(ambulancia.origen);
     var destino = escaparTexto(ambulancia.destino);
@@ -233,6 +247,7 @@ function armarContenidoPopup(ambulancia) {
 
 
 
+// Redibuja el mapa: hospital, rutas, destinos y ambulancias.
 function dibujarAmbulancias(ambulancias) {
     if (capaAmbulancias == null) {
         return;
@@ -316,6 +331,7 @@ function dibujarAmbulancias(ambulancias) {
 
 
 
+// Ajusta el zoom para que se vean todos los marcadores del mapa.
 function ajustarVista() {
     var limites = capaAmbulancias.getBounds();
 
@@ -333,6 +349,7 @@ function ajustarVista() {
 
 
 
+// Inicializa Leaflet, carga las ambulancias y escucha el redimensionado.
 function iniciarMapa() {
     var contenedor = document.getElementById('mapa');
 
@@ -382,4 +399,5 @@ function iniciarMapa() {
 
 
 
+// El mapa se inicia cuando el DOM esta listo.
 document.addEventListener('DOMContentLoaded', iniciarMapa);

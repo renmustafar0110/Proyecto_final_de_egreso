@@ -1,5 +1,7 @@
 <?php
 
+// conexion.php - Conexion unica a MySQL y helper para obtener el ultimo id insertado.
+// Parametros de conexion a la base de datos local.
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'hospital_clinicas');
 define('DB_USER', 'root');
@@ -7,6 +9,7 @@ define('DB_PASS', '');
 
 
 
+// Se abre la conexion y se corta la ejecucion si falla.
 $conexion = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
 
@@ -17,6 +20,7 @@ if ($conexion->connect_error) {
 
 
 
+// Se usa UTF-8 para no romper tildes ni enes.
 $conexion->set_charset('utf8');
 
 

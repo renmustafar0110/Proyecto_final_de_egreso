@@ -1,3 +1,5 @@
+// menu.js - Apertura/cierre del menu lateral, control de roles y cierre de sesion.
+// Referencias a los botones, paneles y botones de cierre del menu.
 (function () {
 
     var botonesMenu = document.querySelectorAll('.menu-btn');
@@ -57,6 +59,7 @@
 
 
 
+    // Oculta un elemento del DOM si existe.
     function ocultarElemento(elemento) {
 
         if (elemento) {
@@ -67,6 +70,7 @@
 
 
 
+    // Oculta un panel del menu y su boton cuando el rol no tiene acceso.
     function ocultarGrupo(idPanel, ocultar) {
 
         if (!ocultar) {
@@ -97,6 +101,7 @@
 
 
 
+    // Cierra todos los paneles y quita el estado activo de los botones.
     function cerrarPaneles() {
 
         var i;
@@ -121,6 +126,7 @@
 
 
 
+    // Abre el panel solicitado; si ya estaba abierto, lo cierra.
     function alternarPanel(boton) {
 
         var panel = document.getElementById(boton.getAttribute('data-menu'));
@@ -152,6 +158,7 @@
 
 
 
+    // Cierra la sesion en el servidor, limpia el navegador y vuelve al login.
     function cerrarSesion() {
 
         fetch('../php/cerrar_sesion.php', { method: 'POST' })
@@ -171,6 +178,7 @@
 
 
 
+    // Agrega la opcion Cerrar sesion al final de cada panel si hay sesion activa.
     function agregarBotonSalir() {
 
         var sesionActiva = sessionStorage.getItem('sesion') || localStorage.getItem('sesion');
@@ -212,6 +220,7 @@
 
 
 
+    // Se conectan los botones del menu con la apertura/cierre de paneles.
     for (var i = 0; i < botonesMenu.length; i++) {
 
         botonesMenu[i].onclick = function () {
@@ -224,6 +233,7 @@
 
 
 
+    // Los botones de cierre cierran todos los paneles.
     for (var j = 0; j < botonesCerrar.length; j++) {
 
         botonesCerrar[j].onclick = cerrarPaneles;
@@ -232,6 +242,7 @@
 
 
 
+    // Al cargar la pagina se aplican las restricciones por rol y el boton de salir.
     restringirMenuPorRol();
 
 

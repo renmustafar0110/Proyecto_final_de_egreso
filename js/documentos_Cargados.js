@@ -1,7 +1,10 @@
+// documentos_Cargados.js - Listado y gestion de documentos del panel administrativo.
+// Lista en memoria de los documentos cargados.
 var listaDocumentos = [];
 
 
 
+// Referencias al modal de edicion de documentos.
 var modal = document.getElementById('edit-modal');
 var formEditar = document.getElementById('edit-form');
 var campoId = document.getElementById('edit-id');
@@ -11,12 +14,14 @@ var campoFecha = document.getElementById('edit-fecha');
 
 
 
+// Referencias a los filtros del listado.
 var campoBuscar = document.getElementById('buscar-titulo');
 var selectCategoria = document.getElementById('filtrar-categoria');
 var avisoSinResultados = document.getElementById('sin-resultados');
 
 
 
+// Pide al backend todos los documentos cargados.
 function obtenerDocumentos() {
     return fetch('../php/listarDocumentos.php')
         .then(function (respuesta) {
@@ -29,6 +34,7 @@ function obtenerDocumentos() {
 
 
 
+// Convierte una fecha YYYY-MM-DD a DD/MM/YYYY.
 function formatearFecha(valor) {
     if (valor == null || valor == '') {
         return '—';
@@ -51,6 +57,7 @@ function formatearFecha(valor) {
 
 
 
+// Asigna una categoria por defecto cuando el documento no tiene una.
 function normalizarCategoria(valor) {
     if (valor == null || valor == '') {
         return 'informacion_general';
@@ -63,6 +70,7 @@ function normalizarCategoria(valor) {
 
 
 
+// Genera el HTML de una fila con sus acciones (ver, editar, estado, eliminar).
 function crearFila(documento) {
     var ruta = '../php/' + documento.archivo;
     var activo = documento.estado == 1;
@@ -77,6 +85,7 @@ function crearFila(documento) {
 
 
 
+    // Se define el texto y el estado siguiente segun si el documento esta activo.
     if (activo) {
         claseBotonEstado = 'btn-accion btn-apagar';
         textoBotonEstado = 'Desactivar';
@@ -106,6 +115,7 @@ function crearFila(documento) {
 
 
 
+// Filtra los documentos por texto y categoria y redibuja cada carpeta.
 function aplicarFiltros() {
     var texto = '';
 
@@ -127,6 +137,7 @@ function aplicarFiltros() {
 
 
 
+    // Se recorren las carpetas y se filtran sus filas segun la busqueda.
     var carpetas = document.querySelectorAll('.carpeta');
     var totalVisibles = 0;
 
@@ -210,6 +221,7 @@ function aplicarFiltros() {
 
 
 
+    // Si hay filtro y no se encontro nada, se muestra el aviso general.
     if (avisoSinResultados != null) {
         var hayFiltro = texto != '' || categoriaSeleccionada != '';
 
@@ -229,6 +241,7 @@ function aplicarFiltros() {
 
 
 
+// Asigna el manejador a todos los botones de accion de la tabla.
 function conectarBotones() {
     var botones = document.querySelectorAll('[data-accion]');
 
@@ -241,6 +254,7 @@ function conectarBotones() {
 
 
 
+// Deriva la accion del boton (editar, estado o eliminar).
 function manejarBoton() {
     var accion = this.getAttribute('data-accion');
     var id = this.getAttribute('data-id');
@@ -266,6 +280,7 @@ function manejarBoton() {
 
 
 
+// Carga los documentos y aplica los filtros actuales.
 function renderizarTabla() {
     obtenerDocumentos().then(function (documentos) {
         if (documentos == null) {
@@ -284,6 +299,7 @@ function renderizarTabla() {
 
 
 
+// La busqueda y el filtro de categoria se aplican al escribir o cambiar.
 if (campoBuscar != null) {
     campoBuscar.addEventListener('input', aplicarFiltros);
 }
@@ -296,6 +312,7 @@ if (selectCategoria != null) {
 
 
 
+// Busca un documento por id dentro de la lista ya cargada.
 function buscarDocumento(id) {
     for (var i = 0; i < listaDocumentos.length; i++) {
         if (listaDocumentos[i].id_documento == id) {
@@ -310,6 +327,7 @@ function buscarDocumento(id) {
 
 
 
+// Envia una accion de gestion al backend y avisa el resultado.
 function enviarGestion(datos, alTerminar) {
     fetch('../php/gestionarDocumento.php', {
         method: 'POST',
@@ -340,6 +358,7 @@ function enviarGestion(datos, alTerminar) {
 
 
 
+// Abre el modal de edicion con los datos del documento.
 function abrirEdicion(id) {
     var documento = buscarDocumento(id);
 
@@ -369,12 +388,14 @@ function abrirEdicion(id) {
 
 
 
+// Cierra el modal de edicion.
 function cerrarEdicion() {
     modal.classList.remove('abierto');
 }
 
 
 
+// Activa o desactiva un documento con confirmacion.
 function cambiarEstado(boton) {
     var id = boton.getAttribute('data-id');
     var estado = boton.getAttribute('data-estado');
@@ -408,6 +429,7 @@ function cambiarEstado(boton) {
 
 
 
+// Elimina un documento y su archivo del servidor, con confirmacion.
 function eliminarDocumento(id) {
     var documento = buscarDocumento(id);
 
@@ -440,10 +462,12 @@ function eliminarDocumento(id) {
 
 
 
+// Eventos del modal de edicion: cancelar, clic fuera y guardar cambios.
 document.getElementById('edit-cancelar').onclick = cerrarEdicion;
 
 
 
+// Un clic fuera de la caja del modal lo cierra.
 modal.addEventListener('click', function (evento) {
     if (evento.target == modal) {
         cerrarEdicion();
@@ -452,6 +476,7 @@ modal.addEventListener('click', function (evento) {
 
 
 
+// Guarda los cambios del formulario de edicion.
 formEditar.onsubmit = function (evento) {
     evento.preventDefault();
 
@@ -488,6 +513,7 @@ formEditar.onsubmit = function (evento) {
 
 
 
+// Al cargar la pagina se muestra el listado de documentos.
 window.onload = function () {
     renderizarTabla();
 };

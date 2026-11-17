@@ -1,3 +1,5 @@
+// panel_Traslados.js - Tabla del panel de traslados con filtros y refresco automatico.
+// Referencias a la tabla, filtros y avisos del panel.
 var cuerpoTabla = document.getElementById('tabla-panel');
 var selectEstado = document.getElementById('filtro-estado');
 var campoFecha = document.getElementById('filtro-fecha');
@@ -7,12 +9,15 @@ var botonActualizar = document.getElementById('btn-actualizar');
 
 
 
+// Constantes de configuracion: refresco automatico y texto sin resultados.
 var SEGUNDOS_REFRESCO = 15000;
 var TEXTO_SIN_RESULTADOS = 'No hay traslados con ese criterio.';
 
 
 
+// Construye el HTML de una fila de la tabla a partir de un traslado.
 function armarFila(traslado) {
+    // Se resuelven los datos opcionales de tripulacion, vehiculo y elemento.
     var conductor = 'Sin asignar';
 
 
@@ -78,6 +83,7 @@ function armarFila(traslado) {
 
 
 
+    // Se arma la fila con todas las columnas y el enlace para gestionar.
     var fila = '<tr class="' + clase + '">';
     fila = fila + '<td>' + escapar(coche) + '</td>';
     fila = fila + '<td>' + escapar(conductor) + '</td>';
@@ -100,7 +106,9 @@ function armarFila(traslado) {
 
 
 
+// Consulta el backend con los filtros activos y redibuja la tabla.
 function cargarPanel() {
+    // Se arman los parametros de busqueda solo si hay filtros.
     var parametros = 'accion=panel';
 
 
@@ -117,11 +125,13 @@ function cargarPanel() {
 
 
 
+    // Peticion al backend del panel de traslados.
     fetch('../php/trazabilidad.php?' + parametros)
         .then(function (respuesta) {
             return respuesta.json();
         })
         .then(function (traslados) {
+            // Si no hay resultados, se muestra el aviso correspondiente.
             if (!Array.isArray(traslados) || traslados.length == 0) {
                 cuerpoTabla.innerHTML = '';
                 avisoPanel.textContent = TEXTO_SIN_RESULTADOS;
@@ -156,6 +166,7 @@ function cargarPanel() {
 
 
 
+// Los filtros y botones vuelven a cargar la tabla.
 selectEstado.addEventListener('change', cargarPanel);
 campoFecha.addEventListener('change', cargarPanel);
 
@@ -173,5 +184,6 @@ botonActualizar.onclick = cargarPanel;
 
 
 
+// Carga inicial y refresco automatico cada 15 segundos.
 cargarPanel();
 setInterval(cargarPanel, SEGUNDOS_REFRESCO);

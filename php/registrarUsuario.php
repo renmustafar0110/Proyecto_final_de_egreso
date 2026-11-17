@@ -1,18 +1,23 @@
 <?php
 
+// registrarUsuario.php - Alta de funcionarios y pacientes desde el administrador.
+// Se cargan la conexion y el control de sesion.
 require_once 'conexion.php';
 require_once 'sesion.php';
 
 
 
+// Solo el super_admin puede crear usuarios.
 requiereSesion(array('super_admin'));
 
 
 
+// La respuesta siempre sera JSON.
 header('Content-Type: application/json; charset=utf-8');
 
 
 
+// Devuelve una respuesta JSON y termina.
 function responder($ok, $mensaje, $extra = array()) {
     echo json_encode(array_merge(array('ok' => $ok, 'mensaje' => $mensaje), $extra));
     exit;
@@ -20,12 +25,14 @@ function responder($ok, $mensaje, $extra = array()) {
 
 
 
+// Lee un campo POST y le quita espacios.
 function campoPost($clave) {
     return isset($_POST[$clave]) ? trim($_POST[$clave]) : '';
 }
 
 
 
+// Valida una fecha en formato YYYY-MM-DD.
 function fechaValida($fecha) {
     $partes = explode('-', $fecha);
 
@@ -48,6 +55,7 @@ function fechaValida($fecha) {
 
 
 
+// Se valida la accion y los datos comunes (cedula, nombre, apellido).
 $accion = campoPost('accion');
 
 
@@ -64,6 +72,7 @@ $apellido = campoPost('apellido');
 
 
 
+// Validaciones comunes de cedula, nombre y apellido.
 if ($cedula === '') {
     responder(false, 'Ingrese la cédula');
 }
@@ -97,8 +106,10 @@ if (strlen($nombre) > 100 || strlen($apellido) > 100) {
 // ---------------------------------------------------------------------
 // Alta de funcionario
 // ---------------------------------------------------------------------
+// Alta de funcionario: cargo, contrasena, rol y roles opcionales.
 if ($accion == 'funcionario') {
 
+    // Datos propios del funcionario.
     $cargo = campoPost('cargo');
     $password = isset($_POST['password']) ? $_POST['password'] : '';
     $telefonoFuncionario = campoPost('telefono_funcionario');
@@ -124,6 +135,7 @@ if ($accion == 'funcionario') {
 
 
 
+    // Validaciones de cargo, contrasena y telefono.
     if ($cargo === '') {
         responder(false, 'Ingrese el cargo del funcionario');
     }
@@ -160,6 +172,7 @@ if ($accion == 'funcionario') {
 
 
 
+    // Se controla que la cedula no este registrada.
     $consulta = $conexion->prepare("SELECT id_funcionario FROM Funcionarios WHERE cedula = ? LIMIT 1");
 
 
@@ -187,10 +200,12 @@ if ($accion == 'funcionario') {
 
 
 
+    // Se hashea la contrasena antes de guardarla.
     $hash = password_hash($password, PASSWORD_DEFAULT);
 
 
 
+    // La operacion es transaccional: funcionario + conductor/copiloto.
     $conexion->begin_transaction();
 
 
@@ -364,6 +379,7 @@ if ($accion == 'funcionario') {
 
 
 
+    // Si todo salio bien, se confirma la transaccion.
     $conexion->commit();
 
 
@@ -382,6 +398,7 @@ if ($accion == 'funcionario') {
 // ---------------------------------------------------------------------
 // Alta de paciente
 // ---------------------------------------------------------------------
+// Datos del paciente.
 $fechaNac = campoPost('fecha_nac');
 $telefono = campoPost('telefono');
 $email = campoPost('email');
@@ -389,6 +406,7 @@ $direccion = campoPost('direccion');
 
 
 
+// Validaciones de fecha, telefono, email y direccion.
 if ($fechaNac !== '' && !fechaValida($fechaNac)) {
     responder(false, 'La fecha de nacimiento no es válida');
 }
@@ -425,6 +443,7 @@ if (strlen($direccion) > 200) {
 
 
 
+// Se controla que la cedula no exista.
 $consulta = $conexion->prepare("SELECT id_paciente FROM Pacientes WHERE cedula = ? LIMIT 1");
 
 
@@ -452,6 +471,7 @@ $consulta->close();
 
 
 
+// Los campos opcionales vacios se guardan como NULL.
 $valorFecha = $fechaNac === '' ? null : $fechaNac;
 $valorTelefono = $telefono === '' ? null : $telefono;
 $valorEmail = $email === '' ? null : $email;
@@ -459,6 +479,7 @@ $valorDireccion = $direccion === '' ? null : $direccion;
 
 
 
+// Insercion del paciente y respuesta final.
 $insertar = $conexion->prepare("INSERT INTO Pacientes
                                   (cedula, nombre, apellido, fecha_nac, telefono, email, direccion)
                                 VALUES (?, ?, ?, ?, ?, ?, ?)");

@@ -1,5 +1,7 @@
+// utilidades.js - Funciones comunes de escape, formato y etiquetas.
 // Funciones compartidas entre las paginas
 
+// Escapa caracteres especiales para insertar texto seguro dentro del HTML.
 function escapar(valor) {
     if (valor == null) {
         return '';
@@ -21,6 +23,7 @@ function escapar(valor) {
 
 
 
+// Convierte una fecha/hora de MySQL (YYYY-MM-DD HH:mm:ss) a DD/MM/YYYY HH:mm.
 function formatearFechaHora(valor) {
     if (valor == null || valor == '') {
         return '—';
@@ -65,6 +68,7 @@ function formatearFechaHora(valor) {
 
 
 
+// Devuelve el nombre legible del tipo de elemento trasladado.
 function etiquetaElemento(tipo) {
     if (tipo == 'equipamiento_medico') {
         return 'Equipamiento médico';
@@ -101,6 +105,7 @@ function etiquetaElemento(tipo) {
 
 
 
+// Arma el texto descriptivo del elemento usando sus datos y su tipo.
 function textoElemento(traslado) {
     var partes = [];
 
@@ -133,6 +138,7 @@ function textoElemento(traslado) {
 
 
 
+// Devuelve la clase CSS que corresponde al estado del traslado.
 function claseEstado(estado) {
     if (estado == 'Pendiente') {
         return 'estado-pendiente';

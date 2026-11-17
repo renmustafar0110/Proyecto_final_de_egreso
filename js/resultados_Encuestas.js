@@ -1,3 +1,5 @@
+// resultados_Encuestas.js - Resultados de encuestas con graficos, filtros y exportacion.
+// Referencias a los controles de filtros y al contenedor de resultados.
 var selectEncuesta = document.getElementById('select-encuesta');
 var filtroDesde = document.getElementById('filtro-desde');
 var filtroHasta = document.getElementById('filtro-hasta');
@@ -11,6 +13,7 @@ var contenedor = document.getElementById('contenedor-resultados');
 
 
 
+// Ultimo resultado cargado (se usa para exportar) y colores de los graficos.
 var ultimoResultado = null;
 
 
@@ -19,6 +22,7 @@ var COLORES = ['#1e3a5f', '#2e7d32', '#f57f17', '#a12b2b', '#5a7a9a', '#7b1fa2',
 
 
 
+// Lee el id de la encuesta desde la URL.
 function obtenerIdUrl() {
     var parametros = new URLSearchParams(window.location.search);
     var id = parametros.get('id');
@@ -36,6 +40,7 @@ function obtenerIdUrl() {
 
 
 
+// Devuelve el nombre visible del tipo de pregunta.
 function etiquetaTipo(tipo) {
     if (tipo == 'multiple') {
         return 'Opción múltiple';
@@ -54,6 +59,7 @@ function etiquetaTipo(tipo) {
 
 
 
+// Carga el listado de encuestas en el select y, si hay id en la URL, muestra resultados.
 function cargarLista() {
     fetch('../php/encuestas.php?accion=listar')
         .then(function (respuesta) {
@@ -73,6 +79,7 @@ function cargarLista() {
 
 
 
+            // Se arma una opcion por encuesta con su cantidad de respuestas.
             for (var i = 0; i < encuestas.length; i++) {
                 html = html + '<option value="' + encuestas[i].id_encuesta + '">' +
                     escapar(encuestas[i].titulo) + ' (' + encuestas[i].total_respuestas + ' resp.)</option>';
@@ -98,6 +105,7 @@ function cargarLista() {
 
 
 // CU-07: URL de resultados con el filtro de fechas aplicado
+// Arma la URL de resultados con el filtro de fechas aplicado.
 function urlResultados(id) {
     var url = '../php/encuestas.php?accion=resultados&id=' + encodeURIComponent(id);
 
@@ -121,6 +129,7 @@ function urlResultados(id) {
 
 
 // Texto informativo del filtro activo (ej: "Filtro: 01/10/2026 a 31/10/2026")
+// Describe el rango de fechas activo para mostrarlo en pantalla.
 function textoFiltroActivo() {
     var desde = filtroDesde.value;
     var hasta = filtroHasta.value;
@@ -133,6 +142,7 @@ function textoFiltroActivo() {
 
 
 
+    // Convierte una fecha YYYY-MM-DD a DD/MM/YYYY para mostrarla en el texto.
     function legible(fecha) {
         var partes = fecha.split('-');
         return partes.length == 3 ? partes[2] + '/' + partes[1] + '/' + partes[0] : fecha;
@@ -157,6 +167,7 @@ function textoFiltroActivo() {
 
 
 
+// Pide los resultados de una encuesta y actualiza el resumen y las tarjetas.
 function cargarResultados(id) {
     if (id <= 0) {
         avisoResultados.textContent = 'Seleccione una encuesta para ver sus resultados.';
@@ -202,6 +213,7 @@ function cargarResultados(id) {
 
 
 
+// Dibuja una tarjeta por cada pregunta de la encuesta.
 function renderPreguntas(preguntas) {
     contenedor.innerHTML = '';
 
@@ -221,6 +233,7 @@ function renderPreguntas(preguntas) {
 
 
 
+// Crea la tarjeta de una pregunta con su grafico de barras y torta.
 function crearTarjetaPregunta(pregunta, indice) {
     var tarjeta = document.createElement('div');
     tarjeta.className = 'tarjeta-pregunta';
@@ -235,6 +248,7 @@ function crearTarjetaPregunta(pregunta, indice) {
 
 
 
+    // Las preguntas de texto libre se muestran como lista.
     if (pregunta.tipo == 'texto') {
         tarjeta.appendChild(crearListaTexto(pregunta.respuestas_texto));
         return tarjeta;
@@ -242,6 +256,7 @@ function crearTarjetaPregunta(pregunta, indice) {
 
 
 
+    // Para opcion multiple y escala se calculan los porcentajes.
     var resultados = pregunta.resultados || [];
     var total = 0;
 
@@ -303,6 +318,7 @@ function crearTarjetaPregunta(pregunta, indice) {
 
 
 
+    // La torta se dibuja despues de insertar el canvas en el DOM.
     setTimeout(function () {
         dibujarTorta(torta, resultados, total);
     }, 0);
@@ -314,6 +330,7 @@ function crearTarjetaPregunta(pregunta, indice) {
 
 
 
+// Crea la lista de respuestas para las preguntas de texto libre.
 function crearListaTexto(valores) {
     var contenedorTexto = document.createElement('div');
     contenedorTexto.className = 'respuestas-texto';
@@ -347,6 +364,7 @@ function crearListaTexto(valores) {
 
 
 
+// Dibuja en un canvas el grafico de torta de una pregunta.
 function dibujarTorta(lienzo, datos, total) {
     var contexto = lienzo.getContext('2d');
     var ancho = lienzo.width;
@@ -403,6 +421,7 @@ function dibujarTorta(lienzo, datos, total) {
 
 
 
+// Exporta los resultados actuales a un archivo CSV.
 function exportarCSV() {
     if (ultimoResultado == null) {
         alert('Seleccione una encuesta con resultados.');
@@ -411,6 +430,7 @@ function exportarCSV() {
 
 
 
+    // Cabecera del CSV y recorrido de todas las preguntas.
     var lineas = [];
     lineas.push(['Encuesta', 'Pregunta', 'Tipo', 'Opción', 'Cantidad', 'Porcentaje'].join(';'));
 
@@ -425,6 +445,7 @@ function exportarCSV() {
 
 
 
+        // Las respuestas de texto se exportan una por fila.
         if (pregunta.tipo == 'texto') {
             var valores = pregunta.respuestas_texto || [];
             for (var t = 0; t < valores.length; t++) {
@@ -442,6 +463,7 @@ function exportarCSV() {
 
 
 
+        // Las preguntas cerradas se exportan con cantidad y porcentaje.
         var resultados = pregunta.resultados || [];
         var total = 0;
 
@@ -471,6 +493,7 @@ function exportarCSV() {
 
 
 
+    // Se genera el archivo y se dispara la descarga.
     var contenido = '\uFEFF' + lineas.join('\r\n');
     var blob = new Blob([contenido], { type: 'text/csv;charset=utf-8;' });
     var enlace = document.createElement('a');
@@ -487,6 +510,7 @@ function exportarCSV() {
 
 
 
+// Escapa un valor para que pueda ir dentro de un CSV separado por punto y coma.
 function campoCSV(valor) {
     if (valor == null) {
         valor = '';
@@ -499,6 +523,7 @@ function campoCSV(valor) {
 
 
 
+// Eventos de filtros y exportacion.
 selectEncuesta.addEventListener('change', function () {
     cargarResultados(parseInt(selectEncuesta.value, 10) || 0);
 });
@@ -530,4 +555,5 @@ botonExportar.onclick = exportarCSV;
 
 
 
+// Al cargar la pagina se llena el selector de encuestas.
 cargarLista();

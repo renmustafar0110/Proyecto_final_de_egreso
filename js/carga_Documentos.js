@@ -1,3 +1,5 @@
+// carga_Documentos.js - Formulario de carga de documentos con vista previa y QR.
+// Referencias a los campos del formulario de carga.
 var archivo = document.getElementById('archivo');
 var nombre = document.getElementById('titulo');
 var categoria = document.getElementById('categoria');
@@ -9,6 +11,7 @@ var boton = document.getElementById('carga_Documento');
 
 
 
+// Referencias a la vista previa del archivo y a su URL temporal.
 var contenedorPreview = document.getElementById('preview-contenedor');
 var cajaPreview = document.getElementById('preview-documento');
 var infoPreview = document.getElementById('preview-info');
@@ -16,10 +19,12 @@ var urlPreview = null;
 
 
 
+// Tamano maximo permitido para el archivo (10 MB).
 var tamanoMaximo = 10 * 1024 * 1024; // 10 MB
 
 
 
+// URL publica del documento que se codifica dentro del QR.
 function construirUrlQR(idQr) {
     var base = new URL('../php/verDocumento.php', window.location.href);
     base.searchParams.set('qr', idQr);
@@ -28,6 +33,7 @@ function construirUrlQR(idQr) {
 
 
 
+// Crea el modal de QR una sola vez y lo agrega al documento.
 function crearModalQR() {
     if (document.getElementById('modal-qr')) {
         return;
@@ -70,6 +76,7 @@ function crearModalQR() {
 
 
 
+// Oculta el modal de QR.
 function cerrarModalQR() {
     var modal = document.getElementById('modal-qr');
     if (modal) {
@@ -79,6 +86,7 @@ function cerrarModalQR() {
 
 
 
+// Dibuja el QR en el modal y prepara la descarga en PNG.
 function generarQR(url) {
     var contenedor = document.getElementById('modal-qr-codigo');
     contenedor.innerHTML = '';
@@ -135,6 +143,7 @@ function generarQR(url) {
 
 
 
+// Muestra el modal de exito con el QR del documento recien cargado.
 function mostrarQRExitoso(mensaje, url) {
     crearModalQR();
 
@@ -153,6 +162,7 @@ function mostrarQRExitoso(mensaje, url) {
 
 
 
+// Intenta interpretar la respuesta del backend como JSON.
 function parsearRespuesta(texto) {
     try {
         return JSON.parse(texto);
@@ -163,6 +173,7 @@ function parsearRespuesta(texto) {
 
 
 
+// Libera la URL temporal y limpia la vista previa.
 function limpiarPreview() {
     if (urlPreview) {
         URL.revokeObjectURL(urlPreview);
@@ -178,12 +189,14 @@ function limpiarPreview() {
 
 
 
+// Convierte bytes a un texto legible en MB.
 function pesoLegible(bytes) {
     return (bytes / 1024 / 1024).toFixed(2) + ' MB';
 }
 
 
 
+// Muestra una vista previa del archivo seleccionado segun su tipo.
 function mostrarPreview() {
     if (contenedorPreview == null || cajaPreview == null) {
         return;
@@ -263,6 +276,7 @@ function mostrarPreview() {
 
 
 
+// Valida archivo, fecha y datos del paciente antes de enviar.
 function validarFormulario() {
 
     if (archivo.files.length == 0) {
@@ -331,6 +345,7 @@ function validarFormulario() {
 
 
 
+// Envia el documento al backend y muestra el QR si se registra bien.
 function enviarDocumento() {
 
     var datos = new FormData();
@@ -344,6 +359,7 @@ function enviarDocumento() {
 
 
 
+    // Se arma el formulario con el archivo y los datos del documento.
     fetch('../php/cargaDocumentos.php', {
         method: 'POST',
         body: datos
@@ -356,6 +372,7 @@ function enviarDocumento() {
 
 
 
+        // Si el registro fue correcto, se muestra el QR del documento.
         if (respuesta && respuesta.ok && respuesta.id_qr) {
             boton.form.reset();
             limpiarPreview();
@@ -375,10 +392,12 @@ function enviarDocumento() {
 
 
 
+// Eventos del formulario: vista previa al elegir archivo y envio al confirmar.
 archivo.addEventListener('change', mostrarPreview);
 
 
 
+// Antes de enviar se valida todo el formulario.
 boton.onclick = function (e) {
     e.preventDefault();
 

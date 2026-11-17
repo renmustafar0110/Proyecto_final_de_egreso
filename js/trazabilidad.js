@@ -3,32 +3,22 @@
 function cargarCochesDisponibles() {
     var selectCoche = document.getElementById('input-numero');
 
-
-
     // Si la pagina no tiene el select de coches, no se hace nada.
     if (selectCoche == null) {
         return Promise.resolve();
     }
 
-
-
     // Se piden las ambulancias y se listan solo las disponibles.
     return obtenerAmbulancias().then(function (ambulancias) {
         var opcionesCoches = '';
 
-
-
         for (var i = 0; i < ambulancias.length; i++) {
             var ambulancia = ambulancias[i];
-
-
 
             if (ambulancia.estado == 'Disponible') {
                 opcionesCoches = opcionesCoches + '<option value="' + escapar(ambulancia.numero_coche) + '">Coche ' + escapar(ambulancia.numero_coche) + '</option>';
             }
         }
-
-
 
         if (opcionesCoches == '') {
             selectCoche.innerHTML = '<option value="">No hay coches disponibles</option>';
@@ -38,34 +28,22 @@ function cargarCochesDisponibles() {
     });
 }
 
-
-
 // Lee el id del traslado a editar desde el parametro editar.
 function parametroDeEdicion() {
     var parametro = new URLSearchParams(window.location.search).get('editar');
-
-
 
     if (parametro == null || parametro == '') {
         return 0;
     }
 
-
-
     return parseInt(parametro, 10);
 }
-
-
 
 // Si se esta editando, se guarda el id del traslado.
 var idTrasladoAEditar = parametroDeEdicion();
 
-
-
 // Referencia al formulario de ordenar traslado.
 var formularioTraslado = document.getElementById('form-ordenar-traslado');
-
-
 
 // Envio del formulario: valida equipamiento y crea o edita el traslado.
 if (formularioTraslado) {
@@ -73,12 +51,8 @@ if (formularioTraslado) {
 
         evento.preventDefault();
 
-
-
         var tipoSelect = document.getElementById('input-elemento-tipo');
         var comboNivel = document.getElementById('input-tipo-equipamiento');
-
-
 
         // Si el elemento es equipamiento medico, el nivel SVB/SVA es obligatorio.
         if (tipoSelect && tipoSelect.value == 'equipamiento_medico') {
@@ -87,32 +61,22 @@ if (formularioTraslado) {
 
                 alert('Seleccione el nivel del equipamiento (SVB o SVA).');
 
-
-
                 if (comboNivel) {
                     comboNivel.focus();
                 }
-
-
 
                 return;
             }
         }
 
-
-
         // Se arman los datos del formulario.
         var datos = new FormData(formularioTraslado);
-
-
 
         // En modo edicion se agrega la accion y el id del traslado.
         if (idTrasladoAEditar > 0) {
             datos.append('accion', 'editar');
             datos.append('id_traslado', idTrasladoAEditar);
         }
-
-
 
         // Se envia la peticion al backend.
         fetch('../php/trazabilidad.php', {
@@ -131,26 +95,18 @@ if (formularioTraslado) {
                     return;
                 }
 
-
-
                 alert('Traslado #' + resultado.id_traslado + ' ordenado correctamente.');
                 formularioTraslado.reset();
                 actualizarCamposEquipamiento();
                 cargarCochesDisponibles();
 
-
-
                 // Se oculta y limpia el bloque de acompanante nuevo.
                 // Se oculta y limpia el bloque de acompañante nuevo
                 var grupoNuevo = document.getElementById('grupo-acompanante-nuevo');
 
-
-
                 if (grupoNuevo) {
                     grupoNuevo.style.display = 'none';
                     var camposNuevo = grupoNuevo.querySelectorAll('input');
-
-
 
                     for (var c = 0; c < camposNuevo.length; c++) {
                         camposNuevo[c].required = false;
@@ -173,46 +129,30 @@ if (formularioTraslado) {
     });
 }
 
-
-
 // Llena un select con personas (conductores, acompanantes o copilotos).
 function armarOpciones(lista, idSelect, campoId, textoInicial, textoVacio) {
     var select = document.getElementById(idSelect);
 
-
-
     if (select == null) {
         return;
     }
-
-
 
     if (!Array.isArray(lista) || lista.length == 0) {
         select.innerHTML = '<option value="">' + textoVacio + '</option>';
         return;
     }
 
-
-
     var html = '<option value="">' + textoInicial + '</option>';
-
-
 
     for (var i = 0; i < lista.length; i++) {
         var persona = lista[i];
-
-
 
         html = html + '<option value="' + escapar(persona[campoId]) + '">' +
             escapar(persona.nombre) + ' ' + escapar(persona.apellido) + '</option>';
     }
 
-
-
     select.innerHTML = html;
 }
-
-
 
 // Catalogo de equipamiento medico obligatorio por nivel (SVB y SVA).
 var EQUIPOS_POR_NIVEL = {
@@ -238,8 +178,6 @@ var EQUIPOS_POR_NIVEL = {
 
 };
 
-
-
 // Muestra los equipos que corresponden al nivel seleccionado.
 function renderizarEquiposNivel() {
 
@@ -248,19 +186,13 @@ function renderizarEquiposNivel() {
     var lista = document.getElementById('lista-equipos');
     var ocultos = document.getElementById('equipos-ocultos');
 
-
-
     if (!combo || !contenedor || !lista || !ocultos) {
         return;
     }
 
-
-
     // Se generan tanto la lista visible como los campos ocultos que se envian.
     var nivel = combo.value;
     var equipos = EQUIPOS_POR_NIVEL[nivel];
-
-
 
     if (!equipos) {
         lista.innerHTML = '';
@@ -269,33 +201,23 @@ function renderizarEquiposNivel() {
         return;
     }
 
-
-
     var htmlLista = '';
     var htmlOcultos = '';
-
-
 
     for (var i = 0; i < equipos.length; i++) {
 
         htmlLista = htmlLista + '<li>' + escapar(equipos[i].nombre) + '</li>';
-
-
 
         htmlOcultos = htmlOcultos + '<input type="hidden" name="equipos[]" value="' +
             escapar(equipos[i].codigo) + '">';
 
     }
 
-
-
     lista.innerHTML = htmlLista;
     ocultos.innerHTML = htmlOcultos;
     contenedor.style.display = '';
 
 }
-
-
 
 // Muestra u oculta el selector de nivel segun el tipo de elemento.
 function actualizarCamposEquipamiento() {
@@ -304,13 +226,9 @@ function actualizarCamposEquipamiento() {
     var campoNivel = document.getElementById('campo-tipo-equipamiento');
     var combo = document.getElementById('input-tipo-equipamiento');
 
-
-
     if (!tipoSelect || !campoNivel || !combo) {
         return;
     }
-
-
 
     if (tipoSelect.value == 'equipamiento_medico') {
         campoNivel.style.display = '';
@@ -319,13 +237,9 @@ function actualizarCamposEquipamiento() {
         combo.value = '';
     }
 
-
-
     renderizarEquiposNivel();
 
 }
-
-
 
 // Conecta los cambios de tipo y nivel de equipamiento.
 function configurarEquipamiento() {
@@ -333,24 +247,16 @@ function configurarEquipamiento() {
     var tipoSelect = document.getElementById('input-elemento-tipo');
     var combo = document.getElementById('input-tipo-equipamiento');
 
-
-
     if (!tipoSelect || !combo) {
         return;
     }
 
-
-
     tipoSelect.addEventListener('change', actualizarCamposEquipamiento);
     combo.addEventListener('change', renderizarEquiposNivel);
-
-
 
     actualizarCamposEquipamiento();
 
 }
-
-
 
 // Adapta las etiquetas y campos del elemento segun el tipo elegido.
 function configurarCamposElemento() {
@@ -365,41 +271,29 @@ function configurarCamposElemento() {
     var label3 = document.getElementById('label-elemento-dato3');
     var input3 = document.getElementById('input-elemento-dato3');
 
-
-
     if (!tipoSelect || !campo1 || !label1 || !input1 || !campo2 || !label2 || !input2 ||
         !campo3 || !label3 || !input3) {
         return;
     }
-
-
 
     // Ajusta las etiquetas y la obligatoriedad de los tres campos del elemento.
     function actualizar() {
         var tipo = tipoSelect.value;
         var esEquipamiento = (tipo == 'equipamiento_medico');
 
-
-
         campo1.style.display = esEquipamiento ? 'none' : '';
         campo2.style.display = esEquipamiento ? 'none' : '';
         campo3.style.display = esEquipamiento ? 'none' : '';
-
-
 
         if (esEquipamiento) {
             input1.required = false;
             input2.required = false;
             input3.required = false;
 
-
-
             input1.value = '';
             input2.value = '';
             input3.value = '';
         }
-
-
 
         // Etiquetas y campos para paciente biologico.
         if (tipo == 'paciente_biologico') {
@@ -407,13 +301,9 @@ function configurarCamposElemento() {
             input1.placeholder = 'Ej: Juan Pérez';
             input1.required = true;
 
-
-
             label2.textContent = 'Cédula:';
             input2.placeholder = 'Ej: 12345678';
             input2.required = true;
-
-
 
             label3.textContent = 'Diagnóstico / observaciones:';
             input3.placeholder = 'Ej: Politraumatismo';
@@ -424,13 +314,9 @@ function configurarCamposElemento() {
             input1.placeholder = 'Ej: Sangre';
             input1.required = true;
 
-
-
             label2.textContent = 'Código / identificación:';
             input2.placeholder = 'Ej: M-2025-00123';
             input2.required = true;
-
-
 
             label3.textContent = 'Conservación / observaciones:';
             input3.placeholder = 'Ej: Refrigerado a 4 °C';
@@ -442,13 +328,9 @@ function configurarCamposElemento() {
             input1.placeholder = 'Ej: Caja de guantes de nitrilo';
             input1.required = true;
 
-
-
             label2.textContent = 'Cantidad / detalle:';
             input2.placeholder = 'Ej: 10 unidades';
             input2.required = false;
-
-
 
             label3.textContent = 'Observaciones:';
             input3.placeholder = 'Opcional';
@@ -460,13 +342,9 @@ function configurarCamposElemento() {
             input1.placeholder = 'Ej: Elemento a trasladar';
             input1.required = true;
 
-
-
             label2.textContent = 'Detalle adicional:';
             input2.placeholder = 'Opcional';
             input2.required = false;
-
-
 
             label3.textContent = 'Observaciones:';
             input3.placeholder = 'Opcional';
@@ -474,13 +352,9 @@ function configurarCamposElemento() {
         }
     }
 
-
-
     tipoSelect.addEventListener('change', actualizar);
     actualizar();
 }
-
-
 
 // Pide una lista al backend y la carga en un select.
 function cargarOpciones(accion, idSelect, campoId, textoInicial, textoVacio, textoError) {
@@ -495,8 +369,6 @@ function cargarOpciones(accion, idSelect, campoId, textoInicial, textoVacio, tex
             armarOpciones([], idSelect, campoId, textoInicial, textoError);
         });
 }
-
-
 
 // Carga en paralelo conductores, acompanantes y copilotos.
 function cargarPersonal() {
@@ -516,8 +388,6 @@ function cargarPersonal() {
     ]);
 }
 
-
-
 // ---------------------------------------------------------------------
 // US-07: registro de un acompañante nuevo desde el formulario
 // ---------------------------------------------------------------------
@@ -525,17 +395,11 @@ function cargarPersonal() {
 function agregarOpcionAcompananteNuevo() {
     var select = document.getElementById('input-acompanante');
 
-
-
     if (select == null) {
         return;
     }
 
-
-
     var yaExiste = false;
-
-
 
     for (var i = 0; i < select.options.length; i++) {
         if (select.options[i].value == 'nuevo') {
@@ -543,8 +407,6 @@ function agregarOpcionAcompananteNuevo() {
             break;
         }
     }
-
-
 
     if (!yaExiste) {
         var opcion = document.createElement('option');
@@ -554,40 +416,26 @@ function agregarOpcionAcompananteNuevo() {
     }
 }
 
-
-
 // Muestra los campos del acompanante nuevo solo cuando se elige esa opcion.
 function configurarAcompananteNuevo() {
     var select = document.getElementById('input-acompanante');
     var grupo = document.getElementById('grupo-acompanante-nuevo');
 
-
-
     if (!select || !grupo) {
         return;
     }
-
-
 
     // Habilita/deshabilita y limpia los campos del acompanante nuevo.
     function actualizar() {
         var esNuevo = select.value == 'nuevo';
 
-
-
         grupo.style.display = esNuevo ? '' : 'none';
 
-
-
         var campos = grupo.querySelectorAll('input');
-
-
 
         for (var i = 0; i < campos.length; i++) {
             // El teléfono es opcional, el resto obligatorio (US-07)
             campos[i].required = esNuevo && campos[i].id != 'input-acompanante-telefono';
-
-
 
             if (!esNuevo) {
                 campos[i].value = '';
@@ -595,12 +443,8 @@ function configurarAcompananteNuevo() {
         }
     }
 
-
-
     select.addEventListener('change', actualizar);
 }
-
-
 
 // ---------------------------------------------------------------------
 // Modo edición (?editar=ID)
@@ -611,22 +455,14 @@ function paraDatetimeLocal(valor) {
         return '';
     }
 
-
-
     var limpio = String(valor).replace(' ', 'T');
-
-
 
     if (limpio.length > 16) {
         limpio = limpio.substring(0, 16);
     }
 
-
-
     return limpio;
 }
-
-
 
 // Carga un traslado existente y valida que todavia se pueda editar.
 function cargarTrasladoParaEditar(id) {
@@ -645,16 +481,12 @@ function cargarTrasladoParaEditar(id) {
                 return;
             }
 
-
-
             // Solo se pueden editar traslados en estado Pendiente.
             if (resultado.traslado.estado != 'Pendiente') {
                 alert('Este traslado ya está en curso: solo se pueden editar los traslados en estado Pendiente.');
                 window.location.href = 'gestion_Traslados.html?id=' + id;
                 return;
             }
-
-
 
             aplicarDatosAlFormulario(resultado.traslado);
         })
@@ -663,15 +495,11 @@ function cargarTrasladoParaEditar(id) {
         });
 }
 
-
-
 // Copia los datos del traslado en todos los campos del formulario.
 function aplicarDatosAlFormulario(traslado) {
     document.getElementById('titulo-trazabilidad').textContent = 'Editar Traslado #' + traslado.id_traslado;
     document.getElementById('btn-ordenar-traslado').textContent = 'Guardar Cambios';
     document.getElementById('btn-cancelar-edicion').style.display = '';
-
-
 
     // Tripulacion, acompanante y copiloto.
     document.getElementById('input-conductor').value =
@@ -679,11 +507,7 @@ function aplicarDatosAlFormulario(traslado) {
     document.getElementById('input-copiloto').value =
         traslado.copiloto_id != null ? String(traslado.copiloto_id) : '';
 
-
-
     var selectAcompanante = document.getElementById('input-acompanante');
-
-
 
     if (traslado.acompanante_id != null) {
         selectAcompanante.value = String(traslado.acompanante_id);
@@ -692,24 +516,16 @@ function aplicarDatosAlFormulario(traslado) {
         // se precargan sus datos como acompañante nuevo
         selectAcompanante.value = 'nuevo';
 
-
-
         document.getElementById('input-acompanante-nombre').value = traslado.acompanante_nombre || '';
         document.getElementById('input-acompanante-apellido').value = traslado.acompanante_apellido || '';
         document.getElementById('input-acompanante-cedula').value = traslado.acompanante_cedula || '';
         document.getElementById('input-acompanante-telefono').value = traslado.acompanante_telefono || '';
 
-
-
         var grupoNuevo = document.getElementById('grupo-acompanante-nuevo');
-
-
 
         if (grupoNuevo) {
             grupoNuevo.style.display = '';
             var camposNuevo = grupoNuevo.querySelectorAll('input');
-
-
 
             for (var c = 0; c < camposNuevo.length; c++) {
                 camposNuevo[c].required = camposNuevo[c].id != 'input-acompanante-telefono';
@@ -719,29 +535,19 @@ function aplicarDatosAlFormulario(traslado) {
         selectAcompanante.value = '';
     }
 
-
-
     // Tipo de elemento y equipamiento.
     document.getElementById('input-elemento-tipo').value =
         traslado.elemento_tipo != null ? traslado.elemento_tipo : 'paciente_biologico';
     configurarCamposElemento();
     actualizarCamposEquipamiento();
 
-
-
     var comboNivel = document.getElementById('input-tipo-equipamiento');
-
-
 
     if (comboNivel && traslado.tipo_equipamiento != null) {
         comboNivel.value = traslado.tipo_equipamiento;
     }
 
-
-
     renderizarEquiposNivel();
-
-
 
     // Datos del elemento, origen, destino y horarios.
     document.getElementById('input-elemento-dato1').value =
@@ -755,12 +561,8 @@ function aplicarDatosAlFormulario(traslado) {
     document.getElementById('input-destino').value =
         traslado.destino != null ? traslado.destino : '';
 
-
-
     document.getElementById('input-hora-salida').value = paraDatetimeLocal(traslado.hora_salida);
     document.getElementById('input-hora-llegada').value = paraDatetimeLocal(traslado.hora_llegada);
-
-
 
     // El coche ya asignado se agrega a la lista si no esta entre los disponibles.
     // El coche ya asignado no figura entre los disponibles: se agrega a la lista
@@ -769,16 +571,12 @@ function aplicarDatosAlFormulario(traslado) {
         var valorCoche = String(traslado.numero_coche);
         var cochePresente = false;
 
-
-
         for (var i = 0; i < selectCoche.options.length; i++) {
             if (selectCoche.options[i].value == valorCoche) {
                 cochePresente = true;
                 break;
             }
         }
-
-
 
         if (cochePresente == false) {
             var opcion = document.createElement('option');
@@ -787,20 +585,14 @@ function aplicarDatosAlFormulario(traslado) {
             selectCoche.appendChild(opcion);
         }
 
-
-
         selectCoche.value = valorCoche;
     }
 }
-
-
 
 // Se preparan los campos dinamicos y luego se cargan los catalogos.
 configurarCamposElemento();
 configurarEquipamiento();
 configurarAcompananteNuevo();
-
-
 
 // Si se esta editando, se espera a tener los catalogos para precargar el traslado.
 if (idTrasladoAEditar > 0) {
@@ -809,11 +601,7 @@ if (idTrasladoAEditar > 0) {
             cargarTrasladoParaEditar(idTrasladoAEditar);
         });
 
-
-
     var botonCancelar = document.getElementById('btn-cancelar-edicion');
-
-
 
     if (botonCancelar) {
         botonCancelar.onclick = function () {

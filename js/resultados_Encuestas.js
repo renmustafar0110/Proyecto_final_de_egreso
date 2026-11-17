@@ -11,34 +11,22 @@ var totalRespuestas = document.getElementById('total-respuestas');
 var filtroInfo = document.getElementById('filtro-info');
 var contenedor = document.getElementById('contenedor-resultados');
 
-
-
 // Ultimo resultado cargado (se usa para exportar) y colores de los graficos.
 var ultimoResultado = null;
 
-
-
 var COLORES = ['#1e3a5f', '#2e7d32', '#f57f17', '#a12b2b', '#5a7a9a', '#7b1fa2', '#00838f', '#c2185b'];
-
-
 
 // Lee el id de la encuesta desde la URL.
 function obtenerIdUrl() {
     var parametros = new URLSearchParams(window.location.search);
     var id = parametros.get('id');
 
-
-
     if (id == null) {
         return 0;
     }
 
-
-
     return parseInt(id, 10);
 }
-
-
 
 // Devuelve el nombre visible del tipo de pregunta.
 function etiquetaTipo(tipo) {
@@ -46,18 +34,12 @@ function etiquetaTipo(tipo) {
         return 'Opción múltiple';
     }
 
-
-
     if (tipo == 'escala') {
         return 'Escala 1 a 5';
     }
 
-
-
     return 'Texto libre';
 }
-
-
 
 // Carga el listado de encuestas en el select y, si hay id en la URL, muestra resultados.
 function cargarLista() {
@@ -73,11 +55,7 @@ function cargarLista() {
                 return;
             }
 
-
-
             var html = '<option value="">Seleccione una encuesta...</option>';
-
-
 
             // Se arma una opcion por encuesta con su cantidad de respuestas.
             for (var i = 0; i < encuestas.length; i++) {
@@ -85,11 +63,7 @@ function cargarLista() {
                     escapar(encuestas[i].titulo) + ' (' + encuestas[i].total_respuestas + ' resp.)</option>';
             }
 
-
-
             selectEncuesta.innerHTML = html;
-
-
 
             var id = obtenerIdUrl();
             if (id > 0) {
@@ -102,31 +76,21 @@ function cargarLista() {
         });
 }
 
-
-
 // CU-07: URL de resultados con el filtro de fechas aplicado
 // Arma la URL de resultados con el filtro de fechas aplicado.
 function urlResultados(id) {
     var url = '../php/encuestas.php?accion=resultados&id=' + encodeURIComponent(id);
 
-
-
     if (filtroDesde.value != '') {
         url = url + '&desde=' + encodeURIComponent(filtroDesde.value);
     }
-
-
 
     if (filtroHasta.value != '') {
         url = url + '&hasta=' + encodeURIComponent(filtroHasta.value);
     }
 
-
-
     return url;
 }
-
-
 
 // Texto informativo del filtro activo (ej: "Filtro: 01/10/2026 a 31/10/2026")
 // Describe el rango de fechas activo para mostrarlo en pantalla.
@@ -134,13 +98,9 @@ function textoFiltroActivo() {
     var desde = filtroDesde.value;
     var hasta = filtroHasta.value;
 
-
-
     if (desde == '' && hasta == '') {
         return '';
     }
-
-
 
     // Convierte una fecha YYYY-MM-DD a DD/MM/YYYY para mostrarla en el texto.
     function legible(fecha) {
@@ -148,24 +108,16 @@ function textoFiltroActivo() {
         return partes.length == 3 ? partes[2] + '/' + partes[1] + '/' + partes[0] : fecha;
     }
 
-
-
     if (desde != '' && hasta != '') {
         return 'Respuestas entre ' + legible(desde) + ' y ' + legible(hasta);
     }
-
-
 
     if (desde != '') {
         return 'Respuestas desde ' + legible(desde);
     }
 
-
-
     return 'Respuestas hasta ' + legible(hasta);
 }
-
-
 
 // Pide los resultados de una encuesta y actualiza el resumen y las tarjetas.
 function cargarResultados(id) {
@@ -177,8 +129,6 @@ function cargarResultados(id) {
         ultimoResultado = null;
         return;
     }
-
-
 
     fetch(urlResultados(id))
         .then(function (respuesta) {
@@ -193,15 +143,11 @@ function cargarResultados(id) {
                 return;
             }
 
-
-
             ultimoResultado = resultado;
             avisoResultados.style.display = 'none';
             resumen.style.display = 'block';
             totalRespuestas.textContent = resultado.total_respuestas;
             filtroInfo.textContent = textoFiltroActivo();
-
-
 
             renderPreguntas(resultado.preguntas);
         })
@@ -211,34 +157,24 @@ function cargarResultados(id) {
         });
 }
 
-
-
 // Dibuja una tarjeta por cada pregunta de la encuesta.
 function renderPreguntas(preguntas) {
     contenedor.innerHTML = '';
-
-
 
     if (!Array.isArray(preguntas) || preguntas.length == 0) {
         contenedor.innerHTML = '<p class="aviso">Esta encuesta no tiene preguntas.</p>';
         return;
     }
 
-
-
     for (var i = 0; i < preguntas.length; i++) {
         contenedor.appendChild(crearTarjetaPregunta(preguntas[i], i));
     }
 }
 
-
-
 // Crea la tarjeta de una pregunta con su grafico de barras y torta.
 function crearTarjetaPregunta(pregunta, indice) {
     var tarjeta = document.createElement('div');
     tarjeta.className = 'tarjeta-pregunta';
-
-
 
     var typeLabel = '<span class="tipo-badge">' + etiquetaTipo(pregunta.tipo) + '</span>';
     var encabezado = document.createElement('div');
@@ -246,49 +182,33 @@ function crearTarjetaPregunta(pregunta, indice) {
     encabezado.innerHTML = '<h3>' + (indice + 1) + '. ' + escapar(pregunta.texto) + '</h3>' + typeLabel;
     tarjeta.appendChild(encabezado);
 
-
-
     // Las preguntas de texto libre se muestran como lista.
     if (pregunta.tipo == 'texto') {
         tarjeta.appendChild(crearListaTexto(pregunta.respuestas_texto));
         return tarjeta;
     }
 
-
-
     // Para opcion multiple y escala se calculan los porcentajes.
     var resultados = pregunta.resultados || [];
     var total = 0;
-
-
 
     for (var i = 0; i < resultados.length; i++) {
         total = total + resultados[i].total;
     }
 
-
-
     var cuerpo = document.createElement('div');
     cuerpo.className = 'resultado-cuerpo';
 
-
-
     var barras = document.createElement('div');
     barras.className = 'barras';
-
-
 
     for (var j = 0; j < resultados.length; j++) {
         var dato = resultados[j];
         var porcentaje = 0;
 
-
-
         if (total > 0) {
             porcentaje = Math.round((dato.total / total) * 100);
         }
-
-
 
         var fila = document.createElement('div');
         fila.className = 'barra-fila';
@@ -300,11 +220,7 @@ function crearTarjetaPregunta(pregunta, indice) {
         barras.appendChild(fila);
     }
 
-
-
     cuerpo.appendChild(barras);
-
-
 
     var torta = document.createElement('canvas');
     torta.width = 180;
@@ -312,57 +228,37 @@ function crearTarjetaPregunta(pregunta, indice) {
     torta.className = 'grafico-torta';
     cuerpo.appendChild(torta);
 
-
-
     tarjeta.appendChild(cuerpo);
-
-
 
     // La torta se dibuja despues de insertar el canvas en el DOM.
     setTimeout(function () {
         dibujarTorta(torta, resultados, total);
     }, 0);
 
-
-
     return tarjeta;
 }
-
-
 
 // Crea la lista de respuestas para las preguntas de texto libre.
 function crearListaTexto(valores) {
     var contenedorTexto = document.createElement('div');
     contenedorTexto.className = 'respuestas-texto';
 
-
-
     if (!Array.isArray(valores) || valores.length == 0) {
         contenedorTexto.innerHTML = '<p class="aviso">Sin respuestas de texto.</p>';
         return contenedorTexto;
     }
 
-
-
     var lista = '<ul>';
-
-
 
     for (var i = 0; i < valores.length; i++) {
         lista = lista + '<li>' + escapar(valores[i]) + '</li>';
     }
 
-
-
     lista = lista + '</ul>';
     contenedorTexto.innerHTML = lista;
 
-
-
     return contenedorTexto;
 }
-
-
 
 // Dibuja en un canvas el grafico de torta de una pregunta.
 function dibujarTorta(lienzo, datos, total) {
@@ -373,11 +269,7 @@ function dibujarTorta(lienzo, datos, total) {
     var centroY = alto / 2;
     var radio = Math.min(centroX, centroY) - 6;
 
-
-
     contexto.clearRect(0, 0, ancho, alto);
-
-
 
     if (total <= 0) {
         contexto.fillStyle = '#d0dbe8';
@@ -387,17 +279,11 @@ function dibujarTorta(lienzo, datos, total) {
         return;
     }
 
-
-
     var anguloInicial = -Math.PI / 2;
-
-
 
     for (var i = 0; i < datos.length; i++) {
         var porcion = (datos[i].total / total) * Math.PI * 2;
         var anguloFinal = anguloInicial + porcion;
-
-
 
         contexto.beginPath();
         contexto.moveTo(centroX, centroY);
@@ -406,20 +292,14 @@ function dibujarTorta(lienzo, datos, total) {
         contexto.fillStyle = COLORES[i % COLORES.length];
         contexto.fill();
 
-
-
         anguloInicial = anguloFinal;
     }
-
-
 
     contexto.beginPath();
     contexto.arc(centroX, centroY, radio * 0.55, 0, Math.PI * 2);
     contexto.fillStyle = '#ffffff';
     contexto.fill();
 }
-
-
 
 // Exporta los resultados actuales a un archivo CSV.
 function exportarCSV() {
@@ -428,22 +308,14 @@ function exportarCSV() {
         return;
     }
 
-
-
     // Cabecera del CSV y recorrido de todas las preguntas.
     var lineas = [];
     lineas.push(['Encuesta', 'Pregunta', 'Tipo', 'Opción', 'Cantidad', 'Porcentaje'].join(';'));
 
-
-
     var preguntas = ultimoResultado.preguntas;
-
-
 
     for (var i = 0; i < preguntas.length; i++) {
         var pregunta = preguntas[i];
-
-
 
         // Las respuestas de texto se exportan una por fila.
         if (pregunta.tipo == 'texto') {
@@ -461,24 +333,16 @@ function exportarCSV() {
             continue;
         }
 
-
-
         // Las preguntas cerradas se exportan con cantidad y porcentaje.
         var resultados = pregunta.resultados || [];
         var total = 0;
-
-
 
         for (var k = 0; k < resultados.length; k++) {
             total = total + resultados[k].total;
         }
 
-
-
         for (var j = 0; j < resultados.length; j++) {
             var porcentaje = total > 0 ? Math.round((resultados[j].total / total) * 100) : 0;
-
-
 
             lineas.push([
                 campoCSV(ultimoResultado.encuesta.titulo),
@@ -491,14 +355,10 @@ function exportarCSV() {
         }
     }
 
-
-
     // Se genera el archivo y se dispara la descarga.
     var contenido = '\uFEFF' + lineas.join('\r\n');
     var blob = new Blob([contenido], { type: 'text/csv;charset=utf-8;' });
     var enlace = document.createElement('a');
-
-
 
     enlace.href = URL.createObjectURL(blob);
     enlace.download = 'resultados_encuesta_' + ultimoResultado.encuesta.id_encuesta + '.csv';
@@ -508,40 +368,28 @@ function exportarCSV() {
     URL.revokeObjectURL(enlace.href);
 }
 
-
-
 // Escapa un valor para que pueda ir dentro de un CSV separado por punto y coma.
 function campoCSV(valor) {
     if (valor == null) {
         valor = '';
     }
 
-
-
     return '"' + String(valor).replace(/"/g, '""') + '"';
 }
-
-
 
 // Eventos de filtros y exportacion.
 selectEncuesta.addEventListener('change', function () {
     cargarResultados(parseInt(selectEncuesta.value, 10) || 0);
 });
 
-
-
 // CU-07: al cambiar el rango de fechas se recargan los resultados filtrados
 filtroDesde.addEventListener('change', function () {
     cargarResultados(parseInt(selectEncuesta.value, 10) || 0);
 });
 
-
-
 filtroHasta.addEventListener('change', function () {
     cargarResultados(parseInt(selectEncuesta.value, 10) || 0);
 });
-
-
 
 botonLimpiarFiltro.onclick = function () {
     filtroDesde.value = '';
@@ -549,11 +397,7 @@ botonLimpiarFiltro.onclick = function () {
     cargarResultados(parseInt(selectEncuesta.value, 10) || 0);
 };
 
-
-
 botonExportar.onclick = exportarCSV;
-
-
 
 // Al cargar la pagina se llena el selector de encuestas.
 cargarLista();

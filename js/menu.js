@@ -6,37 +6,25 @@
     var panelesMenu = document.querySelectorAll('.menu-panel');
     var botonesCerrar = document.querySelectorAll('.menu-cerrar');
 
-
-
     // CU-01 / PRD 7.3: oculta los menús de módulos que el rol del
     // funcionario no tiene asignados (super_admin y "ambos" ven todo).
     function restringirMenuPorRol() {
 
         var rol = sessionStorage.getItem('rol') || localStorage.getItem('rol');
 
-
-
         if (!rol || rol == 'super_admin' || rol == 'ambos') {
             return;
         }
 
-
-
         var veDocumentos = (rol == 'admin_documentos');
         var veAmbulancias = (rol == 'admin_ambulancias');
-
-
 
         ocultarGrupo('menu-documentos', !veDocumentos);
         ocultarGrupo('menu-trazabilidad', !veAmbulancias);
         ocultarGrupo('menu-estadisticas', !veDocumentos);
 
-
-
         // Pantalla de elección de módulo (eleccion_Funcionario.html)
         var accesosModulos = document.querySelectorAll('ul.menu a');
-
-
 
         for (var i = 0; i < accesosModulos.length; i++) {
 
@@ -44,8 +32,6 @@
             var esModuloAmbulancias = (href.indexOf('trazabilidad.html') !== -1
                 || href.indexOf('panel_Traslados.html') !== -1
                 || href.indexOf('vistaPreviaT.html') !== -1);
-
-
 
             if (esModuloAmbulancias && !veAmbulancias) {
                 ocultarElemento(accesosModulos[i].parentNode);
@@ -57,8 +43,6 @@
 
     }
 
-
-
     // Oculta un elemento del DOM si existe.
     function ocultarElemento(elemento) {
 
@@ -68,8 +52,6 @@
 
     }
 
-
-
     // Oculta un panel del menu y su boton cuando el rol no tiene acceso.
     function ocultarGrupo(idPanel, ocultar) {
 
@@ -77,21 +59,13 @@
             return;
         }
 
-
-
         var panel = document.getElementById(idPanel);
-
-
 
         if (panel) {
             panel.style.display = 'none';
         }
 
-
-
         var boton = document.querySelector('.menu-btn[data-menu="' + idPanel + '"]');
-
-
 
         if (boton) {
             boton.style.display = 'none';
@@ -99,22 +73,16 @@
 
     }
 
-
-
     // Cierra todos los paneles y quita el estado activo de los botones.
     function cerrarPaneles() {
 
         var i;
-
-
 
         for (i = 0; i < panelesMenu.length; i++) {
 
             panelesMenu[i].classList.remove('abierto');
 
         }
-
-
 
         for (i = 0; i < botonesMenu.length; i++) {
 
@@ -124,28 +92,18 @@
 
     }
 
-
-
     // Abre el panel solicitado; si ya estaba abierto, lo cierra.
     function alternarPanel(boton) {
 
         var panel = document.getElementById(boton.getAttribute('data-menu'));
 
-
-
         if (!panel) {
             return;
         }
 
-
-
         var estabaAbierto = panel.classList.contains('abierto');
 
-
-
         cerrarPaneles();
-
-
 
         if (!estabaAbierto) {
 
@@ -155,8 +113,6 @@
         }
 
     }
-
-
 
     // Cierra la sesion en el servidor, limpia el navegador y vuelve al login.
     function cerrarSesion() {
@@ -168,40 +124,28 @@
                 sessionStorage.clear();
                 localStorage.clear();
 
-
-
                 window.location.replace('login_Funcionario.html');
 
             });
 
     }
 
-
-
     // Agrega la opcion Cerrar sesion al final de cada panel si hay sesion activa.
     function agregarBotonSalir() {
 
         var sesionActiva = sessionStorage.getItem('sesion') || localStorage.getItem('sesion');
 
-
-
         if (!sesionActiva) {
             return;
         }
-
-
 
         for (var i = 0; i < panelesMenu.length; i++) {
 
             var enlace = document.createElement('a');
 
-
-
             enlace.href = '#';
             enlace.className = 'menu-opcion';
             enlace.textContent = 'Cerrar sesión';
-
-
 
             enlace.onclick = function (evento) {
 
@@ -210,15 +154,11 @@
 
             };
 
-
-
             panelesMenu[i].appendChild(enlace);
 
         }
 
     }
-
-
 
     // Se conectan los botones del menu con la apertura/cierre de paneles.
     for (var i = 0; i < botonesMenu.length; i++) {
@@ -231,8 +171,6 @@
 
     }
 
-
-
     // Los botones de cierre cierran todos los paneles.
     for (var j = 0; j < botonesCerrar.length; j++) {
 
@@ -240,12 +178,8 @@
 
     }
 
-
-
     // Al cargar la pagina se aplican las restricciones por rol y el boton de salir.
     restringirMenuPorRol();
-
-
 
     agregarBotonSalir();
 

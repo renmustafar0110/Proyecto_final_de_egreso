@@ -5,8 +5,6 @@ var COORDENADAS_HOSPITAL = {
     longitud: -56.1913
 };
 
-
-
 // Coordenadas aproximadas de cada departamento usadas para dibujar las rutas.
 var COORDENADAS_DEPARTAMENTOS = {
     'Artigas': [-30.4000, -56.4667],
@@ -30,30 +28,20 @@ var COORDENADAS_DEPARTAMENTOS = {
     'Treinta y Tres': [-33.2333, -54.3833]
 };
 
-
-
 // Referencias globales al mapa y a la capa de marcadores de ambulancias.
 var mapa = null;
 var capaAmbulancias = null;
-
-
 
 // Ubica las ambulancias libres en una grilla alrededor del hospital.
 function calcularPosicion(indice) {
     var filas = Math.floor(indice / 3);
     var columna = indice % 3;
 
-
-
     var latitud = COORDENADAS_HOSPITAL.latitud + 0.003 + filas * 0.003;
     var longitud = COORDENADAS_HOSPITAL.longitud - 0.003 + columna * 0.003;
 
-
-
     return [latitud, longitud];
 }
-
-
 
 // Busca las coordenadas de un departamento por su nombre.
 function obtenerCoordenadasDestino(destino) {
@@ -61,22 +49,14 @@ function obtenerCoordenadasDestino(destino) {
         return null;
     }
 
-
-
     var clave = String(destino).trim();
-
-
 
     if (COORDENADAS_DEPARTAMENTOS[clave]) {
         return COORDENADAS_DEPARTAMENTOS[clave];
     }
 
-
-
     return null;
 }
-
-
 
 // Define que porcentaje del trayecto se pinta segun el estado del traslado.
 function factorDeEstado(estado) {
@@ -84,46 +64,30 @@ function factorDeEstado(estado) {
         return 0.35;
     }
 
-
-
     if (estado == 'En ruta') {
         return 0.6;
     }
-
-
 
     if (estado == 'Llegada a destino') {
         return 1;
     }
 
-
-
     if (estado == 'Retorno') {
         return 0.4;
     }
 
-
-
     return 0;
 }
-
-
 
 // Interpola la posicion de la ambulancia entre el hospital y el destino.
 function calcularPosicionEnRuta(origen, destino, estado) {
     var factor = factorDeEstado(estado);
 
-
-
     var latitud = origen[0] + (destino[0] - origen[0]) * factor;
     var longitud = origen[1] + (destino[1] - origen[1]) * factor;
 
-
-
     return [latitud, longitud];
 }
-
-
 
 // Escapa un texto para el popup o muestra un guion si esta vacio.
 function escaparTexto(valor) {
@@ -131,12 +95,8 @@ function escaparTexto(valor) {
         return '—';
     }
 
-
-
     return escapar(valor);
 }
-
-
 
 // Crea el icono personalizado del hospital.
 function crearIconoHospital() {
@@ -149,13 +109,9 @@ function crearIconoHospital() {
     });
 }
 
-
-
 // Crea el icono de la ambulancia con el color de su estado.
 function crearIconoAmbulancia(estado) {
     var clase = obtenerClaseDeEstado(estado);
-
-
 
     return L.divIcon({
         className: 'marcador-contenedor',
@@ -165,8 +121,6 @@ function crearIconoAmbulancia(estado) {
         popupAnchor: [0, -18]
     });
 }
-
-
 
 // Crea el icono del marcador de destino.
 function crearIconoDestino() {
@@ -179,14 +133,10 @@ function crearIconoDestino() {
     });
 }
 
-
-
 // Contenido del popup del marcador de destino.
 function armarContenidoDestino(ambulancia) {
     var destino = escaparTexto(ambulancia.destino);
     var coche = escaparTexto(ambulancia.numero_coche);
-
-
 
     return '<div class="popup-ambulancia">' +
         '<div class="popup-titulo">Destino: ' + destino + '</div>' +
@@ -194,58 +144,38 @@ function armarContenidoDestino(ambulancia) {
         '</div>';
 }
 
-
-
 // Contenido del popup de la ambulancia con ruta, horarios y estado.
 function armarContenidoPopup(ambulancia) {
     var origen = escaparTexto(ambulancia.origen);
     var destino = escaparTexto(ambulancia.destino);
     var ruta = origen + ' &rarr; ' + destino;
 
-
-
     var detalle = '';
-
-
 
     if (ambulancia.id_traslado) {
         var salida = escaparTexto(ambulancia.hora_salida);
         var llegada = escaparTexto(ambulancia.hora_llegada);
 
-
-
         if (salida == '—') {
             salida = '--';
         }
-
-
 
         if (llegada == '—') {
             llegada = '--';
         }
 
-
-
         detalle = '<div class="popup-detalle">' + ruta + '</div>' +
             '<div class="popup-detalle">Salida: ' + salida + ' &middot; Llegada: ' + llegada + '</div>';
     }
 
-
-
     var titulo = '<div class="popup-titulo">Coche ' + escaparTexto(ambulancia.numero_coche) + '</div>';
     var claseEstado = obtenerClaseDeEstado(ambulancia.estado);
-
-
 
     var estado = '<div class="popup-estado ' + claseEstado + '">' +
         escaparTexto(ambulancia.estado) + '</div>';
 
-
-
     return '<div class="popup-ambulancia">' + titulo + estado + detalle + '</div>';
 }
-
-
 
 // Redibuja el mapa: hospital, rutas, destinos y ambulancias.
 function dibujarAmbulancias(ambulancias) {
@@ -253,16 +183,10 @@ function dibujarAmbulancias(ambulancias) {
         return;
     }
 
-
-
     capaAmbulancias.clearLayers();
-
-
 
     var iconoHospital = crearIconoHospital();
     var origen = [COORDENADAS_HOSPITAL.latitud, COORDENADAS_HOSPITAL.longitud];
-
-
 
     L.marker(origen, {
         icon: iconoHospital,
@@ -272,24 +196,16 @@ function dibujarAmbulancias(ambulancias) {
         .bindPopup('<div class="popup-ambulancia"><div class="popup-titulo">Hospital de Cl&iacute;nicas</div>' +
             '<div class="popup-detalle">Punto de partida y retorno</div></div>');
 
-
-
     var libres = 0;
-
-
 
     for (var i = 0; i < ambulancias.length; i++) {
         var ambulancia = ambulancias[i];
         var posicion = null;
         var coordenadasDestino = null;
 
-
-
         if (ambulancia.id_traslado) {
             coordenadasDestino = obtenerCoordenadasDestino(ambulancia.destino);
         }
-
-
 
         if (coordenadasDestino != null) {
             L.polyline([origen, coordenadasDestino], {
@@ -299,13 +215,9 @@ function dibujarAmbulancias(ambulancias) {
                 dashArray: '6 8'
             }).addTo(capaAmbulancias);
 
-
-
             L.marker(coordenadasDestino, { icon: crearIconoDestino() })
                 .addTo(capaAmbulancias)
                 .bindPopup(armarContenidoDestino(ambulancia));
-
-
 
             posicion = calcularPosicionEnRuta(origen, coordenadasDestino, ambulancia.estado);
         } else {
@@ -313,59 +225,39 @@ function dibujarAmbulancias(ambulancias) {
             libres = libres + 1;
         }
 
-
-
         var icono = crearIconoAmbulancia(ambulancia.estado);
-
-
 
         L.marker(posicion, { icon: icono })
             .addTo(capaAmbulancias)
             .bindPopup(armarContenidoPopup(ambulancia));
     }
 
-
-
     ajustarVista();
 }
-
-
 
 // Ajusta el zoom para que se vean todos los marcadores del mapa.
 function ajustarVista() {
     var limites = capaAmbulancias.getBounds();
-
-
 
     if (limites.isValid()) {
         mapa.fitBounds(limites.pad(0.2), { maxZoom: 13 });
         return;
     }
 
-
-
     mapa.setView([COORDENADAS_HOSPITAL.latitud, COORDENADAS_HOSPITAL.longitud], 15);
 }
-
-
 
 // Inicializa Leaflet, carga las ambulancias y escucha el redimensionado.
 function iniciarMapa() {
     var contenedor = document.getElementById('mapa');
-
-
 
     if (typeof L == 'undefined') {
         if (contenedor) {
             contenedor.innerHTML = '<p class="mapa-placeholder">No se pudo cargar la librer&iacute;a del mapa. Verific&aacute; la conexi&oacute;n a internet.</p>';
         }
 
-
-
         return;
     }
-
-
 
     mapa = L.map('mapa', {
         center: [COORDENADAS_HOSPITAL.latitud, COORDENADAS_HOSPITAL.longitud],
@@ -373,31 +265,21 @@ function iniciarMapa() {
         scrollWheelZoom: true
     });
 
-
-
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; OpenStreetMap'
     }).addTo(mapa);
 
-
-
     capaAmbulancias = L.layerGroup().addTo(mapa);
-
-
 
     obtenerAmbulancias().then(function (ambulancias) {
         dibujarAmbulancias(ambulancias);
     });
 
-
-
     window.addEventListener('resize', function () {
         mapa.invalidateSize();
     });
 }
-
-
 
 // El mapa se inicia cuando el DOM esta listo.
 document.addEventListener('DOMContentLoaded', iniciarMapa);

@@ -9,18 +9,12 @@ function obtenerClaseDeEstado(estado) {
         'Finalizado': 'finalizado'
     };
 
-
-
     if (clases[estado]) {
         return clases[estado];
     }
 
-
-
     return '';
 }
-
-
 
 // Pide al backend el listado de ambulancias; ante un error devuelve una lista vacia.
 function obtenerAmbulancias() {

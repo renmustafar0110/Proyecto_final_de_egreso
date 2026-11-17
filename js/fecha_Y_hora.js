@@ -12,8 +12,6 @@ function actualizarReloj() {
     document.getElementById('reloj').textContent = texto;
 }
 
-
-
 // Arma la fecha larga actual y la escribe en el pie de pagina si existe.
 function actualizarFechaPie() {
     var ahora = new Date();
@@ -30,15 +28,9 @@ function actualizarFechaPie() {
     }
 }
 
-
-
 // Reloj activo: se actualiza cada segundo; la fecha se carga una sola vez.
 actualizarReloj();
 
-
-
 setInterval(actualizarReloj, 1000);
-
-
 
 actualizarFechaPie();

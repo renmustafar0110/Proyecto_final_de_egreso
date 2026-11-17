@@ -4,8 +4,6 @@
 // Se carga la conexion a la base.
 require_once 'conexion.php';
 
-
-
 // Pagina de error cuando el documento no existe o esta inactivo.
 function responderNoDisponible() {
     http_response_code(404);
@@ -31,8 +29,6 @@ function responderNoDisponible() {
     exit;
 }
 
-
-
 // Nombre visible de la categoria.
 function etiquetaCategoria($categoria) {
     $etiquetas = array(
@@ -43,35 +39,23 @@ function etiquetaCategoria($categoria) {
         'encuestas' => 'Encuestas'
     );
 
-
-
     if (isset($etiquetas[$categoria])) {
         return $etiquetas[$categoria];
     }
 
-
-
     return 'Documento';
 }
-
-
 
 // Convierte una fecha YYYY-MM-DD a DD/MM/YYYY.
 function formatearFecha($fecha) {
     $partes = explode('-', $fecha);
 
-
-
     if (count($partes) == 3) {
         return $partes[2] . '/' . $partes[1] . '/' . $partes[0];
     }
 
-
-
     return $fecha;
 }
-
-
 
 // Envia el PDF al navegador para verlo o descargarlo.
 function servirArchivo($rutaCompleta, $nombre) {
@@ -79,38 +63,26 @@ function servirArchivo($rutaCompleta, $nombre) {
     header('Content-Disposition: inline; filename="' . $nombre . '"');
     header('Content-Length: ' . filesize($rutaCompleta));
 
-
-
     readfile($rutaCompleta);
     exit;
 }
 
-
-
 // Se leen los parametros: archivo o id de QR.
 $archivo = '';
-
-
 
 if (isset($_GET['archivo'])) {
     $archivo = basename(trim($_GET['archivo']));
 }
-
-
 
 $idQr = 0;
 if (isset($_GET['qr'])) {
     $idQr = intval($_GET['qr']);
 }
 
-
-
 // Debe venir al menos uno de los dos parametros.
 if ($archivo == '' && $idQr <= 0) {
     responderNoDisponible();
 }
-
-
 
 // Se busca el documento por QR o por archivo.
 if ($idQr > 0) {
@@ -122,48 +94,32 @@ if ($idQr > 0) {
             FROM Documentos WHERE archivo = '$rutaBD'";
 }
 
-
-
 $resultado = $conexion->query($sql);
-
-
 
 // Si no existe se muestra la pagina de error.
 if (!$resultado || $resultado->num_rows == 0) {
     responderNoDisponible();
 }
 
-
-
 $documento = $resultado->fetch_assoc();
-
-
 
 // Los documentos inactivos no se muestran.
 if (intval($documento['estado']) != 1) {
     responderNoDisponible();
 }
 
-
-
 $archivo = basename($documento['archivo']);
 $rutaCompleta = __DIR__ . '/Documento/' . $archivo;
-
-
 
 // Tambien se controla que el archivo exista fisicamente.
 if (!is_file($rutaCompleta)) {
     responderNoDisponible();
 }
 
-
-
 // Si se pide el archivo crudo, se envia el PDF directamente.
 if (isset($_GET['raw'])) {
     servirArchivo($rutaCompleta, $archivo);
 }
-
-
 
 // Datos que se muestran en el visor HTML.
 $titulo = htmlspecialchars($documento['titulo_del_documento'], ENT_QUOTES, 'UTF-8');
@@ -171,30 +127,20 @@ $categoria = etiquetaCategoria($documento['categoria_del_documento']);
 $fecha = formatearFecha($documento['fecha_publicacion']);
 $urlArchivo = 'verDocumento.php?archivo=' . urlencode($archivo) . '&amp;raw=1';
 
-
-
 // US-04: encuesta activa asociada a este documento (si tiene alguna)
 $encuestaAsociada = null;
 
-
-
 if (!empty($documento['id_documento'])) {
     $idDocumento = intval($documento['id_documento']);
-
-
 
     $resultadoEncuesta = $conexion->query("SELECT id_encuesta, titulo FROM Encuestas_Formularios
                                            WHERE id_documento = $idDocumento AND estado = 1
                                            ORDER BY id_encuesta DESC LIMIT 1");
 
-
-
     if ($resultadoEncuesta && $resultadoEncuesta->num_rows > 0) {
         $encuestaAsociada = $resultadoEncuesta->fetch_assoc();
     }
 }
-
-
 
 // Deteccion simple de iPhone/iPad para avisar sobre la previsualizacion.
 $agente = '';
@@ -202,11 +148,7 @@ if (isset($_SERVER['HTTP_USER_AGENT'])) {
     $agente = $_SERVER['HTTP_USER_AGENT'];
 }
 
-
-
 $esIOS = (bool) preg_match('/iPad|iPhone|iPod/', $agente);
-
-
 
 // Se renderiza la pagina del visor.
 header('Content-Type: text/html; charset=utf-8');
@@ -225,13 +167,9 @@ header('Content-Type: text/html; charset=utf-8');
         <span class="categoria-badge"><?php echo $categoria; ?></span>
     </header>
 
-
-
     <main class="visor-main">
         <h1 class="titulo-documento"><?php echo $titulo; ?></h1>
         <p class="meta-documento">Publicado el <?php echo $fecha; ?></p>
-
-
 
         <div class="acciones">
             <a class="btn-abrir" href="<?php echo $urlArchivo; ?>" target="_blank" rel="noopener">Abrir documento</a>
@@ -249,8 +187,6 @@ header('Content-Type: text/html; charset=utf-8');
             <iframe src="<?php echo $urlArchivo; ?>" title="Documento PDF"></iframe>
         </div>
     </main>
-
-
 
     <footer class="visor-footer">
         &copy; Hospital de Clínicas

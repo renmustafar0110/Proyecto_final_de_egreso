@@ -16,8 +16,8 @@ evita confundir una con otra:
 |---|---|---|
 | Autenticación | SSO centralizado del hospital | Login propio con `password_hash` / `password_verify` contra `Funcionarios` y `Administradores` |
 | Sesiones | Token JWT del sistema central | Sesiones PHP nativas con `session_regenerate_id()` |
-| Transporte | HTTPS obligatorio | HTTP local en `http://192.168.1.3/proyecto/`; HTTPS se habilita en el despliegue del DTI |
-| Generación del QR | Server-side | En el navegador, con `js/qrcode.min.js`, usando `URL_BASE_QR` (definida en `php/conexion.php`). Cambiar solo ahí si cambia el IP o se usa dominio |
+| Transporte | HTTPS obligatorio | HTTP en la red local (por ejemplo, `http://10.36.238.189/proyecto/`); HTTPS se habilita en el despliegue del DTI |
+| Generación del QR | Server-side | En el navegador, con `js/qrcode.min.js`, usando `URL_BASE_QR` (calculada en `php/conexion.php` desde el host de la petición; se puede forzar con la variable de entorno `URL_BASE_QR`) |
 | Revocación del QR | Estado `activo` en la entidad QR | **`QR` no tiene columna `estado`**: se desactiva con `Documentos.estado = 0` (o `Encuestas_Formularios.estado = 0`) |
 | Roles | `admin_documentos`, `admin_ambulancias`, `super_admin` | Igual, definidos en `Funcionarios.rol` y validados con `requiereSesion()` (401/403) |
 | Datos de encuestas | Anónimos / seudonimizados | Cabecera sin datos personales del encuestado |

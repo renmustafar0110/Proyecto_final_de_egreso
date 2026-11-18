@@ -1,30 +1,23 @@
 <?php
 
-// login_Funcionario.php - Autentica a un funcionario y define su rol.
-// Se cargan la conexion y el helper de sesion.
 require_once 'conexion.php';
 require_once 'sesion.php';
 
-// La respuesta siempre sera JSON.
 header('Content-Type: application/json; charset=utf-8');
 
-// Datos recibidos del formulario de login.
 $cedula = isset($_POST['cedula']) ? trim($_POST['cedula']) : '';
 $password = isset($_POST['password']) ? $_POST['password'] : '';
 
-// Validacion de campos obligatorios.
 if ($cedula === '' || $password === '') {
     echo json_encode(array('ok' => false, 'mensaje' => 'Ingrese cédula y contraseña'));
     exit;
 }
 
-// Consulta preparada para buscar el funcionario por cedula.
 $consulta = "SELECT id_funcionario, cedula, nombre, apellido, cargo, password_hash, rol
              FROM Funcionarios
              WHERE cedula = ?
              LIMIT 1";
 
-// Se prepara y ejecuta la consulta.
 $stmt = $conexion->prepare($consulta);
 
 if (!$stmt) {
@@ -39,14 +32,11 @@ $stmt->bind_result($idUsuario, $cedulaBD, $nombre, $apellido, $cargo, $passwordH
 $encontrado = $stmt->fetch();
 $stmt->close();
 
-// Se verifica la contrasena con password_verify.
 if (!$encontrado || !password_verify($password, $passwordHash)) {
     echo json_encode(array('ok' => false, 'mensaje' => 'Cédula o contraseña incorrecta.'));
     exit;
 }
 
-// CU-01 / PRD 7.3: el rol se define por funcionario en la tabla Funcionarios
-// (admin_documentos, admin_ambulancias o ambos). Antes todos recibían ambos roles.
 $roles = array('admin_documentos', 'admin_ambulancias');
 
 if ($rolBD == 'admin_documentos') {
@@ -57,7 +47,6 @@ if ($rolBD == 'admin_documentos') {
     $rolBD = 'ambos';
 }
 
-// Datos del usuario que se guardan en la sesion.
 $usuario = array(
     'id_usuario' => intval($idUsuario),
     'cedula' => $cedulaBD,
@@ -69,7 +58,6 @@ $usuario = array(
     'tipo' => 'funcionario'
 );
 
-// Se regenera la sesion y se responde con el usuario autenticado.
 session_regenerate_id(true);
 
 $_SESSION['usuario'] = $usuario;

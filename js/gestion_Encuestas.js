@@ -1,27 +1,21 @@
-// gestion_Encuestas.js - Creacion, edicion y gestion de encuestas y sus QR.
-// Estado del formulario: lista de encuestas, contador de preguntas e id en edicion.
+
+
 var listaEncuestas = [];
 var contadorPreguntas = 0;
 var idEncuestaEnEdicion = 0;
 
-// Referencias a la lista de preguntas, al formulario y a la tabla.
 var listaPreguntas = document.getElementById('lista-preguntas');
 var botonAgregar = document.getElementById('btn-agregar-pregunta');
 var formulario = document.getElementById('form-encuesta');
 var tablaEncuestas = document.getElementById('tabla-encuestas');
 var avisoEncuestas = document.getElementById('aviso-encuestas');
 
-// URL publica que se codifica en el QR de una encuesta.
 function urlEncuesta(id) {
     var base = new URL('../php/responderEncuesta.php', window.location.href);
     base.searchParams.set('id', id);
     return base.href;
 }
 
-// ---------------------------------------------------------------------
-// Constructor de preguntas
-// ---------------------------------------------------------------------
-// Agrega un bloque de pregunta al formulario (o carga una existente en edicion).
 function crearPregunta(datos) {
     contadorPreguntas++;
 
@@ -29,7 +23,6 @@ function crearPregunta(datos) {
     bloque.className = 'pregunta-bloque';
     bloque.setAttribute('data-indice', contadorPreguntas);
 
-    // Se construye el HTML del bloque de pregunta.
     bloque.innerHTML = [
         '<div class="pregunta-cabecera">',
         '   <span class="pregunta-numero">Pregunta ' + contadorPreguntas + '</span>',
@@ -58,8 +51,6 @@ function crearPregunta(datos) {
     var tipo = bloque.querySelector('.pregunta-tipo');
     var campoOpciones = bloque.querySelector('.campo-opciones');
 
-    // Carga de una pregunta existente (modo edición)
-    // En modo edicion se precargan el enunciado, el tipo y las opciones.
     if (datos != null) {
         bloque.querySelector('.pregunta-texto').value = datos.texto != null ? datos.texto : '';
 
@@ -87,7 +78,6 @@ function crearPregunta(datos) {
     campoOpciones.style.display = (tipo.value == 'multiple') ? 'block' : 'none';
 }
 
-// Lee del formulario todas las preguntas y sus opciones.
 function recogerPreguntas() {
     var bloques = listaPreguntas.querySelectorAll('.pregunta-bloque');
     var preguntas = [];
@@ -98,7 +88,6 @@ function recogerPreguntas() {
         var tipo = bloque.querySelector('.pregunta-tipo').value;
         var opciones = [];
 
-        // Las opciones de opcion multiple vienen una por linea.
         if (tipo == 'multiple') {
             var lineas = bloque.querySelector('.pregunta-opciones').value.split('\n');
 
@@ -122,10 +111,6 @@ function recogerPreguntas() {
     return preguntas;
 }
 
-// ---------------------------------------------------------------------
-// Listado
-// ---------------------------------------------------------------------
-// Genera el HTML de una fila del listado de encuestas.
 function armarFila(encuesta) {
     var estadoActivo = encuesta.estado == 1;
     var textoEstado = estadoActivo ? 'Activa' : 'Inactiva';
@@ -133,7 +118,6 @@ function armarFila(encuesta) {
     var siguiente = estadoActivo ? 0 : 1;
     var textoBoton = estadoActivo ? 'Desactivar' : 'Activar';
 
-    // US-04: documento asociado (o encuesta independiente)
     var documentoAsociado = 'Independiente';
     if (encuesta.titulo_del_documento != null && encuesta.titulo_del_documento != '') {
         documentoAsociado = encuesta.titulo_del_documento;
@@ -156,7 +140,6 @@ function armarFila(encuesta) {
     return fila;
 }
 
-// Asigna el manejador a los botones de accion de las encuestas.
 function conectarBotones() {
     var botones = document.querySelectorAll('#tabla-encuestas [data-accion]');
 
@@ -165,7 +148,6 @@ function conectarBotones() {
     }
 }
 
-// Deriva la accion del boton (QR, estado, editar o eliminar).
 function manejarBoton() {
     var accion = this.getAttribute('data-accion');
     var id = this.getAttribute('data-id');
@@ -187,7 +169,6 @@ function manejarBoton() {
     }
 }
 
-// Busca una encuesta por id dentro de la lista cargada.
 function buscarEncuesta(id) {
     for (var i = 0; i < listaEncuestas.length; i++) {
         if (listaEncuestas[i].id_encuesta == id) {
@@ -198,7 +179,6 @@ function buscarEncuesta(id) {
     return null;
 }
 
-// Carga las encuestas desde el backend y redibuja la tabla.
 function renderizarLista() {
     fetch('../php/encuestas.php?accion=listar')
         .then(function (respuesta) {
@@ -235,10 +215,6 @@ function renderizarLista() {
         });
 }
 
-// ---------------------------------------------------------------------
-// Acciones
-// ---------------------------------------------------------------------
-// Envia datos al backend de encuestas y ejecuta el callback si todo sale bien.
 function enviar(datos, alTerminar, silenciarAlerta) {
     fetch('../php/encuestas.php', {
         method: 'POST',
@@ -265,7 +241,6 @@ function enviar(datos, alTerminar, silenciarAlerta) {
     });
 }
 
-// Activa o desactiva una encuesta con confirmacion.
 function cambiarEstado(id, estado) {
     var mensaje = '¿Activar esta encuesta? El QR volverá a funcionar.';
     if (estado == '0') {
@@ -284,7 +259,6 @@ function cambiarEstado(id, estado) {
     enviar(datos, renderizarLista);
 }
 
-// Elimina una encuesta y todas sus respuestas, con confirmacion.
 function eliminarEncuesta(id) {
     var encuesta = buscarEncuesta(id);
     var titulo = encuesta != null ? encuesta.titulo : '#' + id;
@@ -300,10 +274,6 @@ function eliminarEncuesta(id) {
     enviar(datos, renderizarLista);
 }
 
-// ---------------------------------------------------------------------
-// Edición
-// ---------------------------------------------------------------------
-// Carga el detalle de una encuesta para editarla en el formulario.
 function editarEncuesta(id) {
     fetch('../php/encuestas.php?accion=detalle&id=' + encodeURIComponent(id))
         .then(function (respuesta) {
@@ -322,7 +292,6 @@ function editarEncuesta(id) {
         });
 }
 
-// Vuelca la encuesta y sus preguntas en el formulario de edicion.
 function cargarFormularioEdicion(encuesta) {
     idEncuestaEnEdicion = encuesta.id_encuesta;
 
@@ -348,7 +317,6 @@ function cargarFormularioEdicion(encuesta) {
     formulario.scrollIntoView({ block: 'start' });
 }
 
-// Limpia el formulario y vuelve al modo de creacion.
 function volverAModoCrear() {
     idEncuestaEnEdicion = 0;
 
@@ -363,10 +331,6 @@ function volverAModoCrear() {
     document.getElementById('btn-cancelar-edicion').style.display = 'none';
 }
 
-// ---------------------------------------------------------------------
-// QR
-// ---------------------------------------------------------------------
-// Genera y muestra el QR de la encuesta seleccionada.
 function mostrarQR(id) {
     var url = urlEncuesta(id);
 
@@ -400,7 +364,6 @@ function mostrarQR(id) {
     }
 }
 
-// Eventos de cierre del modal de QR.
 document.getElementById('modal-qr-cerrar').onclick = function () {
     document.getElementById('modal-qr').style.display = 'none';
 };
@@ -411,15 +374,10 @@ document.getElementById('modal-qr').onclick = function (evento) {
     }
 };
 
-// ---------------------------------------------------------------------
-// Eventos
-// ---------------------------------------------------------------------
-// Eventos del formulario y del boton para agregar preguntas.
 botonAgregar.onclick = function () {
     crearPregunta();
 };
 
-// Validacion y envio del formulario de encuesta.
 formulario.addEventListener('submit', function (evento) {
     evento.preventDefault();
 
@@ -427,7 +385,6 @@ formulario.addEventListener('submit', function (evento) {
     var descripcion = document.getElementById('enc-descripcion').value.trim();
     var preguntas = recogerPreguntas();
 
-    // Validacion de titulo, preguntas y opciones.
     if (titulo == '') {
         alert('Ingrese el título de la encuesta.');
         return;
@@ -449,7 +406,6 @@ formulario.addEventListener('submit', function (evento) {
         }
     }
 
-    // Se arman los datos que se envian al backend.
     var datos = new FormData();
     var esEdicion = idEncuestaEnEdicion > 0;
 
@@ -464,7 +420,6 @@ formulario.addEventListener('submit', function (evento) {
     datos.append('id_documento', document.getElementById('enc-documento').value);
     datos.append('preguntas', JSON.stringify(preguntas));
 
-    // Al guardar, se vuelve al modo creacion y, si es nueva, se muestra el QR.
     enviar(datos, function (resultado) {
         volverAModoCrear();
         renderizarLista();
@@ -475,13 +430,8 @@ formulario.addEventListener('submit', function (evento) {
     }, esEdicion == false);
 });
 
-// El boton cancelar vuelve al modo creacion.
 document.getElementById('btn-cancelar-edicion').onclick = volverAModoCrear;
 
-// ---------------------------------------------------------------------
-// Documentos asociables (US-04)
-// ---------------------------------------------------------------------
-// Carga los documentos que se pueden asociar a la encuesta.
 function cargarDocumentos() {
     var select = document.getElementById('enc-documento');
 
@@ -517,7 +467,6 @@ function cargarDocumentos() {
         });
 }
 
-// Arranque de la pagina: primera pregunta, documentos y listado.
 crearPregunta();
 cargarDocumentos();
 renderizarLista();

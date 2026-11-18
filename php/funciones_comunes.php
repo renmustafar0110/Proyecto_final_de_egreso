@@ -1,12 +1,9 @@
 <?php
 
-// funciones_comunes.php - Helpers compartidos por varios endpoints.
-// Lee un campo POST y le quita espacios.
 function campoPost($clave) {
     return isset($_POST[$clave]) ? trim($_POST[$clave]) : '';
 }
 
-// Valida una fecha en formato YYYY-MM-DD.
 function fechaValida($fecha) {
     $partes = explode('-', $fecha);
 

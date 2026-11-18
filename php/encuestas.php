@@ -1,21 +1,16 @@
 <?php
 
-// encuestas.php - API de encuestas: listar, crear, editar, estado, resultados y eliminar.
-// Todas las respuestas son JSON.
 header('Content-Type: application/json; charset=utf-8');
 
-// Se cargan la conexion, la sesion y las funciones compartidas.
 require_once 'conexion.php';
 require_once 'sesion.php';
 require_once 'encuestas_comun.php';
 require_once __DIR__ . '/funciones_comunes.php';
 
-// Solo el personal de documentos puede gestionar encuestas.
 requiereSesion(array('admin_documentos', 'super_admin'));
 
 $tiposValidos = array('multiple', 'escala', 'texto');
 
-// Devuelve una respuesta JSON y termina.
 function responder($ok, $datos = array()) {
     echo json_encode(array_merge(array('ok' => $ok), $datos));
     exit;
@@ -23,10 +18,6 @@ function responder($ok, $datos = array()) {
 
 $metodo = $_SERVER['REQUEST_METHOD'];
 
-// ---------------------------------------------------------------------
-// GET
-// ---------------------------------------------------------------------
-// Peticiones GET: listados, detalle y resultados agregados.
 if ($metodo == 'GET') {
 
     $accion = 'listar';
@@ -34,8 +25,6 @@ if ($metodo == 'GET') {
         $accion = $_GET['accion'];
     }
 
-    // US-04: listado de encuestas con su cantidad de preguntas y respuestas
-    // Listado con totales de preguntas y respuestas.
     if ($accion == 'listar') {
         $encuestas = array();
 
@@ -64,8 +53,6 @@ if ($metodo == 'GET') {
         exit;
     }
 
-    // US-04: detalle de una encuesta con sus preguntas
-    // Detalle de una encuesta con sus preguntas.
     if ($accion == 'detalle') {
 
         $id = 0;
@@ -88,8 +75,6 @@ if ($metodo == 'GET') {
         responder(true, array('encuesta' => $encuesta));
     }
 
-    // US-06: resultados agregados para el dashboard (con filtro opcional por fecha)
-    // Resultados agregados con filtro opcional de fechas.
     if ($accion == 'resultados') {
 
         $id = 0;
@@ -101,7 +86,6 @@ if ($metodo == 'GET') {
             responder(false, array('mensaje' => 'Encuesta no válida'));
         }
 
-        // CU-07: filtro por rango de fechas de envío de las respuestas
         $desde = isset($_GET['desde']) ? trim($_GET['desde']) : '';
         $hasta = isset($_GET['hasta']) ? trim($_GET['hasta']) : '';
 
@@ -113,7 +97,6 @@ if ($metodo == 'GET') {
             responder(false, array('mensaje' => 'La fecha final no es válida'));
         }
 
-        // Se construye el filtro por rango de fechas.
         $filtroFechas = '';
 
         if ($desde != '') {
@@ -132,7 +115,6 @@ if ($metodo == 'GET') {
             responder(false, array('mensaje' => 'La encuesta no existe'));
         }
 
-        // Total de respuestas y conteo por pregunta.
         $totalRespuestas = 0;
         $resultadoTotal = $conexion->query("SELECT COUNT(*) AS total FROM Encuestas_Respuestas r
                                            WHERE r.id_encuesta = $id" . $filtroFechas);
@@ -143,11 +125,9 @@ if ($metodo == 'GET') {
 
         $preguntas = obtenerPreguntas($conexion, $id);
 
-        // Se agregan las respuestas segun el tipo de pregunta.
         foreach ($preguntas as $indice => $pregunta) {
             $idPregunta = intval($pregunta['id_pregunta']);
 
-            // Preguntas de texto: se devuelven todos los valores.
             if ($pregunta['tipo'] == 'texto') {
                 $valores = array();
                 $res = $conexion->query("SELECT d.valor FROM Encuestas_Respuesta_Detalle d
@@ -165,7 +145,6 @@ if ($metodo == 'GET') {
                 continue;
             }
 
-            // Preguntas cerradas: se cuentan las respuestas por valor.
             $conteos = array();
             $res = $conexion->query("SELECT d.valor, COUNT(*) AS total FROM Encuestas_Respuesta_Detalle d
                                      INNER JOIN Encuestas_Respuestas r ON r.id_respuesta = d.id_respuesta
@@ -178,7 +157,6 @@ if ($metodo == 'GET') {
                 }
             }
 
-            // Se arman las categorias esperadas (escala 1-5 u opciones).
             $categorias = array();
 
             if ($pregunta['tipo'] == 'escala') {
@@ -212,10 +190,6 @@ if ($metodo == 'GET') {
     responder(false, array('mensaje' => 'Acción no reconocida'));
 }
 
-// ---------------------------------------------------------------------
-// POST
-// ---------------------------------------------------------------------
-// Peticiones POST: crear, editar, cambiar estado y eliminar.
 if ($metodo != 'POST') {
     responder(false, array('mensaje' => 'Método no permitido'));
 }
@@ -225,8 +199,6 @@ if (isset($_POST['accion'])) {
     $accion = $_POST['accion'];
 }
 
-// US-04: crear encuesta con preguntas personalizables
-// Creacion de la encuesta y de sus preguntas.
 if ($accion == 'crear') {
 
     $datos = leerEncuestaValidada($tiposValidos);
@@ -234,8 +206,6 @@ if ($accion == 'crear') {
     $tituloEscapado = $conexion->real_escape_string($datos['titulo']);
     $descripcionEscapada = $conexion->real_escape_string($datos['descripcion']);
 
-    // US-04: la encuesta se asocia a un documento o es independiente
-    // Documento asociado (o NULL si es independiente).
     $idDocumento = documentoAsociado($conexion);
     $valorDocumento = $idDocumento > 0 ? $idDocumento : 'NULL';
 
@@ -249,7 +219,6 @@ if ($accion == 'crear') {
     $idEncuesta = ultimoIdInsertado($conexion);
     $orden = 0;
 
-    // Se inserta cada pregunta en el orden del formulario.
     foreach ($datos['preguntas'] as $pregunta) {
         $texto = $conexion->real_escape_string(trim($pregunta['texto']));
         $entidadTipo = $conexion->real_escape_string($pregunta['tipo']);
@@ -268,9 +237,6 @@ if ($accion == 'crear') {
     responder(true, array('mensaje' => 'Encuesta creada', 'id_encuesta' => $idEncuesta));
 }
 
-// US-04: editar una encuesta existente (título, descripción y preguntas).
-// Las preguntas que conservan su id se actualizan, las nuevas se agregan
-// y las que desaparecen del formulario se eliminan junto a sus respuestas.
 if ($accion == 'editar') {
 
     $id = 0;
@@ -293,11 +259,9 @@ if ($accion == 'editar') {
     $tituloEscapado = $conexion->real_escape_string($datos['titulo']);
     $descripcionEscapada = $conexion->real_escape_string($datos['descripcion']);
 
-    // US-04: la asociación al documento también se puede cambiar al editar
     $idDocumento = documentoAsociado($conexion);
     $valorDocumento = $idDocumento > 0 ? $idDocumento : 'NULL';
 
-    // La edicion se hace en una transaccion para no dejar datos a medias.
     $conexion->begin_transaction();
 
     if (!$conexion->query("UPDATE Encuestas_Formularios
@@ -307,7 +271,6 @@ if ($accion == 'editar') {
         responder(false, array('mensaje' => 'Falló la actualización: ' . $conexion->error));
     }
 
-    // Se comparan las preguntas existentes con las enviadas para saber cuales borrar.
     $existentes = array();
     $resultadoExistente = $conexion->query("SELECT id_pregunta FROM Encuestas_Preguntas
                                             WHERE id_encuesta = $id");
@@ -321,7 +284,6 @@ if ($accion == 'editar') {
     $conservadas = array();
     $orden = 0;
 
-    // Se actualizan las preguntas que conservan id y se insertan las nuevas.
     foreach ($datos['preguntas'] as $pregunta) {
         $texto = $conexion->real_escape_string(trim($pregunta['texto']));
         $entidadTipo = $conexion->real_escape_string($pregunta['tipo']);
@@ -362,11 +324,9 @@ if ($accion == 'editar') {
         }
     }
 
-    // Las preguntas que ya no estan en el formulario se eliminan con sus respuestas.
     if (count($eliminadas) > 0) {
         $listaEliminadas = implode(', ', $eliminadas);
 
-        // Primero se quitan las respuestas que dependen de esas preguntas
         $conexion->query("DELETE FROM Encuestas_Respuesta_Detalle
                           WHERE id_pregunta IN ($listaEliminadas)");
 
@@ -381,8 +341,6 @@ if ($accion == 'editar') {
     responder(true, array('mensaje' => 'Encuesta actualizada', 'id_encuesta' => $id));
 }
 
-// US-04: activar / desactivar encuesta (el QR deja de funcionar al desactivar)
-// Activar o desactivar una encuesta.
 if ($accion == 'estado') {
 
     $id = 0;
@@ -409,8 +367,6 @@ if ($accion == 'estado') {
     responder(false, array('mensaje' => 'Falló el cambio de estado: ' . $conexion->error));
 }
 
-// US-04: eliminar encuesta
-// Eliminar una encuesta.
 if ($accion == 'eliminar') {
 
     $id = 0;
@@ -431,12 +387,6 @@ if ($accion == 'eliminar') {
 
 responder(false, array('mensaje' => 'Acción no reconocida'));
 
-// ---------------------------------------------------------------------
-// Funciones auxiliares
-// ---------------------------------------------------------------------
-
-// Lee y valida los datos enviados por el formulario de encuesta.
-// Si algo falta o no es válido responde el error y detiene la ejecución.
 function leerEncuestaValidada($tiposValidos) {
     $titulo = '';
     if (isset($_POST['titulo'])) {
@@ -464,7 +414,6 @@ function leerEncuestaValidada($tiposValidos) {
         responder(false, array('mensaje' => 'Agregue al menos una pregunta'));
     }
 
-    // Validacion de cada pregunta y sus opciones.
     foreach ($preguntas as $pregunta) {
         $texto = isset($pregunta['texto']) ? trim($pregunta['texto']) : '';
         $tipo = isset($pregunta['tipo']) ? $pregunta['tipo'] : '';
@@ -495,8 +444,6 @@ function leerEncuestaValidada($tiposValidos) {
     return array('titulo' => $titulo, 'descripcion' => $descripcion, 'preguntas' => $preguntas);
 }
 
-// Devuelve la lista de opciones en JSON listo para la consulta,
-// o NULL cuando la pregunta no es de opción múltiple.
 function opcionesDePregunta($conexion, $pregunta) {
     if ($pregunta['tipo'] != 'multiple') {
         return 'NULL';
@@ -515,8 +462,6 @@ function opcionesDePregunta($conexion, $pregunta) {
     return "'" . $json . "'";
 }
 
-// US-04: lee y valida el documento asociado enviado por el formulario.
-// Devuelve 0 cuando la encuesta es independiente.
 function documentoAsociado($conexion) {
 
     $idDocumento = 0;
@@ -537,13 +482,10 @@ function documentoAsociado($conexion) {
     return $idDocumento;
 }
 
-// Valida una fecha simple en formato YYYY-MM-DD (filtro del dashboard US-06).
-// La implementacion esta en funciones_comunes.php.
 function fechaSimpleValida($fecha) {
     return fechaValida($fecha);
 }
 
-// Devuelve la encuesta con el titulo del documento asociado (o null).
 function obtenerEncuesta($conexion, $id) {
     $resultado = $conexion->query("SELECT e.id_encuesta, e.titulo, e.descripcion, e.estado, e.fecha_creacion,
                                           e.id_documento, d.titulo_del_documento

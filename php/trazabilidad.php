@@ -1,21 +1,15 @@
 <?php
 
-// trazabilidad.php - API de traslados, ambulancias y estados.
-// Todas las respuestas son JSON.
 header('Content-Type: application/json');
 
-// Se cargan la conexion y el control de sesion.
 require_once 'conexion.php';
 require_once 'sesion.php';
 require_once __DIR__ . '/funciones_comunes.php';
 
-// Solo el personal de ambulancias puede acceder.
 requiereSesion(array('admin_ambulancias', 'super_admin'));
 
-// US-08: orden de los estados (no se puede retroceder)
 $ordenEstados = array('Pendiente', 'En curso', 'En ruta', 'Llegada a destino', 'Retorno', 'Finalizado');
 
-// Peticiones GET: catalogos, panel, detalle y ambulancias.
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
     $accion = 'ambulancias';
@@ -23,7 +17,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         $accion = $_GET['accion'];
     }
 
-    // US-07: listado precargado de conductores
     if ($accion == 'conductores') {
         $conductores = array();
         $resultado = $conexion->query("SELECT id_conductor, cedula, nombre, apellido, telefono
@@ -40,7 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         exit;
     }
 
-    // Acompañantes registrados (los que todavía no están asignados a un traslado)
     if ($accion == 'acompanantes') {
         $acompanantes = array();
         $resultado = $conexion->query("SELECT id_acompanante AS id, nombre, apellido, cedula_acom AS cedula
@@ -58,7 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         exit;
     }
 
-    // Copilotos registrados (los que todavía no están asignados a un traslado)
     if ($accion == 'copilotos') {
         $copilotos = array();
         $resultado = $conexion->query("SELECT id_copiloto AS id, nombre_copiloto AS nombre,
@@ -77,7 +68,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         exit;
     }
 
-    // US-09: panel de control de traslados con filtros
     if ($accion == 'panel') {
 
         $estado = '';
@@ -90,7 +80,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             $fecha = trim($_GET['fecha']);
         }
 
-        // Consulta principal con los datos de tripulacion y vehiculo.
         $sql = "SELECT t.id_traslado, t.origen, t.destino,
                        t.hora_salida, t.hora_llegada, t.estado,
                        (SELECT te.fecha_cambio FROM Traslado_Estados te
@@ -109,7 +98,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
                 LEFT JOIN Ambulancias a ON a.id_traslado = t.id_traslado
                 WHERE 1 = 1";
 
-        // Filtros opcionales por estado y fecha.
         if ($estado != '') {
             $estadoEscapado = $conexion->real_escape_string($estado);
             $sql = $sql . " AND t.estado = '$estadoEscapado'";
@@ -120,7 +108,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             $sql = $sql . " AND DATE(t.hora_salida) = '$fechaEscapada'";
         }
 
-        // Los traslados activos van primero, los finalizados al final
         $sql = $sql . " ORDER BY (t.estado = 'Finalizado') ASC, t.hora_salida DESC, t.id_traslado DESC";
 
         $resultado = $conexion->query($sql);
@@ -137,7 +124,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         exit;
     }
 
-    // US-08: detalle de un traslado con su historial de estados
     if ($accion == 'detalle') {
 
         $id = 0;
@@ -182,7 +168,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
         $traslado = $resultado->fetch_assoc();
 
-        // Nivel del equipamiento médico cargado en el traslado (si tiene)
         $traslado['tipo_equipamiento'] = null;
 
         $resultadoEquipos = $conexion->query("SELECT tipo_equipamiento
@@ -195,7 +180,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             $traslado['tipo_equipamiento'] = $filaEquipo['tipo_equipamiento'];
         }
 
-        // Historial de cambios de estado.
         $historial = array();
         $resultadoHistorial = $conexion->query("SELECT estado, fecha_cambio
                                                 FROM Traslado_Estados
@@ -208,7 +192,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             }
         }
 
-        // Solo se ofrecen los estados posteriores al actual
         $estadosPermitidos = array();
         $indiceActual = array_search($traslado['estado'], $ordenEstados);
 
@@ -227,7 +210,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         exit;
     }
 
-    // Accion por defecto: listado de ambulancias y su traslado activo.
     $sql = "SELECT a.numero_coche, a.id_traslado,
                    t.origen, t.destino, t.hora_salida, t.hora_llegada, t.estado
             FROM Ambulancias a
@@ -253,13 +235,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     exit;
 }
 
-// Peticiones POST: actualizar estado, editar y eliminar traslados.
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     echo json_encode(array('ok' => false, 'error' => 'Método no permitido'));
     exit;
 }
 
-// US-08: actualizar el estado de un traslado
 $accionPost = '';
 if (isset($_POST['accion'])) {
     $accionPost = $_POST['accion'];
@@ -287,7 +267,6 @@ if ($accionPost == 'actualizar_estado') {
         exit;
     }
 
-    // Se valida que el nuevo estado sea posterior al actual.
     $resultado = $conexion->query("SELECT estado FROM Traslados WHERE id_traslado = $id");
 
     if (!$resultado || $resultado->num_rows == 0) {
@@ -301,7 +280,6 @@ if ($accionPost == 'actualizar_estado') {
     $indiceActual = array_search($estadoActual, $ordenEstados);
     $indiceNuevo = array_search($nuevoEstado, $ordenEstados);
 
-    // No se puede retroceder ni repetir el estado
     if ($indiceNuevo <= $indiceActual) {
         echo json_encode(array('ok' => false, 'error' => 'No se puede retroceder a un estado anterior'));
         exit;
@@ -309,13 +287,11 @@ if ($accionPost == 'actualizar_estado') {
 
     $nuevoEscapado = $conexion->real_escape_string($nuevoEstado);
 
-    // Se actualiza el estado y se guarda el cambio en el historial.
     if (!$conexion->query("UPDATE Traslados SET estado = '$nuevoEscapado' WHERE id_traslado = $id")) {
         echo json_encode(array('ok' => false, 'error' => $conexion->error));
         exit;
     }
 
-    // Se registra el cambio con su timestamp
     $conexion->query("INSERT INTO Traslado_Estados (id_traslado, estado, fecha_cambio)
                       VALUES ($id, '$nuevoEscapado', NOW())");
 
@@ -323,7 +299,6 @@ if ($accionPost == 'actualizar_estado') {
     exit;
 }
 
-// US-07: edición de un traslado. Solo aplica mientras siga en estado "Pendiente".
 if ($accionPost == 'editar') {
 
     $id = 0;
@@ -350,7 +325,6 @@ if ($accionPost == 'editar') {
         exit;
     }
 
-    // Se leen y validan los datos del formulario.
     $datos = leerDatosTraslado($conexion, $id);
 
     $origenEscapado = $conexion->real_escape_string($datos['origen']);
@@ -384,18 +358,15 @@ if ($accionPost == 'editar') {
         exit;
     }
 
-    // El acompañante y el copiloto se reemplazan por completo
     $conexion->query("DELETE FROM Acompanantes WHERE id_traslado = $id");
     $conexion->query("DELETE FROM Copilotos WHERE id_traslado = $id");
 
     guardarAcompanante($conexion, $datos, $id);
     guardarCopiloto($conexion, $datos, $id);
 
-    // El equipamiento también se reemplaza por completo
     $conexion->query("DELETE FROM Equipos WHERE id_traslado = $id");
     guardarEquipos($conexion, $datos, $id);
 
-    // La ambulancia anterior queda libre y se asigna la indicada
     $conexion->query("UPDATE Ambulancias SET id_traslado = NULL WHERE id_traslado = $id");
 
     $matriculaEscapada = $conexion->real_escape_string($datos['matricula']);
@@ -409,7 +380,6 @@ if ($accionPost == 'editar') {
     exit;
 }
 
-// US-07: eliminación de un traslado. Solo aplica mientras siga en estado "Pendiente".
 if ($accionPost == 'eliminar') {
 
     $id = 0;
@@ -436,7 +406,6 @@ if ($accionPost == 'eliminar') {
         exit;
     }
 
-    // Se libera la ambulancia y se borran los registros asociados
     $conexion->query("UPDATE Ambulancias SET id_traslado = NULL WHERE id_traslado = $id");
     $conexion->query("DELETE FROM Acompanantes WHERE id_traslado = $id");
     $conexion->query("DELETE FROM Copilotos WHERE id_traslado = $id");
@@ -452,7 +421,6 @@ if ($accionPost == 'eliminar') {
     exit;
 }
 
-// US-07: se leen y validan los datos del formulario para registrar el traslado
 $datos = leerDatosTraslado($conexion, 0);
 
 $origenEscapado = $conexion->real_escape_string($datos['origen']);
@@ -470,7 +438,6 @@ if ($datos['hora_llegada'] == '') {
     $valorLlegada = "'" . $conexion->real_escape_string($datos['hora_llegada']) . "'";
 }
 
-// Insercion del traslado en estado Pendiente.
 $sql = "INSERT INTO Traslados (hora_salida, hora_llegada, origen, destino, estado,
                               id_conductor, elemento_tipo, elemento_descripcion,
                               elemento_dato1, elemento_dato2, elemento_dato3)
@@ -483,21 +450,16 @@ if (!$conexion->query($sql)) {
     exit;
 }
 
-// Se obtiene el id y se registra el estado inicial.
 $idTraslado = ultimoIdInsertado($conexion);
 
-// US-08: registrar el estado inicial en el historial
 $conexion->query("INSERT INTO Traslado_Estados (id_traslado, estado, fecha_cambio)
                   VALUES ($idTraslado, 'Pendiente', NOW())");
 
-// Registrar acompañante y copiloto si se eligieron
 guardarAcompanante($conexion, $datos, $idTraslado);
 guardarCopiloto($conexion, $datos, $idTraslado);
 
-// Registrar el equipamiento médico según el nivel elegido (SVB o SVA)
 guardarEquipos($conexion, $datos, $idTraslado);
 
-// La ambulancia elegida queda ocupada por este traslado.
 $matriculaEscapada = $conexion->real_escape_string($datos['matricula']);
 
 $actualizar = "UPDATE Ambulancias SET id_traslado = $idTraslado
@@ -508,14 +470,8 @@ if (!$conexion->query($actualizar)) {
     exit;
 }
 
-// Se responde con el id del traslado creado.
 echo json_encode(array('ok' => true, 'id_traslado' => $idTraslado));
 
-// ---------------------------------------------------------------------
-// Funciones auxiliares
-// ---------------------------------------------------------------------
-
-// Inserta el acompanante del traslado (del catalogo o nuevo).
 function guardarAcompanante($conexion, $datos, $idTraslado) {
     if ($datos['acompanante'] === null) {
         return;
@@ -541,7 +497,6 @@ function guardarAcompanante($conexion, $datos, $idTraslado) {
     }
 }
 
-// Inserta el copiloto del traslado.
 function guardarCopiloto($conexion, $datos, $idTraslado) {
     if ($datos['copiloto'] === null) {
         return;
@@ -567,7 +522,6 @@ function guardarCopiloto($conexion, $datos, $idTraslado) {
     }
 }
 
-// Catálogo de equipamiento por nivel. Los ítems de cada nivel son obligatorios.
 function catalogoEquipos() {
 
     $svb = array(
@@ -588,7 +542,6 @@ function catalogoEquipos() {
     return array('SVB' => $svb, 'SVA' => $sva);
 }
 
-// Guarda una fila por cada ítem del nivel elegido en la tabla Equipos.
 function guardarEquipos($conexion, $datos, $idTraslado) {
 
     if ($datos['tipo_equipamiento'] == '' || count($datos['equipos']) == 0) {
@@ -605,7 +558,6 @@ function guardarEquipos($conexion, $datos, $idTraslado) {
 
     $nivel = $datos['tipo_equipamiento'];
 
-    // Se inserta una fila por cada equipo obligatorio del nivel.
     for ($i = 0; $i < count($datos['equipos']); $i++) {
 
         $codigo = $datos['equipos'][$i];
@@ -620,10 +572,6 @@ function guardarEquipos($conexion, $datos, $idTraslado) {
     $sentencia->close();
 }
 
-// Lee y valida los datos del formulario de traslado (US-07).
-// $idTrasladoReferencia es el traslado que se está editando (0 al crear):
-// así la ambulancia que ya tiene asignada no se considera ocupada.
-// Si algún dato falta o no es válido, responde el error y detiene la ejecución.
 function leerDatosTraslado($conexion, $idTrasladoReferencia) {
 
     $numero = campoPost('numero_coche');
@@ -632,14 +580,11 @@ function leerDatosTraslado($conexion, $idTrasladoReferencia) {
     $horaSalida = campoPost('hora_salida');
     $horaLlegada = campoPost('hora_llegada');
 
-    // Datos generales del traslado.
     $idConductor = intval(campoPost('id_conductor'));
     $acompananteNuevo = (campoPost('acompanante_id') === 'nuevo');
     $idAcompanante = $acompananteNuevo ? 0 : intval(campoPost('acompanante_id'));
     $idCopiloto = intval(campoPost('copiloto_id'));
 
-    // US-11: tipos de elemento trasladado (texto libre para insumos y otros)
-    // Tipos de elemento trasladado aceptados.
     $tiposValidos = array('paciente_biologico', 'equipamiento_medico', 'muestra_biologica', 'insumo', 'otro');
 
     $elementoTipo = campoPost('elemento_tipo');
@@ -651,8 +596,6 @@ function leerDatosTraslado($conexion, $idTrasladoReferencia) {
     $elementoDato2 = campoPost('elemento_dato2');
     $elementoDato3 = campoPost('elemento_dato3');
 
-    // El nivel del equipamiento solo aplica al traslado de equipamiento médico
-    // El nivel del equipamiento solo aplica al traslado de equipamiento medico.
     $tipoEquipamiento = strtoupper(campoPost('tipo_equipamiento'));
     $equipos = array();
 
@@ -665,12 +608,10 @@ function leerDatosTraslado($conexion, $idTrasladoReferencia) {
             exit;
         }
 
-        // Todos los ítems del nivel son obligatorios
         for ($i = 0; $i < count($catalogo[$tipoEquipamiento]); $i++) {
             $equipos[] = $catalogo[$tipoEquipamiento][$i]['codigo'];
         }
 
-        // El equipamiento no lleva nombre, N° de serie ni observaciones
         $elementoDato1 = '';
         $elementoDato2 = '';
         $elementoDato3 = '';
@@ -699,7 +640,6 @@ function leerDatosTraslado($conexion, $idTrasladoReferencia) {
     $numero = str_ireplace('coche', '', $numero);
     $numero = trim($numero);
 
-    // Validacion de campos obligatorios.
     if ($numero == '' || $origen == '' || $destino == '' || $horaSalida == '') {
         echo json_encode(array('ok' => false, 'error' => 'Debe completar todos los campos obligatorios'));
         exit;
@@ -710,8 +650,6 @@ function leerDatosTraslado($conexion, $idTrasladoReferencia) {
         exit;
     }
 
-    // Validacion del acompanante y del copiloto (salen del catalogo).
-    // Validación del acompañante y del copiloto (salen del catálogo de sus tablas)
     $datosCopiloto = null;
     $datosAcompanante = null;
     $cedulaConductor = '';
@@ -743,8 +681,7 @@ function leerDatosTraslado($conexion, $idTrasladoReferencia) {
             'telefono' => $filaAcompanante['telefono']
         );
     } elseif ($acompananteNuevo) {
-        // US-07: acompañante registrado con datos libres (nombre, apellido,
-        // cédula y teléfono opcional)
+
         $nombreAcompanante = campoPost('acompanante_nombre');
         $apellidoAcompanante = campoPost('acompanante_apellido');
         $cedulaAcompanante = campoPost('acompanante_cedula');
@@ -767,7 +704,6 @@ function leerDatosTraslado($conexion, $idTrasladoReferencia) {
 
         $cedulaAcompananteEscapada = $conexion->real_escape_string($cedulaAcompanante);
 
-        // Si ya hay un acompañante libre con esa cédula, se usa el catálogo
         $repetido = $conexion->query("SELECT id_acompanante FROM Acompanantes
                                      WHERE cedula_acom = '$cedulaAcompananteEscapada'
                                        AND id_traslado IS NULL
@@ -786,9 +722,6 @@ function leerDatosTraslado($conexion, $idTrasladoReferencia) {
         );
     }
 
-    // El acompanante no puede ser la misma persona que el conductor.
-    // El acompañante no puede ser la misma persona que el conductor
-    // (aplica al catálogo y al acompañante nuevo, US-07 / CU-08)
     if ($datosAcompanante !== null && $cedulaConductor != '' && $datosAcompanante['cedula'] == $cedulaConductor) {
         echo json_encode(array('ok' => false, 'error' => 'El acompañante no puede ser la misma persona que el conductor'));
         exit;
@@ -825,11 +758,9 @@ function leerDatosTraslado($conexion, $idTrasladoReferencia) {
         exit;
     }
 
-    // Validacion de los datos del elemento segun su tipo.
-    // Validación de los datos del elemento según su tipo (US-11)
     if ($elementoTipo != 'equipamiento_medico') {
         if ($elementoTipo == 'insumo' || $elementoTipo == 'otro') {
-            // Texto libre: solo se exige la descripción
+
             if ($elementoDato1 == '') {
                 echo json_encode(array('ok' => false, 'error' => 'Describa el elemento a trasladar'));
                 exit;
@@ -842,7 +773,6 @@ function leerDatosTraslado($conexion, $idTrasladoReferencia) {
 
     $numeroEscapado = $conexion->real_escape_string($numero);
 
-    // Se busca la ambulancia por numero de coche o matricula.
     $consulta = "SELECT a.matricula, a.id_traslado, t.estado
                  FROM Ambulancias a
                  LEFT JOIN Traslados t ON t.id_traslado = a.id_traslado
@@ -863,8 +793,6 @@ function leerDatosTraslado($conexion, $idTrasladoReferencia) {
         exit;
     }
 
-    // La ambulancia no puede tener otro traslado activo.
-    // La ambulancia no puede tener otro traslado activo (la propia no cuenta)
     $trasladoAsignado = 0;
     if ($ambulancia['id_traslado'] != null) {
         $trasladoAsignado = intval($ambulancia['id_traslado']);
@@ -880,7 +808,6 @@ function leerDatosTraslado($conexion, $idTrasladoReferencia) {
         exit;
     }
 
-    // Se devuelven los datos ya validados para guardarlos.
     return array(
         'matricula' => $ambulancia['matricula'],
         'origen' => $origen,

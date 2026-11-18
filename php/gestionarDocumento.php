@@ -1,21 +1,16 @@
 <?php
 
-// gestionarDocumento.php - Edita, activa/desactiva y elimina documentos.
-// Se cargan la conexion y el control de sesion.
 require_once 'conexion.php';
 require_once 'sesion.php';
 
-// Solo el personal de documentos puede gestionar.
 requiereSesion(array('admin_documentos', 'super_admin'));
 
-// Devuelve una respuesta JSON y termina la ejecucion.
 function responder($ok, $mensaje) {
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode(array('ok' => $ok, 'mensaje' => $mensaje));
     exit;
 }
 
-// Categorias aceptadas por el sistema.
 $categoriasValidas = array(
     'informacion_general',
     'indicaciones',
@@ -24,7 +19,6 @@ $categoriasValidas = array(
     'encuestas'
 );
 
-// Se leen la accion y el id del documento.
 $accion = '';
 if (isset($_POST['accion'])) {
     $accion = $_POST['accion'];
@@ -35,12 +29,10 @@ if (isset($_POST['id_documento'])) {
     $id = intval($_POST['id_documento']);
 }
 
-// Sin id valido no se puede operar.
 if ($id <= 0) {
     responder(false, 'Documento no válido');
 }
 
-// Edicion de titulo, categoria y fecha.
 if ($accion == 'editar') {
 
     $titulo = '';
@@ -58,7 +50,6 @@ if ($accion == 'editar') {
         $fecha = trim($_POST['fecha_publicacion']);
     }
 
-    // Validacion de los datos recibidos.
     if ($titulo == '') {
         responder(false, 'El título no puede quedar vacío');
     }
@@ -81,7 +72,6 @@ if ($accion == 'editar') {
         responder(false, 'La fecha no es válida');
     }
 
-    // Se escapan los datos y se actualiza el documento.
     $tituloEscapado = $conexion->real_escape_string($titulo);
     $categoriaEscapada = $conexion->real_escape_string($categoria);
     $fechaEscapada = $conexion->real_escape_string($fecha);
@@ -99,7 +89,6 @@ if ($accion == 'editar') {
     }
 }
 
-// Activacion o desactivacion del documento.
 if ($accion == 'estado') {
 
     $estado = 0;
@@ -125,7 +114,6 @@ if ($accion == 'estado') {
     responder(false, 'El documento no existe');
 }
 
-// Eliminacion del registro y del archivo PDF del servidor.
 if ($accion == 'eliminar') {
 
     $sql = "SELECT archivo, id_qr FROM Documentos WHERE id_documento = $id";
@@ -145,7 +133,6 @@ if ($accion == 'eliminar') {
         responder(false, 'Falló la eliminación: ' . $conexion->error);
     }
 
-    // El QR deja de existir junto con su documento (si tenia uno asociado).
     if ($idQr > 0) {
         $conexion->query("DELETE FROM QR WHERE id_qr = $idQr");
     }
@@ -160,5 +147,4 @@ if ($accion == 'eliminar') {
     responder(true, 'Documento eliminado');
 }
 
-// Si ninguna accion coincide, se informa el error.
 responder(false, 'Acción no reconocida');

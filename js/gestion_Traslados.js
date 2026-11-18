@@ -1,8 +1,7 @@
-// gestion_Traslados.js - Detalle de un traslado: estado, historial y acciones.
-// Id del traslado que se esta gestionando.
+
+
 var idTraslado = 0;
 
-// Referencias a los elementos del detalle y del formulario de estado.
 var avisoDetalle = document.getElementById('aviso-detalle');
 var contenido = document.getElementById('contenido-traslado');
 var formulario = document.getElementById('form-estado');
@@ -15,7 +14,6 @@ var avisoBloqueo = document.getElementById('aviso-bloqueo');
 var botonEditarTraslado = document.getElementById('btn-editar-traslado');
 var botonEliminarTraslado = document.getElementById('btn-eliminar-traslado');
 
-// Lee el id del traslado desde el parametro id de la URL.
 function obtenerIdDeLaUrl() {
     var parametros = new URLSearchParams(window.location.search);
     var id = parametros.get('id');
@@ -27,21 +25,19 @@ function obtenerIdDeLaUrl() {
     return parseInt(id, 10);
 }
 
-// Muestra un aviso de error y oculta el contenido del traslado.
 function mostrarAviso(mensaje) {
     avisoDetalle.textContent = mensaje;
     avisoDetalle.style.display = 'block';
     contenido.style.display = 'none';
 }
 
-// Obtiene del backend el traslado, su historial y los estados permitidos.
 function cargarDetalle() {
     fetch('../php/trazabilidad.php?accion=detalle&id=' + idTraslado)
         .then(function (respuesta) {
             return respuesta.json();
         })
         .then(function (resultado) {
-            // Si el backend devuelve error, se muestra el mensaje.
+
             if (resultado == null || resultado.ok != true) {
                 var mensaje = 'No se pudo cargar el traslado.';
                 if (resultado != null && resultado.error != null) {
@@ -51,7 +47,6 @@ function cargarDetalle() {
                 return;
             }
 
-            // Con los datos recibidos se dibujan las tres secciones de la pagina.
             avisoDetalle.style.display = 'none';
             contenido.style.display = 'block';
 
@@ -64,7 +59,6 @@ function cargarDetalle() {
         });
 }
 
-// Vuelca los datos del traslado en la ficha de detalle.
 function dibujarDetalle(traslado) {
     var conductor = 'Sin asignar';
 
@@ -92,7 +86,6 @@ function dibujarDetalle(traslado) {
 
     document.getElementById('titulo-traslado').textContent = 'Traslado #' + traslado.id_traslado;
 
-    // Editar / eliminar solo están disponibles mientras siga en estado "Pendiente"
     var editable = traslado.estado == 'Pendiente';
 
     accionesTraslado.style.display = editable ? 'flex' : 'none';
@@ -100,7 +93,6 @@ function dibujarDetalle(traslado) {
     botonEditarTraslado.setAttribute('href', 'trazabilidad.html?editar=' + traslado.id_traslado);
 }
 
-// Dibuja la linea de tiempo con los cambios de estado del traslado.
 function dibujarHistorial(historial) {
     var lista = document.getElementById('historial-estados');
     lista.innerHTML = '';
@@ -124,7 +116,6 @@ function dibujarHistorial(historial) {
     lista.innerHTML = html;
 }
 
-// Carga en el select solo los estados a los que se puede avanzar.
 function dibujarFormulario(estadosPermitidos) {
     selectEstado.innerHTML = '<option value="">Seleccione un estado...</option>';
 
@@ -147,7 +138,6 @@ function dibujarFormulario(estadosPermitidos) {
     }
 }
 
-// Actualizacion de estado desde el formulario.
 formulario.addEventListener('submit', function (evento) {
     evento.preventDefault();
 
@@ -156,7 +146,6 @@ formulario.addEventListener('submit', function (evento) {
         return;
     }
 
-    // Se envia la accion y el nuevo estado al backend.
     var datos = new FormData();
     datos.append('accion', 'actualizar_estado');
     datos.append('id_traslado', idTraslado);
@@ -186,7 +175,6 @@ formulario.addEventListener('submit', function (evento) {
         });
 });
 
-// Eliminacion del traslado con confirmacion previa.
 botonEliminarTraslado.onclick = function () {
     if (confirm('¿Eliminar el traslado #' + idTraslado + '?\nEsta acción no se puede deshacer.') == false) {
         return;
@@ -221,7 +209,6 @@ botonEliminarTraslado.onclick = function () {
         });
 };
 
-// Arranque: se valida el id y se carga el detalle del traslado.
 idTraslado = obtenerIdDeLaUrl();
 
 if (idTraslado <= 0) {

@@ -1,24 +1,18 @@
 <?php
 
-// registrarUsuario.php - Alta de funcionarios y pacientes desde el administrador.
-// Se cargan la conexion y el control de sesion.
 require_once 'conexion.php';
 require_once 'sesion.php';
 require_once __DIR__ . '/funciones_comunes.php';
 
-// Solo el super_admin puede crear usuarios.
 requiereSesion(array('super_admin'));
 
-// La respuesta siempre sera JSON.
 header('Content-Type: application/json; charset=utf-8');
 
-// Devuelve una respuesta JSON y termina.
 function responder($ok, $mensaje, $extra = array()) {
     echo json_encode(array_merge(array('ok' => $ok, 'mensaje' => $mensaje), $extra));
     exit;
 }
 
-// Se valida la accion y los datos comunes (cedula, nombre, apellido).
 $accion = campoPost('accion');
 
 if ($accion != 'funcionario' && $accion != 'paciente') {
@@ -29,7 +23,6 @@ $cedula = campoPost('cedula');
 $nombre = campoPost('nombre');
 $apellido = campoPost('apellido');
 
-// Validaciones comunes de cedula, nombre y apellido.
 if ($cedula === '') {
     responder(false, 'Ingrese la cédula');
 }
@@ -50,20 +43,14 @@ if (strlen($nombre) > 100 || strlen($apellido) > 100) {
     responder(false, 'El nombre y el apellido no pueden superar los 100 caracteres');
 }
 
-// ---------------------------------------------------------------------
-// Alta de funcionario
-// ---------------------------------------------------------------------
-// Alta de funcionario: cargo, contrasena, rol y roles opcionales.
 if ($accion == 'funcionario') {
 
-    // Datos propios del funcionario.
     $cargo = campoPost('cargo');
     $password = isset($_POST['password']) ? $_POST['password'] : '';
     $telefonoFuncionario = campoPost('telefono_funcionario');
     $esConductor = isset($_POST['es_conductor']) && $_POST['es_conductor'] === '1';
     $esCopiloto = isset($_POST['es_copiloto']) && $_POST['es_copiloto'] === '1';
 
-    // CU-01: rol del funcionario (ambos módulos por defecto)
     $rol = campoPost('rol');
 
     if ($rol === '') {
@@ -74,7 +61,6 @@ if ($accion == 'funcionario') {
         responder(false, 'Rol no válido');
     }
 
-    // Validaciones de cargo, contrasena y telefono.
     if ($cargo === '') {
         responder(false, 'Ingrese el cargo del funcionario');
     }
@@ -99,7 +85,6 @@ if ($accion == 'funcionario') {
         responder(false, 'El teléfono no puede superar los 20 caracteres');
     }
 
-    // Se controla que la cedula no este registrada.
     $consulta = $conexion->prepare("SELECT id_funcionario FROM Funcionarios WHERE cedula = ? LIMIT 1");
 
     if (!$consulta) {
@@ -117,13 +102,10 @@ if ($accion == 'funcionario') {
 
     $consulta->close();
 
-    // Se hashea la contrasena antes de guardarla.
     $hash = password_hash($password, PASSWORD_DEFAULT);
 
-    // La operacion es transaccional: funcionario + conductor/copiloto.
     $conexion->begin_transaction();
 
-    // id_funcionario = 0 para que el trigger de la base asigne el ID.
     $insertar = $conexion->prepare("INSERT INTO Funcionarios
                                       (id_funcionario, nombre, apellido, cargo, cedula, `password_hash`, rol)
                                     VALUES (0, ?, ?, ?, ?, ?, ?)");
@@ -147,7 +129,6 @@ if ($accion == 'funcionario') {
 
     $telefonoConductor = $telefonoFuncionario === '' ? null : $telefonoFuncionario;
 
-    // Alta opcional como conductor (la tabla Conductores tiene cédula única).
     if ($esConductor) {
 
         $insertarConductor = $conexion->prepare("INSERT INTO Conductores
@@ -176,7 +157,6 @@ if ($accion == 'funcionario') {
         $insertarConductor->close();
     }
 
-    // Alta opcional como copiloto. Se reutiliza la fila libre si ya existe.
     if ($esCopiloto) {
 
         $idCopiloto = 0;
@@ -244,7 +224,6 @@ if ($accion == 'funcionario') {
         }
     }
 
-    // Si todo salio bien, se confirma la transaccion.
     $conexion->commit();
 
     responder(true, 'Funcionario registrado correctamente', array(
@@ -256,16 +235,11 @@ if ($accion == 'funcionario') {
     ));
 }
 
-// ---------------------------------------------------------------------
-// Alta de paciente
-// ---------------------------------------------------------------------
-// Datos del paciente.
 $fechaNac = campoPost('fecha_nac');
 $telefono = campoPost('telefono');
 $email = campoPost('email');
 $direccion = campoPost('direccion');
 
-// Validaciones de fecha, telefono, email y direccion.
 if ($fechaNac !== '' && !fechaValida($fechaNac)) {
     responder(false, 'La fecha de nacimiento no es válida');
 }
@@ -290,7 +264,6 @@ if (strlen($direccion) > 200) {
     responder(false, 'La dirección no puede superar los 200 caracteres');
 }
 
-// Se controla que la cedula no exista.
 $consulta = $conexion->prepare("SELECT id_paciente FROM Pacientes WHERE cedula = ? LIMIT 1");
 
 if (!$consulta) {
@@ -308,13 +281,11 @@ if ($consulta->num_rows > 0) {
 
 $consulta->close();
 
-// Los campos opcionales vacios se guardan como NULL.
 $valorFecha = $fechaNac === '' ? null : $fechaNac;
 $valorTelefono = $telefono === '' ? null : $telefono;
 $valorEmail = $email === '' ? null : $email;
 $valorDireccion = $direccion === '' ? null : $direccion;
 
-// Insercion del paciente y respuesta final.
 $insertar = $conexion->prepare("INSERT INTO Pacientes
                                   (cedula, nombre, apellido, fecha_nac, telefono, email, direccion)
                                 VALUES (?, ?, ?, ?, ?, ?, ?)");

@@ -1,17 +1,13 @@
 <?php
 
-// sesion_paciente.php - Sesion y helpers para el portal del paciente.
-// Arranque de sesion para el paciente.
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Devuelve el paciente logueado o null.
 function sesionPaciente() {
     return isset($_SESSION['paciente']) ? $_SESSION['paciente'] : null;
 }
 
-// Responde error JSON y corta la ejecucion.
 function responderNoAutorizadoPaciente($codigo, $mensaje) {
     http_response_code($codigo);
     header('Content-Type: application/json; charset=utf-8');
@@ -19,7 +15,6 @@ function responderNoAutorizadoPaciente($codigo, $mensaje) {
     exit;
 }
 
-// Exige una sesion de paciente activa.
 function verificarSesionPaciente() {
     $paciente = sesionPaciente();
     if ($paciente === null) {
@@ -28,7 +23,6 @@ function verificarSesionPaciente() {
     return $paciente;
 }
 
-// Endpoint GET ?accion=info para consultar los datos del paciente logueado.
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['accion']) && $_GET['accion'] === 'info') {
     header('Content-Type: application/json; charset=utf-8');
     $paciente = sesionPaciente();

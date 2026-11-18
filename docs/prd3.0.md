@@ -257,7 +257,7 @@ Sistema para la gestión y seguimiento del transporte realizado mediante ambulan
 - **Paciente o elemento** a trasladar (paciente biológico, equipamiento médico u otros insumos)
 - **Copiloto o acompañante**
 - **Punto de origen** y **destino**
-- **Hora de salida**, **hora estimada de llegada** y **hora efectiva de llegada**
+- **Hora de salida**, **hora estimada de llegada** (columna `Traslados.hora_llegada`) y **hora efectiva de llegada** (se deriva del último registro de `Traslado_Estados` con estado `Llegada a destino`)
 
 El administrativo actualiza manualmente el estado de cada operación durante todo su ciclo (Pendiente, En curso, En ruta, Llegada a destino, Retorno, Finalizado) y cuenta con un panel de control con las ambulancias en circulación y los traslados en curso.
 
@@ -310,7 +310,7 @@ El administrativo actualiza manualmente el estado de cada operación durante tod
 
 *Criterios de aceptación:*
 - El campo "paciente o elemento" acepta texto libre
-- Se puede especificar tipo: paciente, equipamiento, insumo, otro
+- Se puede especificar tipo: paciente biológico, equipamiento médico, muestra biológica, insumo u otro
 
 ### 5.3. Casos de Uso
 
@@ -421,10 +421,10 @@ flowchart LR
 | **Encuestas_Preguntas** | id_pregunta (PK), id_encuesta (FK), texto, tipo, opciones, orden | Preguntas de una encuesta (`multiple`, `escala`, `texto`) |
 | **Encuestas_Respuestas** | id_respuesta (PK), id_encuesta (FK), fecha_envio | Cabecera de cada respuesta enviada por un paciente |
 | **Encuestas_Respuesta_Detalle** | id_detalle (PK), id_respuesta (FK), id_pregunta (FK), valor | Valor respondido para cada pregunta |
-| **Traslados** | id_traslado (PK), hora_salida, hora_llegada, origen, destino, km_recorridos, estado, id_conductor (FK), elemento_tipo, elemento_descripcion, elemento_dato1, elemento_dato2, elemento_dato3 | Registro principal de cada traslado en ambulancia |
+| **Traslados** | id_traslado (PK), hora_salida, hora_llegada, origen, destino, estado, id_conductor (FK), elemento_tipo, elemento_descripcion, elemento_dato1, elemento_dato2, elemento_dato3 | Registro principal de cada traslado en ambulancia |
 | **Conductores** | id_conductor (PK), id_funcionario (FK), cedula (UNIQUE), nombre, apellido, telefono | Catálogo de conductores habilitados para traslados |
 | **Ambulancias** | matricula (PK), numero_coche, id_traslado (FK) | Vehículos del hospital y el traslado que tienen asignado |
-| **Acompañantes** | id_acompanante (PK), cedula_acom, nombre, apellido, id_traslado (FK UNIQUE), telefono | Acompañante de un traslado (máximo uno por traslado) |
+| **Acompanantes** | id_acompanante (PK), cedula_acom, nombre, apellido, id_traslado (FK UNIQUE), telefono | Acompañante de un traslado (máximo uno por traslado). Nombre real de la tabla: `Acompanantes` (sin ñ) |
 | **Copilotos** | id_copiloto (PK), id_funcionario (FK), nombre_copiloto, apellido_copiloto, cedula, id_traslado (FK UNIQUE) | Copiloto de un traslado, elegido entre los funcionarios (máximo uno por traslado) |
 | **Equipos** | id_equipo (PK), tipo_equipamiento, tipo_equipo, id_traslado (FK) | Equipamiento médico incluido en un traslado |
 | **Traslado_Estados** | id_estado (PK), id_traslado (FK), estado, fecha_cambio | Historial de cambios de estado de cada traslado |
@@ -439,7 +439,7 @@ flowchart LR
 | actúa | Funcionarios - Copilotos | 1:N | Copilotos.id_funcionario | Un funcionario puede actuar como copiloto en varios traslados |
 | conduce | Conductores - Traslados | 1:N | Traslados.id_conductor | Un conductor puede realizar varios traslados |
 | asigna | Traslados - Ambulancias | 1:1 | Ambulancias.id_traslado | Un traslado tiene una ambulancia asignada |
-| lleva | Traslados - Acompañantes | 1:1 | Acompanantes.id_traslado (UNIQUE) | Un traslado puede llevar un acompañante |
+| lleva | Traslados - Acompanantes | 1:1 | Acompanantes.id_traslado (UNIQUE) | Un traslado puede llevar un acompañante |
 | lleva | Traslados - Copilotos | 1:1 | Copilotos.id_traslado (UNIQUE) | Un traslado puede llevar un copiloto |
 | incluye | Traslados - Equipos | 1:N | Equipos.id_traslado | Un traslado puede incluir varios equipos |
 | historial | Traslados - Traslado_Estados | 1:N | Traslado_Estados.id_traslado | Un traslado acumula un historial de estados |
@@ -451,6 +451,10 @@ flowchart LR
 
 `Administradores` es una tabla independiente: no tiene relaciones con el resto del
 modelo y se usa únicamente para autenticar al personal administrativo.
+
+> Nota de implementación: `Documentos.estado` y `Encuestas_Formularios.estado` son
+> `tinyint(1)` (`1` = activo, `0` = inactivo). La tabla `QR` no tiene columna
+> `estado`; un QR se revoca desactivando su documento o su encuesta asociada.
 
 ---
 

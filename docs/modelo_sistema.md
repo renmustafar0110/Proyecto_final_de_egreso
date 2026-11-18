@@ -60,7 +60,7 @@ Define el contexto del sistema, sus límites y las interacciones con el entorno 
 |---|---|---|
 | Funcionario | Personal administrativo del hospital | Gestiona documentos, ve traslados, crea encuestas |
 | Paciente | Usuario final de los servicios | Escanea QR, visualiza documentos, responde encuestas |
-| Transportista | Conductor/operador de ambulancia | Registra traslados y estados |
+| Transportista | Conductor/operador de ambulancia | Registra traslados y estados. En el prototipo estas operaciones las realiza el funcionario con rol `admin_ambulancias` |
 | Administrador DTI | Personal técnico del hospital | Mantiene el sistema en servidores del piso 6 |
 
 ### Limites del Sistema
@@ -79,7 +79,7 @@ Define el contexto del sistema, sus límites y las interacciones con el entorno 
 | E03 | Funcionario edita un documento | Funcionario | El sistema actualiza los metadatos del documento |
 | E04 | Funcionario elimina un documento | Funcionario | El sistema marca el documento como inactivo |
 | E05 | Se inicia un traslado | Transportista | El sistema registra hora de salida, origen y destino |
-| E06 | Finaliza un traslado | Transportista | El sistema registra hora de llegada y kilometraje |
+| E06 | Finaliza un traslado | Transportista | El sistema registra la hora efectiva en `Traslado_Estados` al pasar a "Llegada a destino" |
 | E07 | Paciente responde encuesta | Paciente | El sistema almacena la respuesta y actualiza graficos |
 | E08 | Funcionario crea encuesta | Funcionario | El sistema agrega la encuesta al modulo correspondiente |
 | E09 | Funcionario inicia sesion | Funcionario | El sistema valida credenciales y redirige al panel |
@@ -130,20 +130,22 @@ Describe como responde el sistema ante los eventos, expresado mediante diagramas
 ### Diagrama de Estados - Documento
 
 ```
-[Estado: Borrador] --> [Estado: Activo] --> [Estado: Inactivo]
-       ^                    |
-       |                    v
-       +--- (editar) ---[Estado: Archivado]
+[Activo (estado = 1)] --> [Inactivo (estado = 0)]
+         ^                        |
+         +------ (reactivar) -----+
 ```
+
+La columna real es `Documentos.estado` (`tinyint(1)`). No existen los estados
+"Borrador" ni "Archivado". Al desactivar el documento, su QR deja de funcionar.
 
 ### Diagrama de Estados - Traslado
 
 ```
-[Pendiente] --> [En Curso] --> [Finalizado]
-                    |
-                    v
-              [Cancelado]
+[Pendiente] --> [En curso] --> [En ruta] --> [Llegada a destino] --> [Retorno] --> [Finalizado]
 ```
+
+El orden es estricto: no se puede retroceder y no existe el estado "Cancelado".
+Cada cambio se graba en `Traslado_Estados` con `fecha_cambio = NOW()`.
 
 ---
 
@@ -163,53 +165,52 @@ Describe como responde el sistema ante los eventos, expresado mediante diagramas
 | - telefono       |          | - password_hash   |
 | - email          |          | - rol             |
 | - direccion      |          +-------------------+
-| - direccion      |                   | 1
-+------------------+                   |
++------------------+                   | 1
         | 1                            | N
         |                    +-------------------+
         | N                  |   Conductores     |
 +------------------+          +-------------------+
 |   QR             |          | - id_conductor: PK|
 +------------------+          | - id_funcionario  |
-| - id_qr: PK      |          | - cedula: UNIQUE  |
-| - cedula         |          | - nombre          |
+| - id_qr: PK      |          | - cedula          |
+| - cedula: FK     |          | - nombre          |
 | - url            |          | - apellido        |
 +------------------+          | - telefono        |
         | 1                   +-------------------+
         |                              | 1
-        | N                            |
-+------------------+                   | N
-|   Documentos     |          +-------------------+
-+------------------+          |   Traslados       |
-| - id_documento   |          +-------------------+
-| - id_qr: FK      |          | - id_traslado: PK |
-| - nom_doc        |          | - hora_salida     |
-| - nom_pac        |          | - hora_llegada    |
-| - cedula         |          | - origen          |
-| - titulo_del_doc |          | - destino         |
-| - archivo        |          | - km_recorridos   |
-| - fecha_public.  |          | - estado          |
-| - categoria      |          | - id_conductor:FK |
-| - estado         |          | - elemento_tipo   |
-+------------------+          | - elemento_dato1  |
-                              | - elemento_dato2  |
-                              | - elemento_dato3  |
-                              +-------------------+
-                                 | 1      | 1      | 1
-                                 |        |        |
-                                 | N      | 1      | 1
-                    +------------+  +-----+-----+  +------------------+
-                    |               |             |                  |
-              +-----------+   +-----------+  +-----------+   +-------------+
-              |  Equipos  |   |Ambulancias|  |Acompanant.|   |  Copilotos  |
-              +-----------+   +-----------+  +-----------+   +-------------+
-              | id_equipo |   | matricula |  | id_acomp. |   | id_copiloto |
-              | tipo_equip|   | numero_co.|  | cedula_ac.|   | id_funcion. |
-              | tipo_equipo|  | id_trasl. |  | nombre    |   | nombre_cop. |
-              | id_trasl. |   +-----------+  | apellido  |   | apellido_c. |
-              +-----------+                  | telefono  |   | cedula      |
-                                             | id_trasl. |   | id_trasl.   |
-                                             +-----------+   +-------------+
+        | N                            | N
++--------------------------+           | N
+|   Documentos             |          +-------------------+
++--------------------------+          |   Traslados       |
+| - id_documento: PK       |          +-------------------+
+| - id_qr: FK              |          | - id_traslado: PK |
+| - nom_doc                |          | - hora_salida     |
+| - nom_pac                |          | - hora_llegada (*)|
+| - cedula                 |          | - origen          |
+| - titulo_del_documento   |          | - destino         |
+| - archivo                |          | - estado          |
+| - fecha_publicacion      |          | - id_conductor:FK |
+| - categoria_del_documento|          | - elemento_tipo   |
+| - estado (1/0)           |          | - elemento_descr. |
++--------------------------+          | - elemento_dato1  |
+                                      | - elemento_dato2  |
+                                      | - elemento_dato3  |
+                                      +-------------------+
+                                         | 1     | 1     | 1
+                                         |       |       |
+                                         | N     | 1     | 1
+                    +------------+  +-----------+  +------------------+
+                    |            |  |           |  |                  |
+              +-----------+ +-----------+ +-------------+ +-------------+
+              |  Equipos  | |Ambulancias| |Acompanantes| |  Copilotos  |
+              +-----------+ +-----------+ +-------------+ +-------------+
+              | id_equipo | | matricula | |id_acompañ.| | id_copiloto |
+              |tipo_equipa.| |num_coche | |cedula_acom| | id_funcion. |
+              |tipo_equipo| | id_trasl. | | nombre    | |nombre_copil.|
+              | id_trasl. | +-----------+ | apellido  | |apellido_cop.|
+              +-----------+               | telefono  | | cedula      |
+                                          | id_trasl. | | id_trasl.   |
+                                          +-----------+ +-------------+
 
 +------------------+          +-----------------------+
 |   Traslados      |          |   Traslado_Estados    |
@@ -255,6 +256,8 @@ Describe como responde el sistema ante los eventos, expresado mediante diagramas
 +-------------------------+
 ```
 
+(*) `Traslados.hora_llegada` guarda la hora **estimada**. La hora **efectiva** se obtiene del último registro de `Traslado_Estados` con estado `Llegada a destino`.
+
 > La tabla `Funcionarios_carga_Documentos` fue eliminada por no tener uso en el
 > sistema. Las antiguas tablas `Encuestas` y `Respuestas` se reemplazaron por el
 > esquema normalizado `Encuestas_Formularios`, `Encuestas_Preguntas`,
@@ -262,6 +265,10 @@ Describe como responde el sistema ante los eventos, expresado mediante diagramas
 > incorpora el atributo `rol` (módulos a los que accede cada funcionario) y
 > `Encuestas_Formularios` la FK `id_documento` para asociar una encuesta a un
 > documento.
+>
+> La tabla `QR` **no tiene columna `estado`**. La revocación del acceso se hace
+> con `Documentos.estado = 0` (y con `Encuestas_Formularios.estado = 0` en el
+> caso de los QR de encuestas). `1` = activo, `0` = inactivo.
 
 ### Diagrama de Secuencia - Carga de Documento
 
@@ -315,8 +322,8 @@ Transportista ---> [Sistema] ---> [BD: Traslados]
 +--------------------------------------------------+
                     | SQL
 +--------------------------------------------------+
-|  Base de Datos (MySQL/PostgreSQL)                |
-|  (12 tablas segun MER)                           |
+|  Base de Datos (MySQL)                           |
+|  (16 tablas segun MER)                           |
 +--------------------------------------------------+
 ```
 

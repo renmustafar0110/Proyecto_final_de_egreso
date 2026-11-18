@@ -6,6 +6,24 @@ Basado en el Documento de Requisitos de Producto (PRD 3.0 / PRD 2.0).
 
 ---
 
+## 0. Estado de implementación (objetivo vs. prototipo)
+
+Las políticas de este documento describen la **arquitectura objetivo** definida en el
+PRD 3.0. La versión que hoy corre en XAMPP es el **prototipo funcional**. Esta tabla
+evita confundir una con otra:
+
+| Política / mecanismo | Objetivo del PRD | Implementación actual del prototipo |
+|---|---|---|
+| Autenticación | SSO centralizado del hospital | Login propio con `password_hash` / `password_verify` contra `Funcionarios` y `Administradores` |
+| Sesiones | Token JWT del sistema central | Sesiones PHP nativas con `session_regenerate_id()` |
+| Transporte | HTTPS obligatorio | HTTP local en `http://192.168.1.100/proyecto/`; HTTPS se habilita en el despliegue del DTI |
+| Generación del QR | Server-side | En el navegador, con `js/qrcode.min.js`, usando la URL pública configurada en `cargaDocumentos.php` |
+| Revocación del QR | Estado `activo` en la entidad QR | **`QR` no tiene columna `estado`**: se desactiva con `Documentos.estado = 0` (o `Encuestas_Formularios.estado = 0`) |
+| Roles | `admin_documentos`, `admin_ambulancias`, `super_admin` | Igual, definidos en `Funcionarios.rol` y validados con `requiereSesion()` (401/403) |
+| Datos de encuestas | Anónimos / seudonimizados | Cabecera sin datos personales del encuestado |
+
+---
+
 ## 1. Políticas de Seguridad
 
 ### 1.1. Política de Autenticación y Acceso
@@ -29,7 +47,7 @@ Basado en el Documento de Requisitos de Producto (PRD 3.0 / PRD 2.0).
 
 - Los documentos públicos vía QR se consideran de **información general, sin datos personales sensibles**.
 - El acceso por QR habilita únicamente lectura del documento, nunca el listado del repositorio ni la descarga de otros documentos.
-- Si un documento es desactivado, su QR deja de funcionar (estado `activo` en la entidad QR).
+- Si un documento es desactivado, su QR deja de funcionar (`Documentos.estado = 0`). La tabla `QR` no tiene columna `estado`.
 - La gestión de documentos (cargar, editar, eliminar) está restringida a funcionarios autenticados con rol `admin_documentos`.
 
 ### 1.4. Política de Privacidad de Datos
@@ -69,7 +87,7 @@ Al almacenar respuestas de forma anónima/seudonimizada se reduce el impacto de 
 El transporte cifrado protege la confidencialidad e integridad de la información durante la transmisión, previniendo interceptación y manipulación.
 
 ### 2.6. Desactivación de QR
-La capacidad de desactivar un QR (estado `activo`) permite revocar el acceso de forma inmediata ante documentos obsoletos o comprometidos.
+La capacidad de desactivar un documento (`Documentos.estado = 0`) permite revocar el acceso de forma inmediata ante documentos obsoletos o comprometidos.
 
 ### 2.7. Control de documentos sensibles
 Al restringir los documentos públicos a información general y sin datos personales, se mitiga el riesgo de exposición de datos clínicos sensibles.
@@ -88,7 +106,7 @@ El registro de cambios de estado con *timestamp* permite auditar la operación d
 | A03 | Interceptación de comunicaciones | Captura de credenciales o datos en tránsito (man-in-the-middle) | Medio | HTTPS obligatorio en todos los endpoints, JWT con expiración |
 | A04 | Ataques de fuerza bruta al login | Intentos repetidos de adivinar credenciales contra el sistema | Medio | Validación delegada al sistema central (SSO), políticas de bloqueo del sistema central |
 | A05 | Pérdida o corrupción de datos | Falla del servidor, desastre físico o error de base de datos | Alto | Backup diario, plan de contingencia DTI, persistencia transaccional |
-| A06 | Suplantación de QR / phishing | QR malicioso que dirige a un sitio falso o documento adulterado | Medio | QRs generados server-side con URL oficial, validación de documento activo |
+| A06 | Suplantación de QR / phishing | QR malicioso que dirige a un sitio falso o documento adulterado | Medio | QRs con la URL oficial del servidor del hospital (objetivo: generarlos server-side) y validación de documento activo |
 | A07 | Exposición de datos de encuestas | Acceso indebido a respuestas de pacientes | Medio | Almacenamiento anónimo/seudonimizado, acceso restringido al dashboard |
 | A08 | Inyección de código (SQL/XSS) | Manipulación de formularios para comprometer la base o el cliente | Medio | Backend con API REST validando entradas, uso de consultas parametrizadas, escape de salidas |
 | A09 | Manipulación de estados de traslados | Cambio no autorizado o retroceso de estados operativos | Medio | Solo usuarios autenticados con rol `admin_ambulancias`, registro con timestamp, sin retroceder estados |

@@ -159,8 +159,8 @@ if (!$conexion->query($sqlQr)) {
 $idQr = ultimoIdInsertado($conexion);
 
 // Direccion del servidor donde quedara publicado el QR.
-$ip = '192.168.1.100';
-$urlQr = 'http://' . $ip . '/proyecto/php/verDocumento.php?qr=' . $idQr;
+// La base se define una sola vez en conexion.php (URL_BASE_QR).
+$urlQr = URL_BASE_QR . '/php/verDocumento.php?qr=' . $idQr;
 $urlQrEscapada = $conexion->real_escape_string($urlQr);
 
 $conexion->query("UPDATE QR SET url = '$urlQrEscapada' WHERE id_qr = $idQr");

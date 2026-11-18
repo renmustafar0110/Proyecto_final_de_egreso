@@ -128,7 +128,7 @@ if ($accion == 'estado') {
 // Eliminacion del registro y del archivo PDF del servidor.
 if ($accion == 'eliminar') {
 
-    $sql = "SELECT archivo FROM Documentos WHERE id_documento = $id";
+    $sql = "SELECT archivo, id_qr FROM Documentos WHERE id_documento = $id";
     $resultado = $conexion->query($sql);
 
     if (!$resultado || $resultado->num_rows == 0) {
@@ -137,11 +137,17 @@ if ($accion == 'eliminar') {
 
     $fila = $resultado->fetch_assoc();
     $rutaArchivo = $fila['archivo'];
+    $idQr = intval($fila['id_qr']);
 
     $sql = "DELETE FROM Documentos WHERE id_documento = $id";
 
     if (!$conexion->query($sql)) {
         responder(false, 'Falló la eliminación: ' . $conexion->error);
+    }
+
+    // El QR deja de existir junto con su documento (si tenia uno asociado).
+    if ($idQr > 0) {
+        $conexion->query("DELETE FROM QR WHERE id_qr = $idQr");
     }
 
     $nombreArchivo = basename($rutaArchivo);

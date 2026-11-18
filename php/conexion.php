@@ -7,6 +7,10 @@ define('DB_NAME', 'hospital_clinicas');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 
+// Base publica usada para armar las URL de los QR.
+// Cambiar solo aqui si cambia el IP o se pasa a un dominio.
+define('URL_BASE_QR', 'http://192.168.1.3/proyecto');
+
 // Se abre la conexion y se corta la ejecucion si falla.
 $conexion = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
